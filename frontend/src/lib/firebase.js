@@ -1,16 +1,18 @@
-// firebaseConfig.js
-import { initializeApp } from 'firebase/app';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCkKEdXB1aSesX4j0deg_Ye0Qvb-B8D-Jk",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  measurementId: "YOUR_MEASUREMENT_ID"
+    apiKey: "AIzaSyCkKEdXB1aSesX4j0deg_Ye0Qvb-B8D-Jk",
+    authDomain: "shoppeasauthentication.firebaseapp.com",
+    projectId: "shoppeasauthentication",
+    storageBucket: "shoppeasauthentication.appspot.com",
+    messagingSenderId: "275125552426",
+    appId: "1:275125552426:web:f80aacd62c98a76e648a53",
 };
 
-const app = initializeApp(firebaseConfig);
-
-export default app;
+// Initialize Firebase
+export const FirebaseApp = initializeApp(firebaseConfig);
+export const FirebaseAuth = getAuth(FirebaseApp);
+export const FirebaseDb = getFirestore(FirebaseApp);
