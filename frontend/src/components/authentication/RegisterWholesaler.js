@@ -18,8 +18,7 @@ const RegisterWholesaler = () => {
     const db = FirebaseDb;
 
     const handleRegister = async () => {
-        setIsLoading(true)
-
+        setIsLoading(true);
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
             await setDoc(doc(db, "users", res.user.uid), {
@@ -28,6 +27,7 @@ const RegisterWholesaler = () => {
                 number: number,
                 uen: uen,
                 address: address,
+                created: new Date(),
                 id: res.user.uid,
                 role: "wholesaler",
             })

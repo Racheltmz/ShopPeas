@@ -25,7 +25,8 @@ const RegisterCustomer = () => {
                 email: email,
                 number: number,
                 id: res.user.uid,
-                role: "customer",
+                created: new Date(),
+                type: "customer",
             })
             alert("SUCCESS")
 

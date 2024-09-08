@@ -1,10 +1,12 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { REACT_APP_API_KEY } from '@env';
+
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCkKEdXB1aSesX4j0deg_Ye0Qvb-B8D-Jk",
+    apiKey: REACT_APP_API_KEY,
     authDomain: "shoppeasauthentication.firebaseapp.com",
     projectId: "shoppeasauthentication",
     storageBucket: "shoppeasauthentication.appspot.com",
