@@ -1,23 +1,38 @@
-import { StyleSheet, Text, View } from "react-native";
+import React from 'react';
+import { View, Text, Image, StyleSheet } from 'react-native';
 
-const ProductItem = (props) => {
+const ProductItem = ({ name, quantity, imageUrl, style }) => {
   return (
-    <View style={styles.productsContainer}>
-        
+    <View style={[styles.container, style]}>
+      <Image source={{ uri: imageUrl }} style={styles.image} />
+      <Text style={styles.name}>{name}</Text>
+      <Text style={styles.quantity}>{quantity} Packet</Text>
     </View>
   );
 };
 
-export default ProductItem;
-
 const styles = StyleSheet.create({
-  productsContainer: {
-    flex: 2,
-    marginHorizontal: "auto",
-    marginTop: 20,
-    height: 400,
-    width: 400,
-    alignItems: "center",
-    backgroundColor: "D6E8A4",
+  container: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    padding: 10,
+    margin: 5,
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: 100,
+    borderRadius: 5,
+    marginBottom: 5,
+  },
+  name: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  quantity: {
+    fontSize: 14,
+    color: '#666',
   },
 });
+
+export default ProductItem;
