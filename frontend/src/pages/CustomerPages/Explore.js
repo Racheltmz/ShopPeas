@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Text } from 'react-native';
-import FilteredProducts from '../../components/customers/FilteredProducts';
+import Products from '../../components/customers/Products';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
@@ -10,21 +10,25 @@ const Explore = () => {
     name: "Bok Choy",
     quantity: 1,
     img: "../../assests/imgs/DummyImage.jpg",
+    id: 1,
   },
     {
     name: "Tomato",
     quantity: 5,
-    img: "../../assests/imgs/DummyImage.jpg"
+    img: "../../assests/imgs/DummyImage.jpg",
+    id: 2,
   },
     {
     name: "Lemonade",
     quantity: 1,
-    img: "../../assests/imgs/DummyImage.jpg"
+    img: "../../assests/imgs/DummyImage.jpg",
+    id: 3,
   },
     {
     name: "Potato",
     quantity: 3,
-    img: "../../assests/imgs/DummyImage.jpg"
+    img: "../../assests/imgs/DummyImage.jpg",
+    id: 4,
   },
 ]
 
@@ -39,12 +43,9 @@ const Explore = () => {
           onChangeText={(text) => setSearchText(text)}
         />
       </View>
-      <View style={{ flex: 1 }}>
-        <View style={{ flex: 3 }}>
-          
-        </View>
+      <View style={{ flex: 2 }}>
         <Text>New Products</Text>
-        <FilteredProducts productsData={DUMMY_ITEMS} />
+        <Products productsData={DUMMY_ITEMS} />
       </View>
     </View>
   );
