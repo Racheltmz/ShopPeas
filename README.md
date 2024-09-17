@@ -16,4 +16,6 @@ Run frontend, go to http://127.0.0.1/5000.
 
 When you install a python library in the venv, update the requirements.txt file so someone else can update their version.
 
-    pip freeze > requirements.txt
+    pip freeze > requirements.txt (updated packages)
+
+    pip install -r requirements.txt (install packages)
