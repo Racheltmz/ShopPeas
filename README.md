@@ -53,6 +53,8 @@ Update libraries when you make changes
 
 Download the json config file I sent and put it in your utils folder.
 
+You don't have to create the collection in advance.
+
 Store CSV file in data, columns in the first row.
 
 Write your functions in the add_records_db.py file, I commented out a @saffron and @jed, those are the functions for you guys. Use **underscore** for the fields (e.g., first_name) and collections (e.g., wholesaler_products)
@@ -64,3 +66,5 @@ If some fields have to be set to null, my current code doesn't handle that ... s
 Run file based on the records you want to add. I used arguments so that you can control what parameters to run on in the CLI. Replace 'wholesaler' with your collection name, replace 'wholesalers.csv' with your csv file name.
 
     python add_records_db.py --collection wholesaler --input_csv ./data/wholesalers.csv
+
+You should be able to see your new collection and records.
