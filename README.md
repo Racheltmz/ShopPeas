@@ -57,7 +57,17 @@ You don't have to create the collection in advance.
 
 Store CSV file in data, columns in the first row.
 
-Write your functions in the add_records_db.py file, I commented out a @saffron and @jed, those are the functions for you guys. Use **underscore** for the fields (e.g., first_name) and collections (e.g., wholesaler_products)
+Write your functions in the add_records_db.py file, I commented out a @saffron and @jed, those are the functions for you guys. 
+
+- Use **underscore** for the fields (e.g., first_name) and collections (e.g., wholesaler_products)
+- `collection` is your collection name, the variable in document is your primary key which should be the first attribute in the entity, the things in set are the other attributes in the collection.
+
+    db.collection(collection).document(user.uid).set({
+        "firstName": record['firstName'],
+        "lastName": record['lastName'],
+        "email": record['email'],
+        "phoneNumber": record['phoneNumber'],
+    })
 
 If some fields have to be set to null, my current code doesn't handle that ... so I went in manually to change.
 
