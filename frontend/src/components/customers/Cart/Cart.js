@@ -1,16 +1,15 @@
 import { StyleSheet, Text, View } from 'react-native'
 
-
-const Profile = () => {
+const Cart = () => {
+    // calls to zustand to retrieve cart items
   return (
     <View>
-        {/* <ProfileDetails> */}
-        <Text>HELLO</Text>
+        {/* Includes a mapping of CartItem */}
     </View>
   )
 }
 
-export default Profile;
+export default Cart;
 
 const styles = StyleSheet.create({
   
