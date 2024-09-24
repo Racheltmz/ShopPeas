@@ -106,7 +106,14 @@ def transactions(df, collection):
 
 # @jed
 def product(df, collection):
-    pass
+    for _, record in df.iterrows():
+        if record['package_size'] == 'null':
+            record['package_size'] = None
+        db.collection(collection).document(str(record['pid'])).set({
+            "name": record['name'],
+            "package_size": record['package_size'],
+        })
+    print(f'Sucessfully created and added products.')
 
 def wholesalerProduct(df, collection):
     for _, record in df.iterrows():
