@@ -21,6 +21,7 @@ const Register = () => {
     </View>
   );
 
+
   return (
     <View>
       {selectedRegister ? (
