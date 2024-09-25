@@ -8,7 +8,8 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 
 # Use a service account
-cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-0e6ec030a9.json')
+#cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-0e6ec030a9.json')
+cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d9624e3bf1.json')
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -96,13 +97,43 @@ def wholesalerAddress(df, collection):
 
 # @saffron
 def consumerAccount(df, collection):
-    pass
+    for _, record in df.iterrows():
+        db.collection(collection).document(record['uid']).set({
+            "uid": record['uid'],
+            "name": record['name'],
+            "card_no": record['card_no'],
+            "expiry_date": record['expiry_date'],
+            "cvv": record['cvv'],
+        })
+    print(f'Sucessfully created new consumer account.')
 
 def consumerAddress(df, collection):
-    pass
+    for _, record in df.iterrows():
+        if record['unit_no'] == 'null':
+            record['unit_no'] = None
+        if record['building_name'] == 'null':
+            record['building_name'] = None
+        db.collection(collection).document(record['uid']).set({
+            "uid": record['uid'],
+            "street_name": record['street_name'],
+            "unit_no": record['unit_no'],
+            "building_name": record['building_name'],
+            "city": record['city'],
+            "postal_code": record['postal_code'],
+        })
+    print(f'Sucessfully created new consumer address.')
 
 def transactions(df, collection):
-    pass
+    for _, record in df.iterrows():
+        db.collection(collection).document(record['order_id']).set({
+            "order_id": record['order_id'],
+            "uid": record['uid'],
+            "wholesalerID": record['wholesalerID'],
+            "uen": record['uen'],
+            "date": record['date'],
+            "status": record['status'],
+        })
+    print(f'Sucessfully created transaction records.')
 
 # @jed
 def product(df, collection):
