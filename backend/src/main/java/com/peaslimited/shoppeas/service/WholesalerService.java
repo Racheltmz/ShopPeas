@@ -1,2 +1,4 @@
-package com.peaslimited.shoppeas.service.implementation;public interface WholesalerService {
+package com.peaslimited.shoppeas.service;
+
+public interface WholesalerService {
 }

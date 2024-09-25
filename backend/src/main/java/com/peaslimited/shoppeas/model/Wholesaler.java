@@ -1,2 +1,4 @@
-package com.peaslimited.shoppeas.model;public class Wholesaler {
+package com.peaslimited.shoppeas.model;
+
+public class Wholesaler {
 }

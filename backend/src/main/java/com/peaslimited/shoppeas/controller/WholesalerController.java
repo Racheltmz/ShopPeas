@@ -1,2 +1,4 @@
-package com.peaslimited.shoppeas.controller;public class WholesalerController {
+package com.peaslimited.shoppeas.controller;
+
+public class WholesalerController {
 }
