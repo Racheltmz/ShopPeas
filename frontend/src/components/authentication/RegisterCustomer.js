@@ -28,6 +28,14 @@ const RegisterCustomer = () => {
                 created: new Date(),
                 type: "customer",
             })
+            await setDoc(doc(db, "cart", res.user.uid), {
+                username: username,
+                email: email,
+                number: number,
+                id: res.user.uid,
+                created: new Date(),
+                type: "customer",
+            })
             alert("SUCCESS")
 
         } catch (err) {
