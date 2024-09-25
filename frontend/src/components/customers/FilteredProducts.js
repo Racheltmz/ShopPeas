@@ -1,14 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 
-const ProductItem = (props) => {
+const FilteredProducts = (props) => {
   return (
     <View style={styles.productsContainer}>
-        
+      <Text>HELLo</Text>
+      <Text>WHATS POPPING</Text>
     </View>
   );
 };
 
-export default ProductItem;
+export default FilteredProducts;
 
 const styles = StyleSheet.create({
   productsContainer: {
@@ -18,6 +19,6 @@ const styles = StyleSheet.create({
     height: 400,
     width: 400,
     alignItems: "center",
-    backgroundColor: "D6E8A4",
+    // backgroundColor: "red",
   },
 });

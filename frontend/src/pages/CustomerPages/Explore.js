@@ -1,42 +1,32 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, Text } from 'react-native';
-import Products from '../../components/customers/Products';
-import { useNavigation } from '@react-navigation/native';
+import FilteredProducts from '../../components/customers/FilteredProducts';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
-  const navigation = useNavigation();
 
   const DUMMY_ITEMS = [
     {
     name: "Bok Choy",
     quantity: 1,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 1,
+    img: "../../assests/imgs/DummyImage.jpg",
   },
     {
     name: "Tomato",
     quantity: 5,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 2,
+    img: "../../assests/imgs/DummyImage.jpg"
   },
     {
     name: "Lemonade",
     quantity: 1,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 3,
+    img: "../../assests/imgs/DummyImage.jpg"
   },
     {
     name: "Potato",
     quantity: 3,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 4,
+    img: "../../assests/imgs/DummyImage.jpg"
   },
 ]
-
-const handleProductPress = (item) => {
-  navigation.navigate('ProductDetails', {product: item});
-}
 
   return (
     <View style={styles.container}>
@@ -49,8 +39,12 @@ const handleProductPress = (item) => {
           onChangeText={(text) => setSearchText(text)}
         />
       </View>
-      <View style={{ flex: 2 , justifyContent: 'center'}}>
-        <Products productsData={DUMMY_ITEMS} onProductPress={handleProductPress} />
+      <View style={{ flex: 1 }}>
+        <View style={{ flex: 3 }}>
+          
+        </View>
+        <Text>New Products</Text>
+        <FilteredProducts productsData={DUMMY_ITEMS} />
       </View>
     </View>
   );
