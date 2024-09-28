@@ -40,7 +40,7 @@ const Login = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#fff',
+      /*backgroundColor: '#fff',*/ //Container Colour for login portion, no need for this as we have image
       alignItems: 'center',
       justifyContent: 'center',
     },

@@ -1,0 +1,93 @@
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
+const WholesalerProduct = ({ name, price, unit, stock, description }) => {
+    return (
+        <View style={styles.productItem}>
+            <View style={styles.productImage} />
+            <View style={styles.productInfo}>
+                <Text style={styles.productName}>{name}</Text>
+                <Text style={styles.productPrice}>${price.toFixed(2)}</Text>
+                <Text style={styles.productUnit}>{unit}</Text>
+                <Text style={styles.productDescription}>{description}</Text>
+            </View>
+            <View style={styles.productActions}>
+                <Text style={styles.stockText}>{stock} left in stock</Text>
+                <View style={styles.actionIcons}>
+                    <TouchableOpacity>
+                        <Ionicons name="trash-outline" size={28} color="#0C5E52" />
+                    </TouchableOpacity>
+                    <TouchableOpacity>
+                        <Ionicons name="create-outline" size={28} color="#0C5E52" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    )
+}
+
+const styles = StyleSheet.create({
+      productItem: {
+        flexDirection: 'row',
+        backgroundColor: '#EBF3D1',
+        margin: 10,
+        padding: 20,
+        borderRadius: 10,
+      },
+      productImage: {
+        width: 60,
+        height: 60,
+        backgroundColor: '#E0E0E0',
+        borderRadius: 5,
+      },
+      productInfo: {
+        flex: 1,
+        marginLeft: 15,
+      },
+      productName: {
+        fontSize: 18,
+        fontWeight: 'bold',
+      },
+      productPrice: {
+        fontSize: 16,
+        color: '#0C5E52',
+      },
+      productUnit: {
+        fontSize: 14,
+        color: 'gray',
+      },
+      productDescription: {
+        fontSize: 14,
+        color: 'gray',
+      },
+      productActions: {
+        justifyContent: 'space-between',
+      },
+      stockText: {
+        fontSize: 12,
+        color: '#0C5E52',
+      },
+      actionIcons: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
+      },
+      footer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: 'white',
+        paddingVertical: 10,
+      },
+      footerItem: {
+        alignItems: 'center',
+      },
+      footerText: {
+        fontSize: 12,
+        color: '#0C5E52',
+      },
+      sellText: {
+        color: '#FF9F67',
+      },
+});
+
+export default WholesalerProduct;

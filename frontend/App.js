@@ -1,3 +1,4 @@
+
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ImageBackground } from "react-native";
@@ -22,7 +23,9 @@ export default function App() {
   }
 
   useEffect(() => {
+    console.log("Setting up auth state listener");
     const unSub = onAuthStateChanged(FirebaseAuth, (user) => {
+      console.log("Auth state changed. User:", user ? user.uid : "null");
       if (user) {
         fetchUserInfo(user.uid);
       } else {
@@ -40,7 +43,9 @@ export default function App() {
   // determine which page to load
   let currentPage;
 
+  console.log("Current user:", currentUser);
   if (currentUser) {
+    console.log("User type:", currentUser.type);
     switch (currentUser.type) {
       case "customer":
         currentPage = <CustomerPages />;
@@ -48,23 +53,23 @@ export default function App() {
       case "wholesaler":
         currentPage = <WholesalerPages />;
         break;
+      default:
+        currentPage = <AuthPage />;
     }
-
-    return (
-      <ImageBackground
-        source={backgroundImage}
-        style={styles.backgroundImage}
-      >
-        <NavigationContainer theme={navTheme}>
-          <View style={styles.contentContainer}>{currentPage}</View>
-        </NavigationContainer>
-      </ImageBackground>
-    );
-  } else {
+  } else{
     currentPage = <AuthPage />;
-
-    return <View style={styles.container}>{currentPage}</View>;
   }
+
+  return (
+    <ImageBackground
+      source={backgroundImage}
+      style={styles.backgroundImage}
+    >
+      <NavigationContainer theme={navTheme}>
+        <View style={styles.contentContainer}>{currentPage}</View>
+      </NavigationContainer>
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -77,7 +82,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    resizeMode: "cover",
+    /* resizeMode: "cover",*/
   },
   contentContainer: {
     flex: 1,

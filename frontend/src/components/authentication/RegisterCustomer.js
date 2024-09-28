@@ -65,13 +65,14 @@ export default RegisterCustomer;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        //backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
+        backgroundColor: '#fff',
         padding: 10,
         marginVertical: 5,
         borderRadius: 5,
