@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.gson.JsonObject;
 import com.peaslimited.shoppeas.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,12 +15,14 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    AuthService authService;
+    private AuthService authService;
+
+    // @saffron registerConsumer
 
     @PostMapping
     @RequestMapping(value = "/wholesaler")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addWholesaler(@RequestBody Map<String, Object> wholesaler) throws IOException, FirebaseAuthException {
-        authService.addWholesaler(wholesaler);
+    public String registerWholesaler(@RequestBody Map<String, Object> wholesaler) throws IOException, FirebaseAuthException {
+        return authService.registerWholesaler(wholesaler);
     }
 }

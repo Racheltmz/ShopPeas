@@ -5,8 +5,8 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
-import com.peaslimited.shoppeas.dto.WholesalerAccountDTO;
-import com.peaslimited.shoppeas.repository.WholesalerAccountRepository;
+import com.peaslimited.shoppeas.model.Wholesaler;
+import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,42 +14,44 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Repository
-public class WholesalerAccountRepositoryImpl implements WholesalerAccountRepository {
+public class WholesalerRepositoryImpl implements WholesalerRepository {
 
-    private final String COLLECTION = "wholesaler_account";
+    private final String COLLECTION = "wholesaler";
 
     @Autowired
     private Firestore firestore;
 
+    // Get wholesaler details
     @Override
-    public WholesalerAccountDTO findByUEN(String UEN) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION).document(UEN);
+    public Wholesaler findByUID(String UID) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(UID);
 
         // Asynchronously retrieve the document
         ApiFuture<DocumentSnapshot> future = docRef.get();
         DocumentSnapshot document = future.get();
 
         // Convert document to Wholesaler object
-        WholesalerAccountDTO wholesalerAccountDTO = null;
+        Wholesaler wholesaler = null;
         if (document.exists()) {
-            wholesalerAccountDTO = document.toObject(WholesalerAccountDTO.class);
+            wholesaler = document.toObject(Wholesaler.class);
         }
-        return wholesalerAccountDTO;
+        return wholesaler;
     }
 
     @Override
-    public void addByUEN(String UEN, WholesalerAccountDTO data) {
-        ApiFuture<WriteResult> future = firestore.collection(COLLECTION).document(UEN).set(data);
+    public void addByUID(String UID, Wholesaler wholesaler) {
+        ApiFuture<WriteResult> future = firestore.collection(COLLECTION).document(UID).set(wholesaler);
     }
 
     @Override
-    public void updateByUEN(String UEN, Map<String, Object> data) {
+    public String updateByUID(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         // Update an existing document
-        DocumentReference docRef = firestore.collection(COLLECTION).document(UEN);
+        DocumentReference docRef = firestore.collection(COLLECTION).document(UID);
 
         // Update fields
         for (String key : data.keySet()) {
             ApiFuture<WriteResult> future = docRef.update(key, data.get(key));
         }
+        return findByUID(UID).getUEN();
     }
 }

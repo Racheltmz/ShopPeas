@@ -6,12 +6,13 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-// Error Response Class
+/**
+ * Error Handling
+ */
 @Getter
 @AllArgsConstructor
-public class ErrorResponse {
-    // Attributes
-    private HttpStatus status;
-    private String message;
-    private LocalDateTime timestamp;
+public class ApiException {
+    private final String message;
+    private final HttpStatus status;
+    private final LocalDateTime timestamp;
 }

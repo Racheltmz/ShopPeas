@@ -20,16 +20,4 @@ public class WholesalerAccount {
         this.bank_account_name = bank_account_name;
         this.bank_account_no = bank_account_no;
     }
-
-    public String getBank() {
-        return bank;
-    }
-
-    public String getBank_account_name() {
-        return bank_account_name;
-    }
-
-    public Long getBank_account_no() {
-        return bank_account_no;
-    }
 }

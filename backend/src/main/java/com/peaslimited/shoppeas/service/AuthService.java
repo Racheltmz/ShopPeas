@@ -6,7 +6,11 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface AuthService {
-//    void addConsumer();
+    // @saffron this function for creating consumers
+    // void registerConsumer();
 
-    void addWholesaler(Map<String, Object> wholesaler) throws FirebaseAuthException, IOException;
+    String registerWholesaler(Map<String, Object> wholesaler) throws FirebaseAuthException, IOException;
+
+    void updateWholesaler(String UID, Map<String, Object> user) throws FirebaseAuthException;
+
 }

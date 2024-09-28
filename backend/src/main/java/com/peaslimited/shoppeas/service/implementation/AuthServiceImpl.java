@@ -1,84 +1,89 @@
 package com.peaslimited.shoppeas.service.implementation;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
+import com.peaslimited.shoppeas.dto.WholesalerAccountDTO;
+import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
 import com.peaslimited.shoppeas.model.Wholesaler;
-import com.peaslimited.shoppeas.model.WholesalerAccount;
-import com.peaslimited.shoppeas.model.WholesalerAddress;
-import com.peaslimited.shoppeas.service.AuthService;
-import com.peaslimited.shoppeas.service.WholesalerAccountService;
-import com.peaslimited.shoppeas.service.WholesalerAddressService;
-import com.peaslimited.shoppeas.service.WholesalerService;
+import com.peaslimited.shoppeas.repository.AuthRepository;
+import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    WholesalerService wholesalerService;
+    private WholesalerService wholesalerService;
 
     @Autowired
-    WholesalerAddressService wholesalerAddressService;
+    private WholesalerAddressService wholesalerAddressService;
 
     @Autowired
-    WholesalerAccountService wholesalerAccountService;
+    private WholesalerAccountService wholesalerAccountService;
+
+    @Autowired
+    private AuthRepository authRepository;
+
+    // @saffron registerConsumer
 
     @Override
-    public void addWholesaler(Map<String, Object> user) throws FirebaseAuthException {
-        UserRecord.CreateRequest request = new UserRecord.CreateRequest()
-                .setEmail(user.get("email").toString())
-                .setEmailVerified(false)
-                .setPassword(user.get("password").toString())
-                .setPhoneNumber(user.get("phone_number").toString())
-                .setDisplayName(user.get("name").toString())
-                .setDisabled(false);
+    public String registerWholesaler(Map<String, Object> user) throws FirebaseAuthException {
+        // Create Firebase user
+        String uid = authRepository.createUser(user);
 
-        UserRecord userRecord = FirebaseAuth.getInstance().createUser(request);
-        String uid = userRecord.getUid();
-
-        // Set user privilege on the user corresponding to uid
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("user", true);
-        FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+        // Set user privilege
+        authRepository.setUserClaims(uid, Map.of("user", true));
 
         String uen = user.get("uen").toString();
-        // Add wholesaler record
-        Wholesaler wholesaler = new Wholesaler(
-                uen,
-                user.get("name").toString(),
-                user.get("email").toString(),
-                user.get("phone_number").toString(),
-                user.get("currency").toString(),
-                Double.valueOf(user.get("rating").toString()),
-                Integer.valueOf(user.get("num_ratings").toString())
-        );
-
+        // Create and add wholesaler
+        Wholesaler wholesaler = createWholesalerFromMap(user);
         wholesalerService.addWholesaler(uid, wholesaler);
 
-        // Add wholesaler account record
-        WholesalerAccount wholesalerAccount = new WholesalerAccount(
-                user.get("bank").toString(),
-                user.get("bank_account_name").toString(),
-                Long.valueOf(user.get("bank_account_no").toString())
-        );
-
+        // Create and add wholesaler account
+        WholesalerAccountDTO wholesalerAccount = createWholesalerAccountFromMap(user);
         wholesalerAccountService.addWholesalerAccount(uen, wholesalerAccount);
 
-        // Add wholesaler address record
-        WholesalerAddress wholesalerAddress = new WholesalerAddress(
-                user.get("street_name").toString(),
-                user.get("unit_no").toString(),
-                user.get("building_name").toString(),
-                user.get("city").toString(),
-                Integer.valueOf(user.get("postal_code").toString())
-        );
-
+        // Create and add wholesaler address
+        WholesalerAddressDTO wholesalerAddress = createWholesalerAddressFromMap(user);
         wholesalerAddressService.addWholesalerAddress(uen, wholesalerAddress);
-        // HANDLE 400 BAD REQUEST EMAIL EXISTS
+
+        return uid;
+    }
+
+    private Wholesaler createWholesalerFromMap(Map<String, Object> user) {
+        return new Wholesaler(
+            user.get("uen").toString(),
+            user.get("name").toString(),
+            user.get("email").toString(),
+            user.get("phone_number").toString(),
+            user.get("currency").toString(),
+            Double.valueOf(user.get("rating").toString()),
+            Integer.valueOf(user.get("num_ratings").toString())
+        );
+    }
+
+    private WholesalerAccountDTO createWholesalerAccountFromMap(Map<String, Object> user) {
+        return new WholesalerAccountDTO(
+            user.get("bank").toString(),
+            user.get("bank_account_name").toString(),
+            Long.valueOf(user.get("bank_account_no").toString())
+        );
+    }
+
+    private WholesalerAddressDTO createWholesalerAddressFromMap(Map<String, Object> user) {
+        return new WholesalerAddressDTO(
+            user.get("street_name").toString(),
+            user.get("unit_no").toString(),
+            user.get("building_name").toString(),
+            user.get("city").toString(),
+            Integer.valueOf(user.get("postal_code").toString())
+        );
+    }
+
+    @Override
+    public void updateWholesaler(String UID, Map<String, Object> user) throws FirebaseAuthException {
+        authRepository.updateUser(UID, user);
     }
 }

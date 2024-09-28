@@ -12,12 +12,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+/**
+ * Connect to firebase
+ */
 @Service
 public class FirebaseConfig {
 
     @Value("${firebase.service-account.path}")
     private String serviceAccountPath;
 
+    /**
+     * Configuration to connect to firebase
+     * @throws IOException
+     */
     @PostConstruct
     public void configureFirebaseConnection() throws IOException {
         File file = ResourceUtils.getFile(serviceAccountPath);

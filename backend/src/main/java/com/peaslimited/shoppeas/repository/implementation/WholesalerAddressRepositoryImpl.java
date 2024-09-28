@@ -5,8 +5,8 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.WriteResult;
-import com.peaslimited.shoppeas.dto.WholesalerAccountDTO;
-import com.peaslimited.shoppeas.repository.WholesalerAccountRepository;
+import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
+import com.peaslimited.shoppeas.repository.WholesalerAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,15 +14,15 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Repository
-public class WholesalerAccountRepositoryImpl implements WholesalerAccountRepository {
+public class WholesalerAddressRepositoryImpl implements WholesalerAddressRepository {
 
-    private final String COLLECTION = "wholesaler_account";
+    private final String COLLECTION = "wholesaler_address";
 
     @Autowired
     private Firestore firestore;
 
     @Override
-    public WholesalerAccountDTO findByUEN(String UEN) throws ExecutionException, InterruptedException {
+    public WholesalerAddressDTO findByUEN(String UEN) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection(COLLECTION).document(UEN);
 
         // Asynchronously retrieve the document
@@ -30,15 +30,15 @@ public class WholesalerAccountRepositoryImpl implements WholesalerAccountReposit
         DocumentSnapshot document = future.get();
 
         // Convert document to Wholesaler object
-        WholesalerAccountDTO wholesalerAccountDTO = null;
+        WholesalerAddressDTO wholesalerAddressDTO = null;
         if (document.exists()) {
-            wholesalerAccountDTO = document.toObject(WholesalerAccountDTO.class);
+            wholesalerAddressDTO = document.toObject(WholesalerAddressDTO.class);
         }
-        return wholesalerAccountDTO;
+        return wholesalerAddressDTO;
     }
 
     @Override
-    public void addByUEN(String UEN, WholesalerAccountDTO data) {
+    public void addByUEN(String UEN, WholesalerAddressDTO data) {
         ApiFuture<WriteResult> future = firestore.collection(COLLECTION).document(UEN).set(data);
     }
 

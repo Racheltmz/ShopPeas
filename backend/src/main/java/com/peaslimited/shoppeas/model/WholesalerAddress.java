@@ -24,24 +24,4 @@ public class WholesalerAddress {
         this.city = city;
         this.postal_code = postal_code;
     }
-
-    public String getStreet_name() {
-        return street_name;
-    }
-
-    public String getUnit_no() {
-        return unit_no;
-    }
-
-    public String getBuilding_name() {
-        return building_name;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public Integer getPostal_code() {
-        return postal_code;
-    }
 }
