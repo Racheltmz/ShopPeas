@@ -10,7 +10,7 @@ import WholesalerPages from "./src/pages/UserPages/WholesalerPages";
 import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
-  const { currentUser, isLoading, fetchUserInfo } = useUserStore();
+  const { currentUser, isLoading, fetchUserInfo, userRole, resetUser } = useUserStore();
   const backgroundImage = require("./assets/imgs/backGroundImage.png");
 
   const navTheme = {
@@ -27,29 +27,30 @@ export default function App() {
         fetchUserInfo(user.uid);
       } else {
         // Handle the case when user is null (logged out)
-        fetchUserInfo("");
+        resetUser();
       }
     });
     return () => {
       unSub();
     };
-  }, [fetchUserInfo]);
+  }, [fetchUserInfo, resetUser]);
 
   if (isLoading) return <Text style={styles.loading}>Loading...</Text>;
 
   // determine which page to load
   let currentPage;
 
-  if (currentUser) {
-    switch (currentUser.type) {
-      case "customer":
+  if (currentUser && userRole) {
+    switch (userRole) {
+      case "consumer":
         currentPage = <CustomerPages />;
         break;
       case "wholesaler":
         currentPage = <WholesalerPages />;
         break;
+      default:
+        currentPage = <Text>Unknown user type</Text>;
     }
-
     return (
       <ImageBackground
         source={backgroundImage}
