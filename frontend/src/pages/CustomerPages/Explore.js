@@ -9,34 +9,34 @@ const Explore = () => {
 
   const DUMMY_ITEMS = [
     {
-    name: "Bok Choy",
-    quantity: 1,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 1,
-  },
-    {
-    name: "Tomato",
-    quantity: 5,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 2,
-  },
-    {
-    name: "Lemonade",
-    quantity: 1,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 3,
-  },
-    {
-    name: "Potato",
-    quantity: 3,
-    img: require("../../../assets/imgs/DummyImage.jpg"),
-    id: 4,
-  },
-]
+      name: "Bok Choy",
+      quantity: 1,
+      img: require("../../../assets/imgs/DummyImage.jpg"),
+      id: 1,
+    },
+      {
+      name: "Tomato",
+      quantity: 5,
+      img: require("../../../assets/imgs/DummyImage.jpg"),
+      id: 2,
+    },
+      {
+      name: "Lemonade",
+      quantity: 1,
+      img: require("../../../assets/imgs/DummyImage.jpg"),
+      id: 3,
+    },
+      {
+      name: "Potato",
+      quantity: 3,
+      img: require("../../../assets/imgs/DummyImage.jpg"),
+      id: 4,
+    },
+  ]
 
-const handleProductPress = (item) => {
-  navigation.navigate('ProductDetails', {product: item});
-}
+  const handleProductPress = (item) => {
+    navigation.navigate('ProductDetails', {product: item});
+  }
 
   return (
     <View style={styles.container}>
