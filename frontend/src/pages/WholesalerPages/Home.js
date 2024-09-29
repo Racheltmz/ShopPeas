@@ -1,17 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 
 const Home = ({ navigation }) => {
-  const products = [
-    { name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
-    { name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
-    { name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Chinese Dressing'},
-    { name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats'},
-    { name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
-    { name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground'},
-  ];
+  const [products, setProducts] = useState([
+    {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
+    {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
+    {name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Chinese Dressing'},
+    {name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats'},
+    {name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
+    {name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground'},
+  ]);
+
+  const removeProduct = (index) => {
+    setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
+  };
+
+  const editProduct = (index, updatedProduct) => {
+    setProducts(currentProducts => 
+      currentProducts.map((product, i) => 
+        i === index ? { ...product, ...updatedProduct } : product
+      )
+    );
+  };
 
   return (
     <SafeAreaView style = {styles.container}>
@@ -51,11 +63,14 @@ const Home = ({ navigation }) => {
         {products.map((product, index) => (
           <WholesalerProduct
             key={index}
+            index={index}
             name={product.name}
             price={product.price}
             unit={product.unit}
             stock={product.stock}
             description={product.description}
+            onRemove={removeProduct}
+            onEdit={editProduct}
           />
         ))}
       </ScrollView>
@@ -114,7 +129,7 @@ const styles = StyleSheet.create({
   headerImage: {
     width: 80, 
     height: 90,
-    marginRight: 115,
+    marginRight: "28.2%",
   },
   addProductContainer: {
     flexDirection: 'row',
