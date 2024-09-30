@@ -109,9 +109,15 @@ def product(df, collection):
     for _, record in df.iterrows():
         if record['package_size'] == 'null':
             record['package_size'] = None
+        if pd.isnull(record['Image']) or record['Image'] == 'null':
+            image_url = None  # Set image URL to None if not available
+        else:
+            image_url = record['Image']
         db.collection(collection).document(str(record['pid'])).set({
-            "name": record['name'],
-            "package_size": record['package_size'],
+            "pid": record['pid'],  # Product ID
+            "name": record['name'],  # Product name
+            "package_size": record['package_size'],  # Package size
+            "image_url": image_url  # Image URL from the CSV file
         })
     print(f'Sucessfully created and added products.')
 
@@ -121,8 +127,7 @@ def wholesalerProduct(df, collection):
             record['price'] = None
         if record['stock'] == 'null':
             record['stock'] = None
-        db.collection(collection).document(record['wholesalerID']).set({
-            "wholesalerID": record['wholesalerID'],
+        db.collection(collection).document(record['swp_id']).set({
             "uen": record['uen'],
             "pid": record['pid'],
             "price": record['price'],
@@ -136,7 +141,6 @@ def shoppingCart(df, collection):
         if record['quantity'] == 'null':
             record['quantity'] = None
         db.collection(collection).document(record['cid']).set({
-            "cid": record['cid'],
             "uid": record['uid'],
             "pid": record['pid'],
             "quantity": record['quantity'],
