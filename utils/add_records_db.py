@@ -204,8 +204,10 @@ elif (collection == 'consumer_account'):
     consumerAccount(df, collection)
 elif(collection == 'consumer_address'):
     consumerAddress(df, collection)
-elif(collection == 'transactions'):
+elif(collection == 'transactions2'):
     transactions(df, collection)
+elif(collection == 'orders'):
+    orders(df, collection)
 # @jed
 elif (collection == 'product'):
     product(df, collection)
