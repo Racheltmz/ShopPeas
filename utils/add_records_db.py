@@ -125,15 +125,27 @@ def consumerAddress(df, collection):
 
 def transactions(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['order_id']).set({
-            "order_id": record['order_id'],
+        db.collection(collection).document(record['transactionID']).set({
+            "transactionID": record['transactionID'],
             "uid": record['uid'],
-            "wholesalerID": record['wholesalerID'],
-            "uen": record['uen'],
+            "orderID": record['orderID'],
             "date": record['date'],
+            "totPrice": record['totPrice'],
             "status": record['status'],
         })
     print(f'Sucessfully created transaction records.')
+
+def orders(df, collection):
+    for _, record in df.iterrows():
+        db.collection(collection).document(record['orderID']).set({
+            "orderID": record['orderID'],
+            "wholesalerID": record['wholesalerID'],
+            "pid": record['pid'],
+            "quantity": record['quantity'],
+            "totPrice": record['totPrice'],
+            "uid": record['uid'],
+        })
+    print(f'Sucessfully created order records.')
 
 # @jed
 def product(df, collection):
