@@ -8,7 +8,6 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 
 # Use a service account
-#cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-0e6ec030a9.json')
 cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d9624e3bf1.json')
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
@@ -95,7 +94,6 @@ def wholesalerAddress(df, collection):
         })
     print(f'Sucessfully created new wholesaler address.')
 
-# @saffron
 def consumerAccount(df, collection):
     for _, record in df.iterrows():
         db.collection(collection).document(record['uid']).set({
@@ -125,29 +123,25 @@ def consumerAddress(df, collection):
 
 def transactions(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['transactionID']).set({
-            "transactionID": record['transactionID'],
+        db.collection(collection).document(record['tid']).set({
             "uid": record['uid'],
-            "orderID": record['orderID'],
+            "orders": record['orders'].split('|'),
+            "total_price": record['total_price'],
             "date": record['date'],
-            "totPrice": record['totPrice'],
             "status": record['status'],
         })
     print(f'Sucessfully created transaction records.')
 
 def orders(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['orderID']).set({
-            "orderID": record['orderID'],
-            "wholesalerID": record['wholesalerID'],
-            "pid": record['pid'],
+        db.collection(collection).document(record['oid']).set({
+            "swp_id": record['swp_id'],
             "quantity": record['quantity'],
-            "totPrice": record['totPrice'],
-            "uid": record['uid'],
+            "price": record['price'],
+            "type": record['type'],
         })
     print(f'Sucessfully created order records.')
 
-# @jed
 def product(df, collection):
     for _, record in df.iterrows():
         if record['package_size'] == 'null':
@@ -157,7 +151,6 @@ def product(df, collection):
         else:
             image_url = record['Image']
         db.collection(collection).document(str(record['pid'])).set({
-            "pid": record['pid'],  # Product ID
             "name": record['name'],  # Product name
             "package_size": record['package_size'],  # Package size
             "image_url": image_url  # Image URL from the CSV file
@@ -181,12 +174,10 @@ def wholesalerProduct(df, collection):
 
 def shoppingCart(df, collection):
     for _, record in df.iterrows():
-        if record['quantity'] == 'null':
-            record['quantity'] = None
         db.collection(collection).document(record['cid']).set({
             "uid": record['uid'],
-            "pid": record['pid'],
-            "quantity": record['quantity'],
+            "orders": record['orders'].split('|'),
+            "total_price": record['total_price'],
         })
     print(f'Sucessfully added entries into the shopping cart.')
 
@@ -203,16 +194,14 @@ elif (collection == 'wholesaler_account'):
     wholesalerAccount(df, collection)
 elif(collection == 'wholesaler_address'):
     wholesalerAddress(df, collection)
-# @saffron
 elif (collection == 'consumer_account'):
     consumerAccount(df, collection)
 elif(collection == 'consumer_address'):
     consumerAddress(df, collection)
-elif(collection == 'transactions2'):
+elif(collection == 'transactions'):
     transactions(df, collection)
 elif(collection == 'orders'):
     orders(df, collection)
-# @jed
 elif (collection == 'product'):
     product(df, collection)
 elif(collection == 'wholesaler_products'):

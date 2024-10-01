@@ -13,6 +13,7 @@ csv_path = 'data/products.csv'
 
 # Function to upload images to firebase storage and get the public url 
 def upload_image_to_firebase(image_path, image_name):
+    
     bucket = storage.bucket()  # Access the default bucket automatically
     blob = bucket.blob(f'images/{image_name}')  # Store images under 'images/' folder in Firebase Storage
     blob.upload_from_filename(image_path)
