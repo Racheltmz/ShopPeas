@@ -1,6 +1,200 @@
-﻿pid,name,package_size
-1001,chicken breast,10
-1002,chicken thighs,8
-1003,chicken wings,35
-1004,fries,20
-1005,chicken nuggets,9
+pid,name,package_size,Image
+P1001,(Lim Traders) Chicken Breaded Patties,1.8kg,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1001.jpg
+P1002,100PLUS ACTIVE Non-Carbonated Drink,1.5L,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1002.jpg
+P1003,100PLUS ACTIVE Non-Carbonated Drink,12 X 300ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1003.jpg
+P1004,100PLUS ACTIVE Non-Carbonated Drink,300ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1004.jpg
+P1005,100PLUS ACTIVE Non-Carbonated Drink,500ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1005.jpg
+P1006,100PLUS ACTIVE Non-Carbonated Drink,6 X 300ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1006.jpg
+P1007,100PLUS Active Non-Carbonated Isotonic Powder,15g,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1007.jpg
+P1008,100PLUS Active Non-Carbonated Isotonic Powder,5 X 15g,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1008.jpg
+P1009,100PLUS Hydration Bar,4 X 75ml,nan
+P1010,100PLUS Hydration Bar,75ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1010.jpg
+P1011,100PLUS Lemon Lime,1.5L,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1011.jpg
+P1012,100PLUS Lemon Lime,325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1012.jpg
+P1013,100PLUS Lemon Lime,500ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1013.jpg
+P1014,100PLUS Orange,1.5L,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1014.jpg
+P1015,100PLUS Orange,500ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1015.jpg
+P1016,100PLUS Original,1.5L,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1016.jpg
+P1017,100PLUS Original,12 X 325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1017.jpg
+P1018,100PLUS Original,325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1018.jpg
+P1019,100PLUS Original,500ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1019.jpg
+P1020,100PLUS Original,6 X 325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1020.jpg
+P1021,100PLUS Zero Sugar,1.5L,nan
+P1022,100PLUS Zero Sugar,12 X 1.5L,nan
+P1023,100PLUS Zero Sugar,24 X 325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1023.jpg
+P1024,100PLUS Zero Sugar,24 X 500ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1024.jpg
+P1025,100PLUS Zero Sugar,325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1025.jpg
+P1026,100PLUS Zero Sugar,500ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1026.jpg
+P1027,100PLUS Zero Sugar,6 X 325ml,https://storage.googleapis.com/shoppeasauthentication.appspot.com/images/P1027.jpg
+P1028,333 Super Refined Blended Vegetable Oil,1 X 17kg,nan
+P1029,3A 100% Pure Black Sesame Oil,320ml,nan
+P1030,3A 100% Pure Black Sesame Oil,750ml,nan
+P1031,3A 100% Pure White Sesame Oil,320ml,nan
+P1032,3A 100% Pure White Sesame Oil,750ml,nan
+P1033,3A Black Pepper Sauce,250ml,nan
+P1034,3A Crispy Prawn Chilli,180g,nan
+P1035,3A Crispy Prawn Chilli,320g,nan
+P1036,3A Ginseng Herbal Soup Mix,40g,nan
+P1037,3A Instant Tom Yum Paste,227g,nan
+P1038,3A Klang Bakuteh Herbs & Spices Mix,35g,nan
+P1039,3A Premium Sugar Free Black Soybean Soy Sauce,400ml,nan
+P1040,7UP CARBONATED LEMON & LIME FLAVOURED DRINK,1.5L,nan
+P1041,7UP CARBONATED LEMON & LIME FLAVOURED DRINK,12 X 320ml,nan
+P1042,7UP CARBONATED LEMON & LIME FLAVOURED DRINK,320ml,nan
+P1043,7UP CARBONATED LEMON & LIME FLAVOURED DRINK,325ml,nan
+P1044,7UP CARBONATED LEMON & LIME FLAVOURED DRINK,4 X 320ml,nan
+P1045,7UP CARBONATED LEMON & LIME FLAVOURED DRINK,500ml,nan
+P1046,7UP Carbonated Lemon & Lime Flavoured Drink No Calories,1.5L,nan
+P1047,7UP Carbonated Lemon & Lime Flavoured Drink No Calories,320ml,nan
+P1048,7UP Carbonated Lemon and Lime Flavoured Drink,1.5L,nan
+P1049,7UP Carbonated Lemon and Lime Flavoured Drink,12 X 320ml,nan
+P1050,7UP Carbonated Lemon and Lime Flavoured Drink,320ml,nan
+P1051,7UP Carbonated Lemon and Lime Flavoured Drink,325ml,nan
+P1052,7UP Carbonated Lemon and Lime Flavoured Drink,4 X 320ml,nan
+P1053,7UP Carbonated Lemon and Lime Flavoured Drink,500ml,nan
+P1054,7UP FREE,1.5L,nan
+P1055,7UP FREE,320ml,nan
+P1056,888 Healthier Blend Cooking Oil,1 X 15kg,nan
+P1057,888 Healthier Blend Cooking Oil,2L,nan
+P1058,888 Healthier Blend Cooking Oil,5L,nan
+P1059,888 Healthier Blend Sesame Oil,5L,nan
+P1060,A&W Cream Soda,1.5L,nan
+P1061,A&W Sarsaparilla,1.25L,nan
+P1062,A&W Sarsaparilla,1.5L,nan
+P1063,A&W Sarsaparilla,12 X 320ml,nan
+P1064,A&W Sarsaparilla,2 X 1.5L,nan
+P1065,A&W Sarsaparilla,320ml,nan
+P1066,A&W Sarsaparilla,4 X 320ml,nan
+P1067,A&W Sarsaparilla,500ml,nan
+P1068,AAA 100% Natural Chrysanthemum Teabag With Brown Raw Sugar Tea,10 X 10g,nan
+P1069,AAA 100% Natural Ginger Powder Teabag with Brown Raw Sugar,10 X 12g,nan
+P1070,AAA Black Garlic Herbal Chicken Soup,35g,nan
+P1071,AAA Cinnamon Hot Pepper Sauce,300ml,nan
+P1072,AAA Premium 40% Less Sodium Lite Soy Sauce,300ml,nan
+P1073,AAA Premium Black Bean Low Salt Soy Sauce Paste,400ml,nan
+P1074,AAA Premium Black Bean Soy Sauce,400ml,nan
+P1075,AAA Premium Black Bean Soy Sauce Paste,400ml,nan
+P1076,AAA Premium Graded Black Bean Soy Sauce,400ml,nan
+P1077,AAA Premium Infusion Stir Fry Sauce,300ml,nan
+P1078,AAA Premium Japanese Style Natural Brewed Soy Sauce,400ml,nan
+P1079,AAA PREMIUM ORGANIC BLACK SOYBEAN SOY SAUCE,400ml,nan
+P1080,AAA Premium Oyster Sauce,510g,nan
+P1081,AAA Premium Oyster Sauce With Dried Scallop,510g,nan
+P1082,AAA Premium Seasoned Soy Sauce for Seafood,400ml,nan
+P1083,AAA Premium Vegetarian Mushroom Oyster Flavoured Sauce with Diced Mushroom,510g,nan
+P1084,AAA SUKI SAUCE,330g,nan
+P1085,AceNuwara Pink Basmati Rice,1kg,nan
+P1086,AceNuwara Red Basmati Rice,1kg,nan
+P1087,AFIAT Blended Sunflower Oil,1 X 17L,nan
+P1088,AFIAT Blended Vegetable Oil,1 X 15kg,nan
+P1089,AFIAT Blended Vegetable Oil,5L,nan
+P1090,AFIAT Premium Canola Oil,1 X 18L,nan
+P1091,Afiat Premium Canola Oil,2L,nan
+P1092,Afiat Premium Canola Oil,5L,nan
+P1093,Afiat Premium Corn Oil,2L,nan
+P1094,Afiat Premium Corn Oil,5L,nan
+P1095,AFIAT Premium Soya Bean Oil,1 X 18L,nan
+P1096,Afiat Premium Soyabean Oil,2L,nan
+P1097,Afiat Premium Soyabean Oil,5L,nan
+P1098,AFIAT Premium Sunflower Oil,1 X 18L,nan
+P1099,Afiat Premium Sunflower Oil,2L,nan
+P1100,Afiat Premium Sunflower Oil,5L,nan
+P1101,Ah Huat Kopitiam Kopi C,20 X 22g,nan
+P1102,Alamo Mineral water - R1,1500ml,nan
+P1103,Alamo Mineral water - R1,330ml,nan
+P1104,Alamo Mineral water - R1,600ml,nan
+P1105,Alce Nero Blueberry Jam,270g,nan
+P1106,Alce Nero Organic Apricot Jam,270g,nan
+P1107,Alce Nero Organic Mix Berries Jam,270g,nan
+P1108,Alce Nero Organic Peach Jam,270g,nan
+P1109,Alce Nero Organic Plum Jam,270g,nan
+P1110,Alce Nero Organic Strawberry Jam,270g,nan
+P1111,Alison's Pantry Almonds Natural,100g,nan
+P1112,Alison's Pantry Almonds Roasted Unsalted,100g,nan
+P1113,Alison's Pantry Cashew Roasted Unsalted,100g,nan
+P1114,Alison's Pantry Cashews Natural,0g,nan
+P1115,Alison's Pantry Cashews Natural,100g,nan
+P1116,Alison's Pantry Chia Seed,0g,nan
+P1117,Alison's Pantry Chia Seed,100g,nan
+P1118,Alison's Pantry Deluxe Natural Nuts,0g,nan
+P1119,Alison's Pantry Deluxe Natural Nuts,100g,nan
+P1120,Alison's Pantry Figs Gourmet,0g,nan
+P1121,Alison's Pantry Figs Gourmet,100g,nan
+P1122,Alison's Pantry Hazelnuts Natural,0g,nan
+P1123,Alison's Pantry Hazelnuts Natural,100g,nan
+P1124,Alison's Pantry Macadamias Natural,0g,nan
+P1125,Alison's Pantry Macadamias Natural,100g,nan
+P1126,Alison's Pantry Mixed Nuts Natural,100g,nan
+P1127,Alison's Pantry Pecans,100g,nan
+P1128,Alison's Pantry Pinenuts,0g,nan
+P1129,Alison's Pantry Pinenuts,100g,nan
+P1130,Alison's Pantry Prunes,0g,nan
+P1131,Alison's Pantry Prunes,100g,nan
+P1132,Alison's Pantry Pumpkin Seeds,0g,nan
+P1133,Alison's Pantry Pumpkin Seeds,100g,nan
+P1134,Alisons Pantry Walnuts Natural,0g,nan
+P1135,Alisons Pantry Walnuts Natural,100g,nan
+P1136,Allswell Water Chestnut & Sugar Cane (Less Sugar),1000ml,nan
+P1137,Allswell Water Chestnut & Sugar Cane (Less Sugar),500ml,nan
+P1138,AMSTAR Tempeh,300g,nan
+P1139,Anarkali Whole Wheat Gold Atta Flour,1kg,nan
+P1140,Anarkali Whole Wheat Gold Atta Flour,5kg,nan
+P1141,Anlene Actifit 3X Chocolate-Flavoured Milk Powder,600g,nan
+P1142,Anlene Actifit 3X Low Fat Creamy Flavored Milk,1L,nan
+P1143,Anlene Actifit 3X Low Fat Milk Powder,10 X 35g,nan
+P1144,Anlene Actifit 3X Low Fat Milk Powder,1kg,nan
+P1145,Anlene Actifit 3X Low Fat Milk Powder,600g,nan
+P1146,Anlene Gold 5X Chocolate-Flavoured Milk Powder,1.2kg,nan
+P1147,Anlene Gold 5X Low Fat Cream-Flavoured Milk Powder,1.2kg,nan
+P1148,Anlene Gold 5X Low Fat Cream-Flavoured Milk Powder,600g,nan
+P1149,Anlene Gold 5X Low Fat Cream-Flavoured Milk Powder,800g,nan
+P1150,Anlene Gold Concentrate Chocolate-Flavoured Milk,4 X 125ml,nan
+P1151,Anlene Gold Concentrate Vanilla-Flavoured Milk,4 X 125ml,nan
+P1152,ÃO Broth Fish Collagen Broth,1000ml,nan
+P1153,ÃO Broth Fish Collagen Broth,500ml,nan
+P1154,ÃO Broth Tomato Broth,1000ml,nan
+P1155,ApiPure 100% Natural Organic Black Quinoa,550g,nan
+P1156,ApiPure 100% Natural Organic Red Quinoa,550g,nan
+P1157,ApiPure 100% Natural Organic Tri-Colour Quinoa,550g,nan
+P1158,ApiPure 100% Natural Organic White Quinoa,1kg,nan
+P1159,ApiPure Organic Black Chia Seeds,250g,nan
+P1160,ApiPure Organic Black Chia Seeds,500g,nan
+P1161,Apple Fiesta Royal Gala Apples (NZ),800g,nan
+P1162,Apple Fiesta Royal Gala Apples (USA),800g,nan
+P1163,AQUA Mountain Spring Water,1500ml,nan
+P1164,AQUA Mountain Spring Water,19L,nan
+P1165,AQUA Mountain Spring Water,330ml,nan
+P1166,AQUA Mountain Spring Water,4 X 330ml,nan
+P1167,AQUA Mountain Spring Water,600ml,nan
+P1168,Arawana Soyabean Oil,1 X 17kg,nan
+P1169,Arees Pure Drinking Water,1500ml,nan
+P1170,Arees Pure Drinking Water,350ml,nan
+P1171,Arees Pure Drinking Water,500ml,nan
+P1172,Arees Pure Drinking Water With Lemon Flavour,320ml,nan
+P1173,ASIA FARM BLACKCURRANT CORDIAL,1 X 4L,nan
+P1174,ASIA FARM BLUEBERRY JUICE CONCENTRATE,1 X 4L,nan
+P1175,ASIA FARM CALAMANSI JUICE CONCENTRATE,1 X 4L,nan
+P1176,ASIA FARM FRUIT PUNCH CORDIAL HC,1 X 4L,nan
+P1177,ASIA FARM HC Apple Cordial,1 X 2L,nan
+P1178,ASIA FARM HC BARLEY SYRUP,1 X 2L,nan
+P1179,ASIA FARM HC BLACKCURRANT CORDIAL,1 X 2L,nan
+P1180,ASIA FARM HC BLUEBERRY CORDIAL,1 X 2L,nan
+P1181,ASIA FARM HC FRUIT PUNCH CORDIAL,1 X 2L,nan
+P1182,ASIA FARM HC HONEYDEW SYRUP,1 X 2L,nan
+P1183,ASIA FARM HC LIME CORDIAL,1 X 2L,nan
+P1184,ASIA FARM HC MANGO CORDIAL,1 X 2L,nan
+P1185,ASIA FARM HC ORANGE CORDIAL,1 X 2L,nan
+P1186,ASIA FARM HC PINK GUAVA CORDIAL,1 X 2L,nan
+P1187,ASIA FARM HC ROSE SYRUP,1 X 2L,nan
+P1188,ASIA FARM HONEYDEW SYRUP,1 X 4L,nan
+P1189,ASIA FARM NATURAL BREWED BARLEY DRINK CONCENTRATE,1 X 4L,nan
+P1190,ASIA FARM NATURAL BREWED HERBAL TEA DRINK CONCENTRATE,1 X 4L,nan
+P1191,ASIA FARM NATURAL BREWED LEMON TEA DRINK CONCENTRATE,1 X 2L,nan
+P1192,ASIA FARM NATURAL BREWED LEMON TEA DRINK CONCENTRATE,1 X 4L,nan
+P1193,ASIA FARM NATURAL BREWED ROSELLE JUICE CONCENTRATE,1 X 4L,nan
+P1194,ASIA FARM NATURAL BREWED SOUR PLUM JUICE CONCENTRATE,1 X 4L,nan
+P1195,ASIA FARM NATURAL BREWED WINTER MELON DRINK CONCENTRATE,1 X 4L,nan
+P1196,ASIA FARM ORANGE CORDIAL,1 X 4L,nan
+P1197,ASIA FARM Premium Orange Juice Concentrate (BF),1 X 4L,nan
+P1198,ASIA FARM Purple Tea Citrus Lemon Drink,500ml,nan
+P1199,ASIA FARM PURPLE TEA PEACH CONCENTRATE,1 X 4L,nan
