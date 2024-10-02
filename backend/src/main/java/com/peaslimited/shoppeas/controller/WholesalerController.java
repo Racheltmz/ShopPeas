@@ -2,13 +2,16 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.model.Wholesaler;
-import com.peaslimited.shoppeas.model.WholesalerProfile;
-import com.peaslimited.shoppeas.service.AuthService;
+import com.peaslimited.shoppeas.dto.WholesalerProfileDTO;
+import com.peaslimited.shoppeas.service.UserService;
 import com.peaslimited.shoppeas.service.WholesalerAccountService;
 import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import com.peaslimited.shoppeas.service.WholesalerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -20,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class WholesalerController {
 
     @Autowired
-    private AuthService authService;
+    private UserService authService;
 
     @Autowired
     private WholesalerService wholesalerService;
@@ -31,19 +34,34 @@ public class WholesalerController {
     @Autowired
     private WholesalerAccountService wholesalerAccountService;
 
+    @GetMapping("/view/{uen}")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public WholesalerProfileDTO viewWholesalerConsumer(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
+        WholesalerProfileDTO profile = new WholesalerProfileDTO();
+        Wholesaler wholesaler = wholesalerService.getWholesalerUID(UEN);
+        System.out.println(wholesaler);
+        profile.setWholesaler(wholesaler);
+        profile.setWholesalerAddress(wholesalerAddressService.getWholesalerAddress(UEN));
+        return profile;
+    }
+
     /**
      * Get wholesaler details by UID
-     * @param UID
      * @return wholesaler details
      * @throws ExecutionException
      * @throws InterruptedException
      */
-    @GetMapping
-    @RequestMapping(value = "/{uid}")
+    @GetMapping("/profile")
+    @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public WholesalerProfile getWholesaler(@PathVariable("uid") String UID) throws ExecutionException, InterruptedException {
-        WholesalerProfile profile = new WholesalerProfile();
-        Wholesaler wholesaler = wholesalerService.getWholesaler(UID);
+    public WholesalerProfileDTO viewWholesaler() throws ExecutionException, InterruptedException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+
+        WholesalerProfileDTO profile = new WholesalerProfileDTO();
+        Wholesaler wholesaler = wholesalerService.getWholesaler(uid);
         String UEN = wholesaler.getUEN();
         profile.setWholesaler(wholesaler);
         profile.setWholesalerAddress(wholesalerAddressService.getWholesalerAddress(UEN));
@@ -51,16 +69,19 @@ public class WholesalerController {
         return profile;
     }
 
-
-    @PatchMapping
-    @RequestMapping(value = "/update/{uid}")
+    @PatchMapping("/update")
+    @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateWholesaler(@PathVariable("uid") String UID, @RequestBody Map<String, Map<String, Object>> data) throws ExecutionException, InterruptedException, FirebaseAuthException {
+    public void updateWholesaler(@RequestBody Map<String, Map<String, Object>> data) throws ExecutionException, InterruptedException, FirebaseAuthException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+
         Map<String, Object> profileDetails = data.get("wholesaler");
         Map<String, Object> accountDetails = data.get("wholesalerAccount");
         Map<String, Object> addressDetails = data.get("wholesalerAddress");
-        authService.updateWholesaler(UID, profileDetails);
-        String UEN = wholesalerService.updateWholesaler(UID, profileDetails);
+        authService.updateWholesaler(uid, profileDetails);
+        String UEN = wholesalerService.updateWholesaler(uid, profileDetails);
         wholesalerAccountService.updateWholesalerAccount(UEN, accountDetails);
         wholesalerAddressService.updateWholesalerAddress(UEN, addressDetails);
     }

@@ -9,6 +9,8 @@ public interface WholesalerService {
 
     Wholesaler getWholesaler(String UID) throws ExecutionException, InterruptedException;
 
+    Wholesaler getWholesalerUID(String UEN) throws ExecutionException, InterruptedException;
+
     void addWholesaler(String UID, Wholesaler wholesaler);
 
     String updateWholesaler(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException;

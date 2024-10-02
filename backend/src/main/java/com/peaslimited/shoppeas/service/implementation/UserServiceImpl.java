@@ -4,7 +4,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.dto.WholesalerAccountDTO;
 import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
 import com.peaslimited.shoppeas.model.Wholesaler;
-import com.peaslimited.shoppeas.repository.AuthRepository;
+import com.peaslimited.shoppeas.repository.UserRepository;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-public class AuthServiceImpl implements AuthService {
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private WholesalerService wholesalerService;
@@ -24,22 +24,22 @@ public class AuthServiceImpl implements AuthService {
     private WholesalerAccountService wholesalerAccountService;
 
     @Autowired
-    private AuthRepository authRepository;
+    private UserRepository authRepository;
 
     // @saffron registerConsumer
 
     @Override
-    public String registerWholesaler(Map<String, Object> user) throws FirebaseAuthException {
-        // Create Firebase user
-        String uid = authRepository.createUser(user);
-
-        // Set user privilege
-        authRepository.setUserClaims(uid, Map.of("user", true));
+    public String registerWholesaler(String UID, Map<String, Object> user) throws FirebaseAuthException {
+//        // Create Firebase user
+//        String uid = authRepository.createUser(user);
+//
+//        // Set user privilege
+//        authRepository.setUserClaims(uid, Map.of("user", true));
 
         String uen = user.get("uen").toString();
         // Create and add wholesaler
         Wholesaler wholesaler = createWholesalerFromMap(user);
-        wholesalerService.addWholesaler(uid, wholesaler);
+        wholesalerService.addWholesaler(UID, wholesaler);
 
         // Create and add wholesaler account
         WholesalerAccountDTO wholesalerAccount = createWholesalerAccountFromMap(user);
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
         WholesalerAddressDTO wholesalerAddress = createWholesalerAddressFromMap(user);
         wholesalerAddressService.addWholesalerAddress(uen, wholesalerAddress);
 
-        return uid;
+        return UID;
     }
 
     private Wholesaler createWholesalerFromMap(Map<String, Object> user) {
