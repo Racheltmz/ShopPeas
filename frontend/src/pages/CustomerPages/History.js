@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Modal, StyleSheet, Text, View } from 'react-native'
 
 const History = () => {
   return (
-    <View>
-        <Text>HELLO</Text>
+    <View style={styles.container}>
+        
     </View>
   )
 }
@@ -11,5 +11,7 @@ const History = () => {
 export default History;
 
 const styles = StyleSheet.create({
-  
+  container: {
+    flex: 1,
+  },
 })

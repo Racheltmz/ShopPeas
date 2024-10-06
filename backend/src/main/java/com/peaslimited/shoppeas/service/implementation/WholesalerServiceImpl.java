@@ -22,6 +22,11 @@ public class WholesalerServiceImpl implements WholesalerService {
     }
 
     @Override
+    public Wholesaler getWholesalerUID(String UEN) throws ExecutionException, InterruptedException {
+        return wholesalerRepository.findUIDByUEN(UEN);
+    }
+
+    @Override
     public void addWholesaler(String UID, Wholesaler wholesaler) {
         wholesalerRepository.addByUID(UID, wholesaler);
     }

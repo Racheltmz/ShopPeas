@@ -169,6 +169,7 @@ const ProductDetails = ({ route }) => {
                 Minutes away
               </Text>
               <Text>Stocks: {selectedWholesaler?.stocks}</Text>
+              {/* <Image> </Image> */}
               <View style={styles.quantityContainer}>
                 <TouchableOpacity
                   onPress={() => setQuantity(Math.max(1, quantity - 1))}

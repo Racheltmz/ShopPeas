@@ -9,6 +9,8 @@ public interface WholesalerRepository {
 
     Wholesaler findByUID(String UID) throws ExecutionException, InterruptedException;
 
+    Wholesaler findUIDByUEN(String UEN) throws ExecutionException, InterruptedException;
+
     void addByUID(String UID, Wholesaler wholesaler);
 
     String updateByUID(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException;

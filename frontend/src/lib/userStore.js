@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import { doc, getDoc } from "firebase/firestore";
-import { FirebaseDb } from "./firebase";
+import { FirebaseAuth, FirebaseDb } from "./firebase";
 
 const db = FirebaseDb;
 
 export const useUserStore = create((set, get) => ({
   currentUser: null,
   userRole: "",
+  userAddress: null,
+  paymentDetails: null,
   isLoading: true,
   fetchUserInfo: async (uid) => {
     if (!uid) return set({ currentUser: null, userRole: "", isLoading: false });
@@ -17,17 +19,62 @@ export const useUserStore = create((set, get) => ({
       if (userRole) {
         const docRef = doc(db, userRole, uid);
         const docSnap = await getDoc(docRef);
-  
+
         if (docSnap.exists()) {
-          set({ currentUser: docSnap.data(), isLoading: false });
+          const user = FirebaseAuth.currentUser;
+          const signupDate = new Date(user.metadata.creationTime);
+
+          // Format the date as "DD-MM-YYYY"
+          const formattedSignupDate = signupDate
+            .toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })
+            .split("/")
+            .join("-");
+
+          // Merge the formatted signup date with the existing user data
+          const userData = {
+            ...docSnap.data(),
+            signupDate: formattedSignupDate,
+          };
+
+          set({ currentUser: userData, isLoading: false });
         } else {
           set({ currentUser: null, isLoading: false });
         }
-      }
-      else {
-        set({ currentUser: null, isLoading: false });
-      }
 
+        // get address
+        const addressDocRef = doc(db, userRole + "_address", uid);
+        const addressDocSnap = await getDoc(addressDocRef);
+
+        if (docSnap.exists()) {
+          set({ userAddress: addressDocSnap.data(), isLoading: false });
+        } else {
+          set({ userAddress: null, isLoading: false });
+        }
+
+        // get bank account details
+        const paymentDetailsDocRef = doc(db, userRole + "_account", uid);
+        const paymentDetailsDocSnap = await getDoc(paymentDetailsDocRef);
+
+        if (docSnap.exists()) {
+          set({
+            paymentDetails: paymentDetailsDocSnap.data(),
+            isLoading: false,
+          });
+        } else {
+          set({ paymentDetails: null, isLoading: false });
+        }
+      } else {
+        set({
+          currentUser: null,
+          paymentDetails: null,
+          userAddress: null,
+          isLoading: false,
+        });
+      }
     } catch (err) {
       console.log(err);
       return set({ currentUser: null, isLoading: false });
@@ -39,5 +86,4 @@ export const useUserStore = create((set, get) => ({
   resetUser: () => {
     set({ currentUser: null, userRole: "", isLoading: false });
   },
-  
 }));
