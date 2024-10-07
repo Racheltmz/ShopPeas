@@ -32,3 +32,7 @@
 2024-Oct-03 04:09:57 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 401 UNAUTHORIZED Unauthenticated access: No user record found for the provided user ID: 3NWYvqwimCO90MyOHH7WRJ0h5H 
 2024-Oct-03 04:09:57 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
 2024-Oct-03 04:10:01 [http-nio-8080-exec-5] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 404 NOT_FOUND Record does not exist: Cannot invoke "com.peaslimited.shoppeas.model.Wholesaler.getUEN()" because "wholesaler" is null 
+2024-Oct-07 10:06:11 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-07 13:34:05 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 401 UNAUTHORIZED Unauthenticated access: No user record found for the provided user ID: 3NWYvqwimCO90MyOHH7WRJ0h5H 
+2024-Oct-07 13:34:05 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-07 13:35:09 [http-nio-8080-exec-7] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 

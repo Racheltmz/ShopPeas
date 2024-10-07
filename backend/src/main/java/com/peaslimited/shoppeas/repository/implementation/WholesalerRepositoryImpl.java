@@ -2,11 +2,14 @@ package com.peaslimited.shoppeas.repository.implementation;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.model.Wholesaler;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +40,7 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
     }
 
     @Override
-    public Wholesaler findUIDByUEN(String UEN) throws ExecutionException, InterruptedException {
+    public DocumentSnapshot findDocByUEN(String UEN) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", UEN).get();
 
         // Asynchronously retrieve the document
@@ -47,15 +50,21 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
 
         // Check if any documents match
-        Wholesaler wholesaler = null;
-
+        DocumentSnapshot document = null;
         if (!documents.isEmpty()) {
             // Get the first matching document and return its ID
-            DocumentSnapshot document = documents.getFirst();
-            wholesaler = document.toObject(Wholesaler.class);
+            document = documents.getFirst();
         }
-        return wholesaler;
+
+        return document;
     }
+
+    @Override
+    public Wholesaler findByUEN(String UEN) throws ExecutionException, InterruptedException {
+        DocumentSnapshot document = findDocByUEN(UEN);
+        return document.toObject(Wholesaler.class);
+    }
+
 
     @Override
     public void addByUID(String UID, Wholesaler wholesaler) {
@@ -72,5 +81,36 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
             ApiFuture<WriteResult> future = docRef.update(key, data.get(key));
         }
         return findByUID(UID).getUEN();
+    }
+
+    @Override
+    public RatingDTO findRatingByUEN(String UEN) throws ExecutionException, InterruptedException {
+        Wholesaler wholesaler = findByUEN(UEN);
+        return new RatingDTO(wholesaler.getRating(), wholesaler.getNum_ratings());
+    }
+
+    @Override
+    public void updateRatingByUEN(String UEN, Integer rating) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = findDocByUEN(UEN).getReference();
+        Wholesaler wholesaler = findByUEN(UEN);
+
+        // Get current rating details
+        ArrayList<Integer> cur_num_ratings = wholesaler.getNum_ratings();
+
+        // Update ratings count
+        cur_num_ratings.set(rating-1, cur_num_ratings.get(rating-1) + 1);
+
+        int total_rates = 0;
+        double total_rating = 0.0;
+        for(int score = 0; score < cur_num_ratings.size(); score++) {
+            int num_rates = cur_num_ratings.get(score);
+            total_rates += num_rates;
+            total_rating += num_rates * (score + 1);
+        }
+        double new_rating = total_rating / total_rates;
+
+        docRef.update("rating", new_rating);
+        docRef.update("num_ratings", cur_num_ratings);
+
     }
 }

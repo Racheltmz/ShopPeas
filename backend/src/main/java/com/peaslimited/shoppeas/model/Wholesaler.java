@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,5 +18,5 @@ public class Wholesaler {
     private String phone_number;
     private String currency;
     private Double rating;
-    private Integer num_ratings;
+    private ArrayList<Integer> num_ratings;
 }

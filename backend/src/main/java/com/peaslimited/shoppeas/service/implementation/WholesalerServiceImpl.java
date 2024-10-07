@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.service.implementation;
 
+import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.model.Wholesaler;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerService;
@@ -23,7 +24,7 @@ public class WholesalerServiceImpl implements WholesalerService {
 
     @Override
     public Wholesaler getWholesalerUID(String UEN) throws ExecutionException, InterruptedException {
-        return wholesalerRepository.findUIDByUEN(UEN);
+        return wholesalerRepository.findByUEN(UEN);
     }
 
     @Override
@@ -34,6 +35,16 @@ public class WholesalerServiceImpl implements WholesalerService {
     @Override
     public String updateWholesaler(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         return wholesalerRepository.updateByUID(UID, data);
+    }
+
+    @Override
+    public RatingDTO getRatingByUEN(String UEN) throws ExecutionException, InterruptedException {
+        return wholesalerRepository.findRatingByUEN(UEN);
+    }
+
+    @Override
+    public void addRating(String UEN, Integer rating) throws ExecutionException, InterruptedException {
+        wholesalerRepository.updateRatingByUEN(UEN, rating);
     }
 
 }

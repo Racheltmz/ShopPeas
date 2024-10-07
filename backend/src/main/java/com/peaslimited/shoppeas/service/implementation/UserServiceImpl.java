@@ -9,6 +9,7 @@ import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @Service
@@ -53,6 +54,15 @@ public class UserServiceImpl implements UserService {
     }
 
     private Wholesaler createWholesalerFromMap(Map<String, Object> user) {
+        String numRatingsString = user.get("num_ratings").toString();
+        String[] numRatingsArray = numRatingsString.split(",");
+
+        ArrayList<Integer> numRatingsList = new ArrayList<>();
+
+        for (String num : numRatingsArray) {
+            numRatingsList.add(Integer.valueOf(num.trim())); // Convert each string element to an Integer
+        }
+
         return new Wholesaler(
             user.get("uen").toString(),
             user.get("name").toString(),
@@ -60,7 +70,7 @@ public class UserServiceImpl implements UserService {
             user.get("phone_number").toString(),
             user.get("currency").toString(),
             Double.valueOf(user.get("rating").toString()),
-            Integer.valueOf(user.get("num_ratings").toString())
+            numRatingsList
         );
     }
 
