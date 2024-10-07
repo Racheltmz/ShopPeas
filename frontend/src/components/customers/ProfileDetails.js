@@ -1,128 +1,53 @@
-import React, { useEffect, useState } from "react";
-import {
-  Modal,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useUserStore } from '../../lib/userStore';
 
-const ProfileEdit = ({ visible, onSave, userData }) => {
-  const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({});
-
-  // List of editable fields
-  const editableFields = [
-    "email",
-    "contact",
-    "streetName",
-    "unitNo",
-    "buildingName",
-    "city",
-    "postalCode",
-  ];
-
-  useEffect(() => {
-    // Initialize formData with only editable fields
-    const initialFormData = {};
-    editableFields.forEach((field) => {
-      if (userData.hasOwnProperty(field)) {
-        initialFormData[field] = userData[field];
-      }
-    });
-    setFormData(initialFormData);
-  }, [userData]);
-
-  const toggleEdit = () => {
-    if (editMode) {
-      // If we're exiting edit mode, revert changes
-      setFormData({ ...userData });
-    }
-    setEditMode((prev) => !prev);
-  };
-
-  const handleChange = (key, value) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleSave = () => {
-    
-    onSave(formData);
-    setEditMode(false);
-  };
-
-  const handleCancel = () => {
-    setFormData({ ...userData });
-    setEditMode(false);
-  };
-
-  const buttonElements = (
-    <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-        <Text style={styles.cancelButtonText}>Cancel</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderField = (
-    key,
-    label,
-    editable = true,
-    keyboardType = "default"
-  ) => (
-    <View key={key}>
-      <Text style={styles.label}>{label}:</Text>
-      {editable ? (
-        <TextInput
-          style={editMode ? styles.inputEdit : styles.input}
-          value={formData[key]}
-          onChangeText={(text) => handleChange(key, text)}
-          editable={editMode}
-          keyboardType={keyboardType}
-        />
-      ) : (
-        <Text style={styles.dateJoined}>{userData[key]}</Text>
-      )}
-    </View>
-  );
-
+const ProfileDetails = ({ userData, navigation }) => {
+  const { resetUser } = useUserStore()
   return (
-    <View visible={visible} transparent={true}>
-      <View style={styles.container}>
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <Image
-              source={require("../../../assets/imgs/DummyImage.jpg")}
-              style={styles.profilePicture}
-            />
-            <Text style={styles.name}>{userData.name}</Text>
-            {/* <Image source={require('../../assets/pea-icon.png')} style={styles.peaIcon} /> */}
-          </View>
-
-          <View style={styles.accountHeader}>
-            <Text style={styles.sectionTitle}>Account Details</Text>
-            <TouchableOpacity onPress={toggleEdit}>
-              <Ionicons name="create-outline" size={28} color="#0C5E52" />
-            </TouchableOpacity>
-          </View>
-
-          {renderField("email", "Email", true, "email-address")}
-          {renderField("contact", "Contact", true, "phone-pad")}
-          {renderField("dateJoined", "Date Joined", false)}
-          {renderField("streetName", "Street Name")}
-          {renderField("unitNo", "Unit-No")}
-          {renderField("buildingName", "Building Name")}
-          {renderField("city", "City")}
-          {renderField("postalCode", "Postal Code", true, "numeric")}
-
-          {editMode && buttonElements}
+    <View style={styles.container}>
+      <View style={styles.topPortion}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>Profile</Text>
+          {/* <Image source={require('../../../assets/imgs/DummyImage.jpg')} style={styles.peaIcon} /> */}
+          <TouchableOpacity onPress={() => resetUser()}>
+            <Image source={require('../../../assets/imgs/logout.png')} style={styles.logoutButton} />
+          </TouchableOpacity>
         </View>
+        <View style={styles.profileCard}>
+          <View style={styles.profileCardLeft}>
+            <Image source={require('../../../assets/imgs/DummyImage.jpg')} style={styles.profilePicture} />
+            <Text style={styles.name}>{userData.name}</Text>
+          </View>
+          <View style={styles.profileCardRight}>
+            <View style={{marginVertical: 10}}>
+              <Text style={styles.infoTitle}>Date Joined:</Text>
+              <Text style={styles.infoValue}>{userData.dateJoined}</Text>
+            </View>
+            <View style={{marginVertical: 10}}>
+              <Text style={styles.infoTitle}>Location:</Text>
+              <Text style={styles.infoValue}>{userData.city}</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+
+      <View style={styles.accountDetails}>
+        <View style={styles.accountHeader}>
+          <Text style={styles.accountTitle}>Account Details</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('ProfileEdit', { userData })} style={styles.editButton}>
+            <Ionicons name="create-outline" size={40} color="#0C5E52" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.detailText}>Contact: {userData.contact}</Text>
+        <Text style={styles.detailText}>Address: {`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
+        <View style={styles.cardInfo}>
+          <Ionicons name="card" size={24} color="#0C5E52" />
+          <Text style={styles.cardText}>Card *1234</Text>
+        </View>
+        <Text style={styles.detailText}>Email: {userData.email}</Text>
       </View>
     </View>
   );
@@ -130,105 +55,101 @@ const ProfileEdit = ({ visible, onSave, userData }) => {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
-    alignItems: "center",
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    paddingTop: "15%",
   },
-  content: {
-    backgroundColor: "white",
-    borderRadius: 20,
-    paddingHorizontal: "10%",
-    width: "90%",
-    height: "97%",
-    marginTop: "5%",
-    paddingVertical: "5%",
-  },
-  closeButton: {
-    alignSelf: "flex-end",
+  topPortion: {
+    backgroundColor: '#D6E8A4',
+    paddingVertical: '5%',
+    paddingHorizontal: '8%',
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  profilePicture: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 10,
-  },
-  name: {
-    fontSize: 20,
-    fontWeight: "bold",
+  headerTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#0C5E52',
   },
   peaIcon: {
-    width: 30,
-    height: 30,
-    marginLeft: "auto",
+    width: 24,
+    height: 24,
   },
-  accountHeader: {
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
+  logoutButton: {
+    width: 24,
+    height: 24,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+  profileCard: {
+    paddingTop: '8%',
+    borderRadius: 10,
+    marginBottom: 20,
+    flexDirection: 'row',
+  },
+  profileCardLeft: {
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingLeft: '7%',
+    paddingRight: '20%',
+  },
+  profilePicture: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     marginBottom: 10,
   },
-  label: {
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+  },
+  profileCardRight: {
+    borderRadius: 10,
+    paddingHorizontal: '5%',
+    justifyContent: 'center',
+  },
+  infoTitle: {
     fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 10,
+    color: '#666',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#0C5E52",
-    backgroundColor: "#D9D9D9",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 5,
+  infoValue: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0C5E52',
   },
-
-  inputEdit: {
-    borderWidth: 1,
-    borderColor: "#0C5E52",
-    borderRadius: 5,
-    padding: 10,
-    marginTop: 5,
+  accountDetails: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: '3%',
+    margin: '5%',
   },
-
-  dateJoined: {
+  accountHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  accountTitle: {
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    marginBottom: '5%',
+  },
+  detailText: {
     fontSize: 16,
-    marginTop: 5,
+    marginBottom: 10,
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+  cardInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 5,
   },
-  saveButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 5,
-    flex: 1,
-    marginRight: 10,
-  },
-  saveButtonText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "bold",
-  },
-  cancelButton: {
-    backgroundColor: "#f0f0f0",
-    padding: 10,
-    borderRadius: 5,
-    flex: 1,
+  cardText: {
+    fontSize: 16,
     marginLeft: 10,
-  },
-  cancelButtonText: {
-    color: "black",
-    textAlign: "center",
   },
 });
 
-export default ProfileEdit;
+export default ProfileDetails;
