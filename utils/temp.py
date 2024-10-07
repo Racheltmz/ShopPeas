@@ -12,4 +12,4 @@ cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-auth.set_custom_user_claims('63HeN3mxkZbF5bcQZgLAEyZWY2f2', {'consumer': True})
+auth.set_custom_user_claims('AVhjvApIgsc4PfK4ADJh07A38Kj2', {'consumer': True})

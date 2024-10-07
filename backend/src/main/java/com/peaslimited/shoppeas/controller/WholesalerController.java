@@ -1,9 +1,9 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import com.peaslimited.shoppeas.model.Wholesaler;
-import com.peaslimited.shoppeas.dto.WholesalerProfileDTO;
-import com.peaslimited.shoppeas.service.UserService;
+import com.peaslimited.shoppeas.dto.*;
+import com.peaslimited.shoppeas.dto.mapper.WholesalerProfileMapper;
+import com.peaslimited.shoppeas.service.AuthService;
 import com.peaslimited.shoppeas.service.WholesalerAccountService;
 import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import com.peaslimited.shoppeas.service.WholesalerService;
@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 public class WholesalerController {
 
     @Autowired
-    private UserService authService;
+    private AuthService authService;
 
     @Autowired
     private WholesalerService wholesalerService;
@@ -38,19 +38,14 @@ public class WholesalerController {
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
     public WholesalerProfileDTO viewWholesalerConsumer(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
-        WholesalerProfileDTO profile = new WholesalerProfileDTO();
-        Wholesaler wholesaler = wholesalerService.getWholesalerUID(UEN);
-        System.out.println(wholesaler);
-        profile.setWholesaler(wholesaler);
-        profile.setWholesalerAddress(wholesalerAddressService.getWholesalerAddress(UEN));
-        return profile;
+        WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(UEN);
+        WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(UEN);
+        return WholesalerProfileMapper.toProfileDTO(wholesaler, wholesalerAddress, null);
     }
 
     /**
      * Get wholesaler details by UID
      * @return wholesaler details
-     * @throws ExecutionException
-     * @throws InterruptedException
      */
     @GetMapping("/profile")
     @PreAuthorize("hasRole('WHOLESALER')")
@@ -60,16 +55,16 @@ public class WholesalerController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
-        WholesalerProfileDTO profile = new WholesalerProfileDTO();
-        Wholesaler wholesaler = wholesalerService.getWholesaler(uid);
+        WholesalerDTO wholesaler = wholesalerService.getWholesaler(uid);
         String UEN = wholesaler.getUEN();
-        profile.setWholesaler(wholesaler);
-        profile.setWholesalerAddress(wholesalerAddressService.getWholesalerAddress(UEN));
-        profile.setWholesalerAccount(wholesalerAccountService.getWholesalerAccount(UEN));
-        return profile;
+        WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(UEN);
+        WholesalerAccountDTO wholesalerAccount = wholesalerAccountService.getWholesalerAccount(UEN);
+
+        // Invoke mapper to combine information and return the profile DTO
+        return WholesalerProfileMapper.toProfileDTO(wholesaler, wholesalerAddress, wholesalerAccount);
     }
 
-    @PatchMapping("/update")
+    @PatchMapping("/profile/update")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateWholesaler(@RequestBody Map<String, Map<String, Object>> data) throws ExecutionException, InterruptedException, FirebaseAuthException {
@@ -84,5 +79,31 @@ public class WholesalerController {
         String UEN = wholesalerService.updateWholesaler(uid, profileDetails);
         wholesalerAccountService.updateWholesalerAccount(UEN, accountDetails);
         wholesalerAddressService.updateWholesalerAddress(UEN, addressDetails);
+    }
+
+    @GetMapping("/rating/{uen}")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public RatingDTO getRating(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+        assert uid != null;
+
+        return wholesalerService.getRatingByUEN(UEN);
+    }
+
+    @PatchMapping("/rate")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void rateWholesaler(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+        assert uid != null;
+
+        String uen = data.get("uen").toString();
+        Integer new_rating = Integer.valueOf(data.get("rating").toString());
+        wholesalerService.addRating(uen, new_rating);
     }
 }

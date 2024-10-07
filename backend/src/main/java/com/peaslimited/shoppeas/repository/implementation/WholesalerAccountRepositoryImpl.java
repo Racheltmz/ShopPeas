@@ -4,7 +4,6 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.WriteResult;
 import com.peaslimited.shoppeas.dto.WholesalerAccountDTO;
 import com.peaslimited.shoppeas.repository.WholesalerAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class WholesalerAccountRepositoryImpl implements WholesalerAccountReposit
 
     @Override
     public void addByUEN(String UEN, WholesalerAccountDTO data) {
-        ApiFuture<WriteResult> future = firestore.collection(COLLECTION).document(UEN).set(data);
+        firestore.collection(COLLECTION).document(UEN).set(data);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class WholesalerAccountRepositoryImpl implements WholesalerAccountReposit
 
         // Update fields
         for (String key : data.keySet()) {
-            ApiFuture<WriteResult> future = docRef.update(key, data.get(key));
+            docRef.update(key, data.get(key));
         }
     }
 }

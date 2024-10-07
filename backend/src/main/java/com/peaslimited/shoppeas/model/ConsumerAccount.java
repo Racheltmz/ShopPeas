@@ -8,11 +8,12 @@ import org.springframework.data.annotation.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WholesalerAccount {
+public class ConsumerAccount {
     @Id
-    private String UEN;
-    private String bank;
-    private String bank_account_name;
-    private Long bank_account_no;
+    private String UID;
+    private Long card_no;
+    private String expiry_date;
+    private Integer cvv;
+    private String name;
 
 }

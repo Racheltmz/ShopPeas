@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.service.implementation;
 
-import com.peaslimited.shoppeas.model.Wholesaler;
+import com.peaslimited.shoppeas.dto.RatingDTO;
+import com.peaslimited.shoppeas.dto.WholesalerDTO;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +18,33 @@ public class WholesalerServiceImpl implements WholesalerService {
 
     // Get wholesaler details
     @Override
-    public Wholesaler getWholesaler(String UID) throws ExecutionException, InterruptedException {
+    public WholesalerDTO getWholesaler(String UID) throws ExecutionException, InterruptedException {
         return wholesalerRepository.findByUID(UID);
     }
 
     @Override
-    public Wholesaler getWholesalerUID(String UEN) throws ExecutionException, InterruptedException {
-        return wholesalerRepository.findUIDByUEN(UEN);
+    public WholesalerDTO getWholesalerUID(String UEN) throws ExecutionException, InterruptedException {
+        return wholesalerRepository.findByUEN(UEN);
     }
 
     @Override
-    public void addWholesaler(String UID, Wholesaler wholesaler) {
+    public void addWholesaler(String UID, WholesalerDTO wholesaler) {
         wholesalerRepository.addByUID(UID, wholesaler);
     }
 
     @Override
     public String updateWholesaler(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         return wholesalerRepository.updateByUID(UID, data);
+    }
+
+    @Override
+    public RatingDTO getRatingByUEN(String UEN) throws ExecutionException, InterruptedException {
+        return wholesalerRepository.findRatingByUEN(UEN);
+    }
+
+    @Override
+    public void addRating(String UEN, Integer rating) throws ExecutionException, InterruptedException {
+        wholesalerRepository.updateRatingByUEN(UEN, rating);
     }
 
 }

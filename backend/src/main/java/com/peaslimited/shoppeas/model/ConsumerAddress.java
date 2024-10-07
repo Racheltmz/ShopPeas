@@ -10,9 +10,9 @@ import javax.annotation.Nullable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WholesalerAddress {
+public class ConsumerAddress {
     @Id
-    private String UEN;
+    private String UID;
     private String street_name;
     @Nullable
     private String unit_no;
