@@ -4,15 +4,15 @@ import {
   View,
 } from "react-native";
 import ProfileDetails from "../../components/customers/ProfileDetails";
+import { createStackNavigator } from '@react-navigation/stack';
 import { useUserStore } from "../../lib/userStore";
+import ProfileEdit from "../../components/customers/ProfileEdit";
 
 const Profile = ({ navigation }) => {
-  const [activeTab, setActiveTab] = useState("likes");
-  const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const { currentUser, userAddress } = useUserStore();
 
-  // You would typically fetch this data from your user state or props
-  console.log(userAddress)
+  const Stack = createStackNavigator();
+
   const [userData, setUserData] = [{
     name: currentUser.first_name + " " + currentUser.last_name,
     following: 19,
@@ -28,27 +28,30 @@ const Profile = ({ navigation }) => {
 
   const handleSaveProfile = (updatedUserData) => {
     // This is where you would typically make an API call to update the user's profile
-    console.log("Saving updated user data:", updateqdUserData);
+    console.log("Saving updated user data:", updatedUserData);
     // setUserData({ ...userData, ...updatedUserData });
     // Here you would handle the response from the API, update local state, etc.
   };
 
 
   return (
-    // The use of SafeAreaView in the Profile component ensures that the content doesn't overlap with the device's notches or status bar.
-    <View style={styles.container}>
-      <ProfileDetails 
-        onSave={handleSaveProfile}
-        userData={userData}
-      />
-    </View>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileDetails">
+        {(props) => <ProfileDetails {...props} userData={userData} />}
+      </Stack.Screen>
+      <Stack.Screen name="ProfileEdit">
+        {(props) => (
+          <ProfileEdit
+            {...props}
+            route={{
+              ...props.route,
+              params: { ...props.route.params, userData: userData, onSave: handleSaveProfile }
+            }}
+          />
+        )}
+      </Stack.Screen>
+    </Stack.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default Profile;

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  Image,
   StyleSheet,
   FlatList,
   TouchableOpacity,
@@ -30,6 +29,7 @@ const ProductDetails = ({ route }) => {
       stocks: 39,
       price: 1.29,
       ratings: 4.9,
+      uen: 123456,
     },
     {
       name: "Cheap Wholesaler",
@@ -38,6 +38,7 @@ const ProductDetails = ({ route }) => {
       stocks: 45,
       price: 1.27,
       ratings: 4.3,
+      uen: 12342323,
     },
     {
       name: "Quality buy",
@@ -46,6 +47,7 @@ const ProductDetails = ({ route }) => {
       stocks: 80,
       price: 1.51,
       ratings: 4.7,
+      uen: 123452316,
     },
     {
       name: "Value Dollar",
@@ -54,6 +56,7 @@ const ProductDetails = ({ route }) => {
       stocks: 15,
       price: 1.19,
       ratings: 4.5,
+      uen: 123456213231,
     },
     {
       name: "Big Box",
@@ -62,6 +65,7 @@ const ProductDetails = ({ route }) => {
       stocks: 28,
       price: 1.49,
       ratings: 4.9,
+      uen: 123451232316,
     },
   ];
 
