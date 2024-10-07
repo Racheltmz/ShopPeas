@@ -1,7 +1,7 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.peaslimited.shoppeas.dto.RatingDTO;
-import com.peaslimited.shoppeas.model.Wholesaler;
+import com.peaslimited.shoppeas.dto.WholesalerDTO;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +18,17 @@ public class WholesalerServiceImpl implements WholesalerService {
 
     // Get wholesaler details
     @Override
-    public Wholesaler getWholesaler(String UID) throws ExecutionException, InterruptedException {
+    public WholesalerDTO getWholesaler(String UID) throws ExecutionException, InterruptedException {
         return wholesalerRepository.findByUID(UID);
     }
 
     @Override
-    public Wholesaler getWholesalerUID(String UEN) throws ExecutionException, InterruptedException {
+    public WholesalerDTO getWholesalerUID(String UEN) throws ExecutionException, InterruptedException {
         return wholesalerRepository.findByUEN(UEN);
     }
 
     @Override
-    public void addWholesaler(String UID, Wholesaler wholesaler) {
+    public void addWholesaler(String UID, WholesalerDTO wholesaler) {
         wholesalerRepository.addByUID(UID, wholesaler);
     }
 

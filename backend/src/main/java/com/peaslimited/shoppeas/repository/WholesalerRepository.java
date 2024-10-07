@@ -2,20 +2,20 @@ package com.peaslimited.shoppeas.repository;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
-import com.peaslimited.shoppeas.model.Wholesaler;
+import com.peaslimited.shoppeas.dto.WholesalerDTO;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public interface WholesalerRepository {
 
-    Wholesaler findByUID(String UID) throws ExecutionException, InterruptedException;
+    WholesalerDTO findByUID(String UID) throws ExecutionException, InterruptedException;
 
     DocumentSnapshot findDocByUEN(String UEN) throws ExecutionException, InterruptedException;
 
-    Wholesaler findByUEN(String UEN) throws ExecutionException, InterruptedException;
+    WholesalerDTO findByUEN(String UEN) throws ExecutionException, InterruptedException;
 
-    void addByUID(String UID, Wholesaler wholesaler);
+    void addByUID(String UID, WholesalerDTO wholesaler);
 
     String updateByUID(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException;
 

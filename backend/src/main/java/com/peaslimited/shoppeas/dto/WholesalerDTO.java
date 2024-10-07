@@ -1,18 +1,15 @@
-package com.peaslimited.shoppeas.model;
+package com.peaslimited.shoppeas.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Wholesaler {
-    @Id
-    private String UID;
+public class WholesalerDTO {
     private String UEN;
     private String name;
     private String email;
@@ -20,5 +17,4 @@ public class Wholesaler {
     private String currency;
     private Double rating;
     private ArrayList<Integer> num_ratings;
-
 }
