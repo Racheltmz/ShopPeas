@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.service;
 
 import com.peaslimited.shoppeas.dto.ConsumerDTO;
-import com.peaslimited.shoppeas.model.Consumer;
 
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
