@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
-import { StyleSheet, View, TextInput, Button, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, Image, SafeAreaView } from 'react-native';
+import { FirebaseAuth } from '../../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useUserStore } from '../../lib/userStore';
+import { Ionicons } from '@expo/vector-icons';
 
-const Login = () => {
+const Login = ({ onBackPress, onRegisterPress }) => {
     const auth = FirebaseAuth;
     const { updateUserType, fetchUserInfo } = useUserStore();
     const [isLoading, setIsLoading] = useState(false);
@@ -39,31 +40,145 @@ const Login = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <TextInput style={styles.input} placeholder="Email" autoCapitalize="none" onChangeText={setEmail} />
-            <TextInput secureTextEntry={true} style={styles.input} value={password} placeholder="Password" autoCapitalize="none" onChangeText={setPassword} />
-            {isLoading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-                <Button title="Login" onPress={handleLogin} />
-            )}
-        </View>
-    )
+        <SafeAreaView style={styles.container}>
+            <TouchableOpacity 
+                style={styles.backButton}
+                onPress={onBackPress}
+            >
+                <Ionicons 
+                  color={'#EBF3D1'}
+                  size={20}
+                  name="arrow-back-outline"
+                />
+            </TouchableOpacity>
+            
+            <Image
+                source={require('../../../assets/imgs/welcome.png')}
+                style={styles.welcome}
+            />
+            
+            <View style={styles.inputContainer}>
+                <Ionicons name="mail-outline" size={24} color="#0C5E52" style={styles.inputIcon} />
+                <TextInput 
+                    style={styles.input} 
+                    placeholder="Email" 
+                    placeholderTextColor="#0C5E52"
+                    autoCapitalize="none" 
+                    onChangeText={setEmail} 
+                />
+            </View>
+            
+            <View style={styles.inputContainer}>
+                <Ionicons name="lock-closed-outline" size={24} color="#0C5E52" style={styles.inputIcon} />
+                <TextInput 
+                    style={styles.input} 
+                    placeholder="Password" 
+                    placeholderTextColor="#0C5E52"
+                    secureTextEntry={true} 
+                    autoCapitalize="none" 
+                    onChangeText={setPassword} 
+                />
+            </View>
+            
+            <TouchableOpacity onPress={{/* rmb to do forget password popup/component */}}>
+                <Text style={styles.forgotPassword}>Forgot Password?</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleLogin}
+                disabled={isLoading}
+            >
+                <Text style={styles.loginButtonText}>
+                    {isLoading ? 'Logging in...' : 'LOG IN'}
+                </Text>
+                <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
+            </TouchableOpacity>
+            
+            <View style={styles.signupContainer}>
+                <Text style={styles.signupText}>No Account? </Text>
+                <TouchableOpacity onPress={onRegisterPress}>
+                    <Text style={styles.signupLink}>Create One!</Text>
+                </TouchableOpacity>
+            </View>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      /*backgroundColor: '#fff',*/ //Container Colour for login portion, no need for this as we have image
-      alignItems: 'center',
-      justifyContent: 'center',
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 20,
+    },
+    backButton: {
+        position: 'absolute',
+        top: '3%',
+        left: '1%',
+        width: '13%',
+        height: '5.2%',
+        borderRadius: '100%',
+        backgroundColor: '#0C5E52',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    welcome: {
+        width: 300,
+        height: "15%",
+        resizeMode: 'contain',
+        marginBottom: '5%',
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        width: '100%',
+        height: '6%',
+        borderWidth: '1%',
+        borderColor: '#0C5E52',
+        borderRadius: '20%',
+        paddingHorizontal: '5%',
+        marginBottom: '5%',
+    },
+    inputIcon: {
+        marginRight: '5%',
     },
     input: {
-      width: '80%',
-      padding: 10,
-      marginBottom: 10,
-      borderWidth: 1,
-      borderColor: '#ccc',
+        flex: 1,
+        color: '#0C5E52',
+    },
+    forgotPassword: {
+        color: '#0C5E52',
+        marginBottom: '5%',
+    },
+    loginButton: {
+        flexDirection: 'row',
+        backgroundColor: '#0C5E52',
+        width: '100%',
+        height: '5%',
+        borderRadius: '20%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: '7%',
+    },
+    loginButtonText: {
+        color: '#EBF3D1',
+        fontWeight: 'bold',
+        marginRight: "30%",
+    },
+    arrowIcon: {
+        position: 'absolute',
+        right: '5%',
+    },
+    signupContainer: {
+        flexDirection: 'row',
+    },
+    signupText: {
+        color: '#0C5E52',
+    },
+    signupLink: {
+        color: '#0C5E52',
+        fontWeight: 'bold',
     },
 });
 

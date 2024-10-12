@@ -55,14 +55,9 @@ export default WholesalerPages;
 
 const styles = StyleSheet.create({
   tabBarStyle: {
-    height: 60,
+    height: '8%',
     backgroundColor: "#E2ECEA",
-    position: 'absolute',
-    bottom: 20, 
-    left: 20,
-    right: 20,
-    borderRadius: 20,
-    paddingBottom: 3,
+    paddingBottom: 10,
   },
   tabBarItemStyle:{
     margin: 5,
