@@ -26,83 +26,88 @@ const ProfileEdit = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#0C5E52" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Edit Account Details</Text>
+      <View style={{backgroundColor: "#D6E8A4"}}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={24} color="#0C5E52" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Edit Account Details</Text>
+        </View>
+        <View style={styles.profileCard}>
+          <Image
+            source={require('../../../assets/imgs/DummyImage.jpg')}
+            style={styles.profilePicture}
+          />
+          <Text style={styles.name}>{userData.name}</Text>
+          <Text style={styles.dateJoined}>
+            Date Joined: {userData.dateJoined}
+          </Text>
+        </View>
       </View>
 
-      <View style={styles.profileCard}>
-        <Image
-          source={require('../../../assets/imgs/DummyImage.jpg')}
-          style={styles.profilePicture}
+
+      <View style={{paddingVertical: "3%", paddingHorizontal: "10%"}}>
+
+        <Text style={styles.label}>Contact Details:</Text>
+        <TextInput
+          style={styles.input}
+          value={formData.contact}
+          onChangeText={(text) => handleChange("contact", text)}
+          placeholder="Phone No."
+          keyboardType="phone-pad"
         />
-        <Text style={styles.name}>{userData.name}</Text>
-        <Text style={styles.dateJoined}>
-          Date Joined: {userData.dateJoined}
-        </Text>
-      </View>
+        <TextInput
+          style={styles.input}
+          value={formData.email}
+          onChangeText={(text) => handleChange("email", text)}
+          placeholder="Email"
+          keyboardType="email-address"
+        />
 
-      <Text style={styles.label}>Contact Details:</Text>
-      <TextInput
-        style={styles.input}
-        value={formData.contact}
-        onChangeText={(text) => handleChange("contact", text)}
-        placeholder="Phone No."
-        keyboardType="phone-pad"
-      />
-      <TextInput
-        style={styles.input}
-        value={formData.email}
-        onChangeText={(text) => handleChange("email", text)}
-        placeholder="Email"
-        keyboardType="email-address"
-      />
+        <Text style={styles.label}>Address:</Text>
+        <TextInput
+          style={styles.input}
+          value={formData.streetName}
+          onChangeText={(text) => handleChange("streetName", text)}
+          placeholder="Street Name"
+        />
+        <TextInput
+          style={styles.input}
+          value={formData.unitNo}
+          onChangeText={(text) => handleChange("unitNo", text)}
+          placeholder="Unit No."
+        />
+        <TextInput
+          style={styles.input}
+          value={formData.buildingName}
+          onChangeText={(text) => handleChange("buildingName", text)}
+          placeholder="Building Name"
+        />
+        <TextInput
+          style={styles.input}
+          value={formData.city}
+          onChangeText={(text) => handleChange("city", text)}
+          placeholder="City"
+        />
+        <TextInput
+          style={styles.input}
+          value={formData.postalCode}
+          onChangeText={(text) => handleChange("postalCode", text)}
+          placeholder="Postal Code"
+          keyboardType="numeric"
+        />
 
-      <Text style={styles.label}>Address:</Text>
-      <TextInput
-        style={styles.input}
-        value={formData.streetName}
-        onChangeText={(text) => handleChange("streetName", text)}
-        placeholder="Street Name"
-      />
-      <TextInput
-        style={styles.input}
-        value={formData.unitNo}
-        onChangeText={(text) => handleChange("unitNo", text)}
-        placeholder="Unit No."
-      />
-      <TextInput
-        style={styles.input}
-        value={formData.buildingName}
-        onChangeText={(text) => handleChange("buildingName", text)}
-        placeholder="Building Name"
-      />
-      <TextInput
-        style={styles.input}
-        value={formData.city}
-        onChangeText={(text) => handleChange("city", text)}
-        placeholder="City"
-      />
-      <TextInput
-        style={styles.input}
-        value={formData.postalCode}
-        onChangeText={(text) => handleChange("postalCode", text)}
-        placeholder="Postal Code"
-        keyboardType="numeric"
-      />
-
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.buttonText}>Save</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.buttonText}>Cancel</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.buttonText}>Save</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </ScrollView>
   );
@@ -111,10 +116,11 @@ const ProfileEdit = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#D1E7DD",
-    padding: 20,
+    backgroundColor: "white",
   },
   header: {
+    padding: 20,
+    marginTop: "10%",
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
@@ -161,6 +167,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+    borderLeftWidth: 1,
+    borderRightWidth: 1,
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderColor: "#0C5E52",
   },
   buttonContainer: {
     flexDirection: "row",

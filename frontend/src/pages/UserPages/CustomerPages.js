@@ -6,6 +6,11 @@ import ProductDetails from '../CustomerPages/ProductDetails';
 import Profile from '../CustomerPages/Profile';
 import History from '../CustomerPages/History';
 import Cart from '../CustomerPages/Cart';
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text } from 'react-native';
+import Payment from '../../components/customers/Payment/Payment';
+import PaymentMethod from '../../components/customers/Payment/PaymentMethod';
+import AddCard from '../../components/customers/Payment/AddCard';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -24,10 +29,39 @@ const CustomerPages = () => {
         {() => (
           <Tab.Navigator
             initialRouteName='Explore'
-            screenOptions={{
-              tabBarStyle: { backgroundColor: "#0C5E52"},
-              headerShown: false,
-            }}
+            screenOptions={({ route }) => ({
+              tabBarIcon: ({ color, size, focused }) => {
+                let iconName;
+                size = 30;
+                switch (route.name) {
+                  case "Explore":
+                    iconName = focused ? "search" : "search-outline";
+                    break;
+                  case "Cart":
+                    iconName = focused ? "cart" : "cart-outline";
+                    break;
+                  case "History":
+                    iconName = focused ? "time" : "time-outline";
+                    break;
+                  case "Profile":
+                    iconName = focused ? "person" : "person-outline"
+                    break;
+                }
+                return <Ionicons name={iconName} size={size} color={color}></Ionicons>
+              },
+              tabBarLabel: ({ children, color, focused }) => (
+                <Text style={{
+                  fontSize: 10,
+                  color,
+                  fontWeight: focused ? "bold" : "normal"
+                }}>{children}</Text>
+              ),
+              tabBarStyle: styles.tabBarStyle,
+              tabBarItemStyle: styles.tabBarItemStyle,
+              tabBarActiveTintColor: "#FFFFFF",
+              tabBarInactiveTintColor: "#EFEFEF",
+              headerShown: false
+            })}
           >
             <Tab.Screen name="Explore" component={ExploreStack} />
             <Tab.Screen name="Cart" component={Cart} />
@@ -37,8 +71,23 @@ const CustomerPages = () => {
         )}
       </Stack.Screen>
       <Stack.Screen name="Cart" component={Cart} />
+      <Stack.Screen name="Payment" component={Payment} />
+      <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
+      <Stack.Screen name="AddCard" component={AddCard} />
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  tabBarStyle: {
+    height: "8%",
+    backgroundColor: "#0C5E52",
+    paddingBottom: 10,
+  },
+  tabBarItemStyle: {
+    margin: 5,
+    borderRadius: 10,
+  }
+})
 
 export default CustomerPages;

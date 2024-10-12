@@ -11,6 +11,10 @@ const Cart = ({ navigation }) => {
     clearCart();
   };
 
+  const handleCheckout = () => {
+    navigation.navigate('Payment');
+  }
+
   const totalPrice = getTotal();
 
   return (
@@ -37,7 +41,7 @@ const Cart = ({ navigation }) => {
       </ScrollView>
       <View style={styles.footer}>
         <Text style={styles.totalPrice}>Total ${totalPrice.toFixed(2)}</Text>
-        <TouchableOpacity style={styles.checkoutButton}>
+        <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
           <Text style={styles.checkoutButtonText}>Check Out</Text>
         </TouchableOpacity>
       </View>
