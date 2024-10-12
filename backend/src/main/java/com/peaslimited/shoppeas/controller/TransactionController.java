@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.controller;
 
+import com.peaslimited.shoppeas.dto.WholesalerTransactionsDTO;
 import com.peaslimited.shoppeas.service.CurrencyService;
 import com.peaslimited.shoppeas.service.WholesalerTransactionsService;
 import com.peaslimited.shoppeas.dto.mapper.WholesalerTransactionMapper;
@@ -32,15 +33,10 @@ public class TransactionController {
 
     // CONSUMER METHODS
 
-    //get order history
+    //TODO: @saffron get order history
 
-    //get cart
 
-    //add to cart
 
-    //get all payment methods
-
-    //add payment
     
     @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
@@ -50,22 +46,27 @@ public class TransactionController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
-        //TODO: @saffron this part is the code to create the transaction and order records
-        // convert order data to array
+        //ACTION: GET TRANSACTION DATA
+        //convert order data to array
         String orderStr = data.get("orders").toString();
         orderStr = orderStr.replace("[","");
         orderStr = orderStr.replace("]","");
         ArrayList<String> orders = new ArrayList<String>(Arrays.asList(orderStr.split(",")));
-        
+
+        //remainder of transaction data
         String tid = data.get("tid").toString();
-        double total_price = Double.parseDouble(data.get("total_price").toString());
-        String status = data.get("status").toString();
-        LocalDateTime date = LocalDateTime.now();
-        
-        wholesalerTransactionService.addWTransaction(tid, WholesalerTransactionMapper.toWTransactionDTO(uid, orders, total_price, date, status));
+        double price = Double.parseDouble(data.get("price").toString());
+        //String status = data.get("status").toString();
+        String status = "PENDING-ACCEPTANCE";
+        String date = data.get("date").toString();
+
+        //ACTION: ADDS TRANSACTION RECORD
+        WholesalerTransactionsDTO transaction = WholesalerTransactionMapper.toWTransactionDTO(uid, orders, price, date, status);
+        wholesalerTransactionService.addWTransaction(tid, transaction);
 
         // TODO: only if the wholesaler's selected currency is MYR, will the currency api be invoked
-        double price = Double.parseDouble(data.get("price").toString());
+        // shifted above
+        //double price = Double.parseDouble(data.get("price").toString());
         String preferredCurrency = data.get("currency").toString();
         double exchangeRate = 0.0;
         double finalPrice = 0.0;
@@ -77,21 +78,16 @@ public class TransactionController {
             // NOTE: temporary print statement to validate output
             System.out.println(finalPrice);
         }
+
+        //TODO: empty shopping cart
     }
 
 
-    //WHOLESALER METHODS
 
-    //view transactions and order and buyer details
+    //TODO: @saffron WHOLESALER METHODS
     
-    //get transactions by type
+    //get all transactions
 
-    //get to be accepted, get to be completed, get completed
-
-    //add to be accepted transaction (after make payment)
-
-    //add to be completed transaction (after accepted)
-
-    //add completed transaction (after completing transaction)
+    //update transactions
     
 }

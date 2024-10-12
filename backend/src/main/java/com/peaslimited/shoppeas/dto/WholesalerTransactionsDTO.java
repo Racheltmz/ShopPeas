@@ -25,7 +25,7 @@ public class WholesalerTransactionsDTO {
     private double total_price;
 
     //date transaction placed (i.e., payment made)
-    private LocalDateTime date;
+    private String date;
 
     //status: PENDING ACCEPTANCE, PENDING COMPLETION, COMPLETED
     private String status;

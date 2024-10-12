@@ -28,8 +28,13 @@ public class WholesalerTransactions {
     private double total_price;
 
     //date transaction placed (i.e., payment made)
-    private LocalDateTime date;
+    private String date;
 
-    //status: PENDING ACCEPTANCE, PENDING COMPLETION, COMPLETED
+    /* STATUSES:
+     * IN CART: added to cart, payment not made
+     * PENDING ACCEPTANCE: payment made, transaction is now "to be accepted" by wholesaler
+     * PENDING COMPLETION: transaction has been accepted by wholesaler, to be completed
+     * COMPLETED: transaction has been completed
+     */
     private String status;
 }

@@ -15,12 +15,12 @@ public class WholesalerTransactionMapper {
         String uid = wTransaction.getUid();
         ArrayList<String> orders = wTransaction.getOrders();
         double total_price = wTransaction.getTotal_price();
-        LocalDateTime date = wTransaction.getDate();
+        String date = wTransaction.getDate();
         String status = wTransaction.getStatus();
         return new WholesalerTransactionsDTO(uid, orders, total_price, date, status);
     }
 
-    public static WholesalerTransactionsDTO toWTransactionDTO(String uid, ArrayList<String> orders, double total_price, LocalDateTime date, String status)
+    public static WholesalerTransactionsDTO toWTransactionDTO(String uid, ArrayList<String> orders, double total_price, String date, String status)
     {
         return new WholesalerTransactionsDTO(uid, orders, total_price, date, status);
     }
