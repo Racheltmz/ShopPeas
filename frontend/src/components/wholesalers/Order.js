@@ -4,6 +4,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 const Order = ({ order, onAccept, onComplete }) => {
   const isToBeAccepted = order.status === 'to_be_accepted';
   const isToBeCompleted = order.status === 'to_be_completed';
+  const isCompleted = order.status === 'completed';
 
   const handleAccept = () => {
     if (isToBeAccepted) {
@@ -30,6 +31,11 @@ const Order = ({ order, onAccept, onComplete }) => {
           <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
             <Text style={styles.buttonText}>Complete</Text>
           </TouchableOpacity>
+        )}
+        {isCompleted && (
+          <View style={styles.completedButton}>
+            <Text style={styles.buttonText}>COMPLETED</Text>
+          </View>
         )}
       </View>
       <View style={styles.orderContent}>
@@ -86,6 +92,11 @@ const styles = StyleSheet.create({
   },
   completeButton: {
     backgroundColor: '#FFA07A',
+    padding: 5,
+    borderRadius: 5,
+  },
+  completedButton: {
+    backgroundColor: '#15b33f',
     padding: 5,
     borderRadius: 5,
   },

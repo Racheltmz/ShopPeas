@@ -22,7 +22,7 @@ const Login = () => {
             let userType = 'unknown';
             if (idTokenResult.claims.consumer) {
                 userType = 'consumer';
-            } else if (idTokenResult.claims.wholesaler) {
+            } else if (idTokenResult.claims.wholesaler) {                                           
                 userType = 'wholesaler';
             }
 

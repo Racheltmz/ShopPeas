@@ -54,8 +54,7 @@ export default function App() {
     return (
       <ImageBackground
         source={backgroundImage}
-        style={styles.backgroundImage}
-      >
+        style={styles.backgroundImage}    >
         <NavigationContainer theme={navTheme}>
           <View style={styles.contentContainer}>{currentPage}</View>
         </NavigationContainer>
