@@ -7,7 +7,7 @@ const Home = ({ navigation }) => {
   const [products, setProducts] = useState([
     {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
     {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
-    {name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Chinese Dressing'},
+    {name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing'},
     {name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats'},
     {name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
     {name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground'},
@@ -40,14 +40,14 @@ const Home = ({ navigation }) => {
         </View>
 
         <View style={styles.header}>
-        <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>Happy Wholesaler</Text>
-            <Text style={styles.subHeaderTitle}>My Products</Text>
-        </View>
-        <Image
-            source={require('../../../assets/imgs/pea.png')}
-            style={styles.headerImage}
-        />
+          <View style={styles.headerTextContainer}>
+              <Text style={styles.headerTitle}>Happy Wholesaler</Text>
+              <Text style={styles.subHeaderTitle}>My Products</Text>
+          </View>
+          <Image
+              source={require('../../../assets/imgs/pea.png')}
+              style={styles.headerImage}
+          />
         </View>
         
         <View style={styles.addProductContainer}>
@@ -127,8 +127,8 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   headerImage: {
-    width: 80, 
-    height: 90,
+    width: '18%', 
+    height: '100%',
     marginRight: "28.2%",
   },
   addProductContainer: {
