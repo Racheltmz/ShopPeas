@@ -8,7 +8,7 @@ const AuthPage = () => {
     const [currentState, setCurrentState] = useState('default');
 
     const renderDefault = () => (
-        <View style={styles.content}>
+        <View style={styles.default}>
             <Image
                 source={require('../../assets/imgs/loginImg.png')}
                 style={styles.logo}
@@ -33,34 +33,17 @@ const AuthPage = () => {
     );
 
     const renderLogin = () => (
-        <View style={styles.content}>
-            <TouchableOpacity 
-                style={styles.backButton}
-                onPress={() => setCurrentState('default')}
-            >
-                <Ionicons 
-                  color={'#EBF3D1'}
-                  size={20}
-                  name="arrow-back-outline"
-                />
-            </TouchableOpacity>
-            <Login />
-        </View>
+      <View style={styles.default}>
+        <Login 
+            onBackPress={() => setCurrentState('default')}
+            onRegisterPress={() => setCurrentState('register')}
+        />
+      </View>
     );
 
     const renderRegister = () => (
-        <View style={styles.content}>
-            <TouchableOpacity 
-                style={styles.backButton}
-                onPress={() => setCurrentState('default')}
-            >
-                <Ionicons
-                  color={'#EBF3D1'}
-                  size={20}
-                  name="arrow-back-outline"
-                />
-            </TouchableOpacity>
-            <Register />
+        <View style={styles.default}>
+            {/* rmb to create back button for reg page*/}
         </View>
     );
 
@@ -88,21 +71,21 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
     },
-    content: {
+    default: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
+        padding: '10%',
     },
     logo: {
         width: '90%',  
         height: '30%', 
         resizeMode: 'contain',
-        marginBottom: 30,
+        marginBottom: '8%',
     },
     buttonContainer: {
         justifyContent: 'center',
-        marginBottom: 20,
+        marginBottom: '8%',
     },
     loginButton: {
         backgroundColor: '#0C5E52',
@@ -127,21 +110,6 @@ const styles = StyleSheet.create({
       color: '#0C5E52',
       fontWeight: 'bold',
       textAlign: 'center',
-    },
-    backButton: {
-      position: 'absolute',
-      top: 40,
-      left: 20,
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: '#006400',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    backButtonText: {
-      color: 'white',
-      fontSize: 24,
     },
 });
 
