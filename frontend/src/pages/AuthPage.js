@@ -2,8 +2,6 @@ import { useState } from "react";
 import { View, StyleSheet, SafeAreaView, Image, TouchableOpacity, Text, ImageBackground } from "react-native";
 import Login from "../components/authentication/Login";
 import Register from "../components/authentication/Register";
-import { Ionicons } from '@expo/vector-icons';
-
 const AuthPage = () => {
     const [currentState, setCurrentState] = useState('default');
 
@@ -43,7 +41,9 @@ const AuthPage = () => {
 
     const renderRegister = () => (
         <View style={styles.default}>
-            {/* rmb to create back button for reg page*/}
+            <Register 
+              onBackPress={() => setCurrentState('default')}
+            />
         </View>
     );
 

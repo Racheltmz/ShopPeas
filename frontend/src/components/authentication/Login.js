@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         top: '3%',
-        left: '1%',
+        left: '-2%',
         width: '13%',
         height: '5.2%',
         borderRadius: '100%',
