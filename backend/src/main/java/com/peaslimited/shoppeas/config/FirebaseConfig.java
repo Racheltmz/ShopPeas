@@ -25,6 +25,7 @@ public class FirebaseConfig {
      * Configuration to connect to firebase
      * @throws IOException
      */
+    @SuppressWarnings("deprecation")
     @PostConstruct
     public void configureFirebaseConnection() throws IOException {
         File file = ResourceUtils.getFile(serviceAccountPath);
