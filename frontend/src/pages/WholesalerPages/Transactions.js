@@ -3,10 +3,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useState, useMemo } from 'react';
 import OrderDropdown from '../../components/wholesalers/OrderDropdown';
 import PendingOrders from '../../components/wholesalers/PendingOrders';
+import CompletedOrders from '../../components/wholesalers/CompletedOrders';
 
 const Transactions = ({ defaultValue }) => {
   const [selectedOption, setSelectedOption] = useState('pending');
-  const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
+  // const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
 
   const [orders, setOrders] = useState([
     {
@@ -102,6 +103,13 @@ const Transactions = ({ defaultValue }) => {
       />
       {selectedOption === 'pending' && (
         <PendingOrders
+          orders={orders}
+          onAccept={handleAccept}
+          onComplete={handleComplete}
+        />
+      )}
+      {selectedOption === 'completed' && (
+        <CompletedOrders
           orders={orders}
           onAccept={handleAccept}
           onComplete={handleComplete}
