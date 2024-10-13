@@ -11,6 +11,7 @@ import { StyleSheet, Text } from 'react-native';
 import Payment from '../../components/customers/Payment/Payment';
 import PaymentMethod from '../../components/customers/Payment/PaymentMethod';
 import AddCard from '../../components/customers/Payment/AddCard';
+import ViewWholesaler from '../../components/customers/ViewWholesaler';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -19,6 +20,7 @@ const ExploreStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="ExploreMain" component={Explore} />
     <Stack.Screen name="ProductDetails" component={ProductDetails} />
+    <Stack.Screen name="ViewWholesaler" component={ViewWholesaler} />
   </Stack.Navigator>
 );
 
@@ -74,6 +76,7 @@ const CustomerPages = () => {
       <Stack.Screen name="Payment" component={Payment} />
       <Stack.Screen name="PaymentMethod" component={PaymentMethod} />
       <Stack.Screen name="AddCard" component={AddCard} />
+      <Stack.Screen name="ViewWholesaler" component={ViewWholesaler} />
     </Stack.Navigator>
   );
 };

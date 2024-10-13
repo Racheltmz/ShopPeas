@@ -15,6 +15,10 @@ const Cart = ({ navigation }) => {
     navigation.navigate('Payment');
   }
 
+  const handleWholesalerPress = (wholesalerName) => {
+    navigation.navigate('ViewWholesaler', { wholesalerName });
+  };
+
   const totalPrice = getTotal();
 
   return (
@@ -29,7 +33,9 @@ const Cart = ({ navigation }) => {
       <ScrollView style={styles.cartList}>
         {cart.map((wholesaler, index) => (
           <View key={index} style={styles.wholesalerSection}>
-            <Text style={styles.wholesalerName}>{wholesaler.wholesaler}</Text>
+            <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.wholesaler)}>
+              <Text style={styles.wholesalerName}>{wholesaler.wholesaler}</Text>
+            </TouchableOpacity>
             <Text style={styles.wholesalerLocation}>
               {wholesaler.location}, {wholesaler.distance} Minutes away
             </Text>
