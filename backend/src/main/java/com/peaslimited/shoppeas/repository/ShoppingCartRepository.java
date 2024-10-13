@@ -14,7 +14,10 @@ public interface ShoppingCartRepository {
     ShoppingCartDTO findByCID(String cid) throws ExecutionException, InterruptedException;
     DocumentSnapshot findDocByUID(String UID) throws ExecutionException, InterruptedException;
     ShoppingCartDTO findByUID(String UID) throws ExecutionException, InterruptedException;
+    ShoppingCart findByUID_NonDTO(String UID) throws ExecutionException, InterruptedException;
 
     void updateCartWithOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
+    void deleteWholeCart(String cid) throws ExecutionException, InterruptedException;
+    void deleteCartItem(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException;
 }

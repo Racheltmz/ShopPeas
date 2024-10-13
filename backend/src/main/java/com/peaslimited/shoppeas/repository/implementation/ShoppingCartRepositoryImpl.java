@@ -50,7 +50,7 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
         // Asynchronously retrieve the document
         QuerySnapshot querySnapshot = query.get();
 
-        // Convert document to Wholesaler object
+
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
 
         // Check if any documents match
@@ -66,6 +66,7 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
     @Override
     public ShoppingCartDTO findByUID(String UID) throws ExecutionException, InterruptedException {
         DocumentSnapshot document = findDocByUID(UID);
+
         if(document != null)
         {
             return document.toObject(ShoppingCartDTO.class);
@@ -73,6 +74,23 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
         return null;
     }
 
+    //ACTION: RETURNS THE FULL ENTITY OBJECT, NOT DTO
+    @Override
+    public ShoppingCart findByUID_NonDTO(String UID) throws ExecutionException, InterruptedException {
+        DocumentSnapshot document = findDocByUID(UID);
+        String cid = document.getId();
+        if(document != null)
+        {
+            ShoppingCart cart = document.toObject(ShoppingCart.class);
+            cart.setCid(cid);
+            return cart;
+        }
+        return null;
+    }
+
+    //new order is added to existing cart (i.e., cart already has other items)
+    //or quantity is updated
+    //cart/ order repos are then updated
     @Override
     public void updateCartWithOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException
     {
@@ -134,6 +152,26 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
             order = document.toObject(OrderDTO.class);
         }
         return order;
+    }
+
+    @Override
+    public void deleteWholeCart(String cid) throws ExecutionException, InterruptedException
+    {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(cid);
+        docRef.delete();
+    }
+
+    @Override
+    public void deleteCartItem(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        String oid_toDelete = data.get("oid").toString();
+        ShoppingCart cart = findByUID_NonDTO(uid);
+        String cid = cart.getCid();
+
+        ArrayList<String> currOrderList = cart.getOrders();
+        currOrderList.remove(String.valueOf(oid_toDelete));
+
+        DocumentReference docRef = firestore.collection(COLLECTION).document(cid);
+        docRef.update("orders", currOrderList);
     }
 
 

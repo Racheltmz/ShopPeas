@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
+import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.repository.ShoppingCartRepository;
 import com.peaslimited.shoppeas.service.ShoppingCartService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,26 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public ShoppingCart getCartByUID_NonDTO(String UID)throws ExecutionException, InterruptedException
+    {
+        return cartRepo.findByUID_NonDTO(UID);
+    }
+
+    @Override
     public void updateCartByOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException
     {
         cartRepo.updateCartWithOrder(cid, data);
+    }
+
+    @Override
+    public void deleteWholeCart(String cid) throws ExecutionException, InterruptedException
+    {
+        cartRepo.deleteWholeCart(cid);
+    }
+
+    public void deleteItemByOID(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException
+    {
+        cartRepo.deleteCartItem(uid, data);
     }
 
 }

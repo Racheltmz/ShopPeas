@@ -1,7 +1,10 @@
 package com.peaslimited.shoppeas.controller;
 
+import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
 import com.peaslimited.shoppeas.dto.WholesalerTransactionsDTO;
+import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.CurrencyService;
+import com.peaslimited.shoppeas.service.ShoppingCartService;
 import com.peaslimited.shoppeas.service.WholesalerTransactionsService;
 import com.peaslimited.shoppeas.dto.mapper.WholesalerTransactionMapper;
 
@@ -19,6 +22,7 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
@@ -31,9 +35,15 @@ public class TransactionController {
     @Autowired
     private WholesalerTransactionsService wholesalerTransactionService;
 
+    @Autowired
+    private ShoppingCartService cartService;
+
+    @Autowired
+    private CartController cartController;
+
     // CONSUMER METHODS
 
-    //TODO: @saffron get order history
+    //TODO: @saffron get order history, make payment
 
 
 
@@ -41,7 +51,7 @@ public class TransactionController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void makePayment(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException {
+    public void makePayment(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         // Get UID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
@@ -64,7 +74,7 @@ public class TransactionController {
         WholesalerTransactionsDTO transaction = WholesalerTransactionMapper.toWTransactionDTO(uid, orders, price, date, status);
         wholesalerTransactionService.addWTransaction(tid, transaction);
 
-        // TODO: only if the wholesaler's selected currency is MYR, will the currency api be invoked
+        // ACTION: only if the wholesaler's selected currency is MYR, will the currency api be invoked
         // shifted above
         //double price = Double.parseDouble(data.get("price").toString());
         String preferredCurrency = data.get("currency").toString();
@@ -79,7 +89,21 @@ public class TransactionController {
             System.out.println(finalPrice);
         }
 
-        //TODO: empty shopping cart
+        //ACTION: empty shopping cart
+        String cid = cartController.getCID(uid);
+        cartService.deleteWholeCart(cid);
+
+        /*
+        -> get specific payment method from API call
+        -> find payment method
+        -> if exists, return true (payment success)
+        assume by default that all payments are successful
+
+
+
+         */
+
+
     }
 
 
@@ -88,6 +112,5 @@ public class TransactionController {
     
     //get all transactions
 
-    //update transactions
     
 }

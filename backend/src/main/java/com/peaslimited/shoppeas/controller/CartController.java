@@ -4,6 +4,7 @@ import com.peaslimited.shoppeas.dto.OrderDTO;
 import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
 import com.peaslimited.shoppeas.dto.mapper.OrderMapper;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
+import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.OrderService;
 import com.peaslimited.shoppeas.service.ShoppingCartService;
 import com.peaslimited.shoppeas.service.WholesalerTransactionsService;
@@ -30,15 +31,31 @@ public class CartController {
     @Autowired
     private ShoppingCartService cartService;
 
-    // TODO: @saffron get cart, add to cart, update cart item, delete cart
+    // TODO: @saffron delete cart
 
-    //get cart
+    //get cart (DTO object)
     @GetMapping("/getCart")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
     public ShoppingCartDTO getCartByUID(@RequestParam String UID) throws ExecutionException, InterruptedException {
         return cartService.getCartByUID(UID);
     }
+
+    // returns full shopping cart entity object, including cid
+    @GetMapping("/getCartNonDTO")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public ShoppingCart getCartByUID_NonDTO(@RequestParam String UID_nonDTO) throws ExecutionException, InterruptedException {
+        return cartService.getCartByUID_NonDTO(UID_nonDTO);
+    }
+
+    //get cid only
+    public String getCID(String UID) throws ExecutionException, InterruptedException {
+        ShoppingCart cart = cartService.getCartByUID_NonDTO(UID);
+        String cid = cart.getCid();
+        return cid;
+    }
+
 
     //add order
     @PostMapping("/addToCart")
@@ -83,10 +100,12 @@ public class CartController {
 
 
     //update cart
+    //new order is added to existing cart (i.e., cart already has other items)
+    //or quantity is updated
     @PatchMapping("/addToCart/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void addToCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
+    public void updateCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
@@ -101,15 +120,37 @@ public class CartController {
         OrderDTO order = OrderMapper.toOrderDTO(price, quantity, swp_id, type);
         orderService.addOrder(oid, order);
 
-        // check if cart record exists for uid
-        // else: create cart and add to cart
-        String cid = data.get("cid").toString();
+        // cart record exists for uid
+        //String cid = data.get("cid").toString();
+        String cid = getCID(uid);
         //ACTION: UPDATES CART
         cartService.updateCartByOrder(cid, data);
 
     }
 
-    //update cart order
 
     //delete cart item
+    @PatchMapping("/addToCart/update/deleteSingleItem")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteCartItem(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+
+        //ACTION: DELETE ITEM/ORDER FROM CART
+        cartService.deleteItemByOID(uid, data);
+
+        //ACTION: DELETE ORDER FROM ORDER FIREBASE COLLECTION
+        String oid_toDelete = data.get("oid").toString();
+
+
+    }
+
+    //delete whole cart from firebase (i.e., empty cart)
+    @DeleteMapping("/delete")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void deleteWholeCart(@RequestParam String cid) throws ExecutionException, InterruptedException {
+        cartService.deleteWholeCart(cid);
+    }
 }

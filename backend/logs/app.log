@@ -24,3 +24,4 @@
 2024-Oct-12 22:21:48 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 404 NOT_FOUND Record does not exist: Cannot invoke "com.google.cloud.firestore.DocumentSnapshot.exists()" because "document" is null 
 2024-Oct-12 22:22:45 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 404 NOT_FOUND Record does not exist: Cannot invoke "Object.toString()" because the return value of "java.util.Map.get(Object)" is null 
 2024-Oct-12 23:15:22 [http-nio-8080-exec-4] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-13 13:14:25 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
