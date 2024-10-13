@@ -8,7 +8,7 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 
 # Use a service account
-cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-0e6ec030a9.json')
+cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d9624e3bf1.json')
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -142,7 +142,7 @@ def orders(df, collection):
         })
     print(f'Sucessfully created order records.')
 
-def product(df, collection):
+def products(df, collection):
     for _, record in df.iterrows():
         if record['package_size'] == 'null':
             record['package_size'] = None
@@ -150,7 +150,7 @@ def product(df, collection):
             image_url = None  # Set image URL to None if not available
         else:
             image_url = record['Image']
-        db.collection(collection).document(str(record['pid'])).set({
+        db.collection(collection).add({
             "name": record['name'],  # Product name
             "package_size": record['package_size'],  # Package size
             "image_url": image_url  # Image URL from the CSV file
@@ -163,7 +163,7 @@ def wholesalerProduct(df, collection):
             record['price'] = None
         if record['stock'] == 'null':
             record['stock'] = None
-        db.collection(collection).document(record['swp_id']).set({
+        db.collection(collection).add({
             "uen": record['uen'],
             "pid": record['pid'],
             "price": record['price'],
@@ -202,9 +202,11 @@ elif(collection == 'transactions'):
     transactions(df, collection)
 elif(collection == 'orders'):
     orders(df, collection)
-elif (collection == 'product'):
-    product(df, collection)
+elif (collection == 'products'):
+    products(df, collection)
 elif(collection == 'wholesaler_products'):
     wholesalerProduct(df, collection)
 elif(collection == 'shopping_cart'):
     shoppingCart(df, collection)
+else:
+    print("Please enter a valid collection name.")

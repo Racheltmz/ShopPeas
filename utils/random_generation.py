@@ -1,9 +1,23 @@
 import pandas as pd
 import random
 from datetime import date
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+from firebase_admin import auth
+import argparse
+import pandas as pd
+
+parser = argparse.ArgumentParser()
+
+# Use a service account
+cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d9624e3bf1.json')
+default_app = firebase_admin.initialize_app(cred)
+db = firestore.client()
 
 wholesalerproducts = pd.read_csv('./data/wholesalerproducts.csv')
 consumer_id = pd.read_csv('./data/consumeraccount.csv')['uid']
+wholesalers = pd.read_csv('./data/wholesalers.csv')['uen']
 
 def gen_orders():
     cart_records = 100
@@ -80,10 +94,29 @@ def gen_transaction():
     df = pd.DataFrame(gen_records)
     df.to_csv(f'./data/transactions.csv', index=False)
 
-task = 'transaction'
+def gen_wholesalerproducts():
+    docs = db.collection("products").stream()
+    wholesalerid = [doc.id for doc in docs]
+    num_records = 1000
+    gen_records = []
+    for i in range(num_records):
+        chosen_wholesaler = random.choice(wholesalers)
+        chosen_id = random.choice(wholesalerid)
+        gen_records.append({
+            'uen': chosen_wholesaler,
+            'pid': chosen_id,
+            'price': round(random.uniform(0, 99.99), 2),
+            'stock': random.randint(50, 500),
+        })
+    df = pd.DataFrame(gen_records)
+    df.to_csv(f'./data/wholesalerproducts2.csv', index=False)
+
+task = 'wholesalerproducts'
 if task == 'order':
     gen_orders()
 elif task == 'cart':
     gen_cart()
 elif task == 'transaction':
     gen_transaction()
+elif task == 'wholesalerproducts':
+    gen_wholesalerproducts()
