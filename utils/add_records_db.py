@@ -123,33 +123,33 @@ def consumerAddress(df, collection):
 
 def transactions(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['tid']).set({
+        db.collection(collection).add({
+            "uen": record['uen'],
             "uid": record['uid'],
-            "orders": record['orders'].split('|'),
+            "products": record['products'].split('|'),
             "total_price": record['total_price'],
             "date": record['date'],
             "status": record['status'],
         })
     print(f'Sucessfully created transaction records.')
 
-def orders(df, collection):
+def order_history(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['oid']).set({
-            "swp_id": record['swp_id'],
-            "quantity": record['quantity'],
-            "price": record['price'],
-            "type": record['type'],
+        db.collection(collection).add({
+            "uid": record['uid'],
+            "orders": record['orders'].split('|'),
+            "date": record['date'],
         })
-    print(f'Sucessfully created order records.')
+    print(f'Sucessfully created order history records.')
 
 def products(df, collection):
     for _, record in df.iterrows():
         if record['package_size'] == 'null':
             record['package_size'] = None
-        if pd.isnull(record['Image']) or record['Image'] == 'null':
+        if pd.isnull(record['image']) or record['image'] == 'null':
             image_url = None  # Set image URL to None if not available
         else:
-            image_url = record['Image']
+            image_url = record['image']
         db.collection(collection).add({
             "name": record['name'],  # Product name
             "package_size": record['package_size'],  # Package size
@@ -174,7 +174,7 @@ def wholesalerProduct(df, collection):
 
 def shoppingCart(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['cid']).set({
+        db.collection(collection).add({
             "uid": record['uid'],
             "orders": record['orders'].split('|'),
             "total_price": record['total_price'],
@@ -200,8 +200,8 @@ elif(collection == 'consumer_address'):
     consumerAddress(df, collection)
 elif(collection == 'transactions'):
     transactions(df, collection)
-elif(collection == 'orders'):
-    orders(df, collection)
+elif(collection == 'order_history'):
+    order_history(df, collection)
 elif (collection == 'products'):
     products(df, collection)
 elif(collection == 'wholesaler_products'):

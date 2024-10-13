@@ -19,104 +19,121 @@ wholesalerproducts = pd.read_csv('./data/wholesalerproducts.csv')
 consumer_id = pd.read_csv('./data/consumeraccount.csv')['uid']
 wholesalers = pd.read_csv('./data/wholesalers.csv')['uen']
 
-def gen_orders():
-    cart_records = 100
-    transaction_records = 100
-    order_type = ['CART', 'TRANSACTION']
-    id = 0
+def choose_wholesaler_products(uen, num_products):
+    products = wholesalerproducts[wholesalerproducts['uen'] == uen].sample(num_products)
+    # get total price of products
+    total_price = [random.randint(1, 5) * products['price'][i] for i in range(num_products)].sum()
+
+    return '|'.join(products['pid'].values), total_price
+
+def gen_transactions():
+    cart_records = 10
+    history_records = 9
+    status = ['IN-CART', 'PENDING-ACCEPTANCE']
     gen_records = []
     for i in range(cart_records):
-        chosen_record = wholesalerproducts.sample(1)
-        gen_records.append({
-            'oid': f'O{(id+i+1):06d}',
-            'swp_id': chosen_record['swp_id'].values[0],
-            'quantity': random.randint(1, 5),
-            'price': chosen_record['price'].values[0],
-            'type': order_type[0]
-        })
-
-    id = cart_records + 1
-    for i in range(transaction_records):
-        chosen_record = wholesalerproducts.sample(1)
-        gen_records.append({
-            'oid': f'O{(id+i+1):06d}',
-            'swp_id': chosen_record['swp_id'].values[0],
-            'quantity': random.randint(1, 5),
-            'price': chosen_record['price'].values[0],
-            'type': order_type[1]
-        })
-
-    df = pd.DataFrame(gen_records)
-    df.to_csv('./data/orders.csv', index=False)
-
-def gen_cart():
-    orders = pd.read_csv('./data/orders.csv')
-    cart_orders = orders[orders['type'] == 'CART']
-    num_carts = 9
-    gen_records = []
-
-    for i in range(num_carts):
-        chosen_orders = cart_orders[i*10:(i+1)*10+1]
-        orders = '|'.join(chosen_orders['oid'].values)
-        total = (chosen_orders['price'] * chosen_orders['quantity']).sum()
-        gen_records.append({
-            'cid': f'C{(i+1):06d}',
-            'uid': consumer_id[i],
-            'orders': orders,
-            'total_price': f'{total:.2f}'
-        })
-    df = pd.DataFrame(gen_records)
-    df.to_csv(f'./data/shoppingcart.csv', index=False)
-
-def gen_transaction():
-    orders = pd.read_csv('./data/orders.csv')
-    cart_orders = orders[orders['type'] == 'TRANSACTION']
-    num_carts = 9
-    gen_records = []
-    status = ['PENDING-ACCEPTANCE', 'PENDING-COMPLETION', 'COMPLETED']
-
-    for i in range(num_carts):
         start_date = date.today().replace(day=1, month=1).toordinal()
         end_date = date.today().toordinal()
-        random_day = date.fromordinal(random.randint(start_date, end_date))
+        random_day = date.fromordinal(random.randint(start_date, end_date)) # from the past
+        chosen_wholesaler = random.choice(wholesalers)
+        num_products = random.randint(1, 3)
+        products, total_price = choose_wholesaler_products(chosen_wholesaler, num_products)
 
-        chosen_orders = cart_orders[i*10:(i+1)*10+1]
-        orders = '|'.join(chosen_orders['oid'].values)
-        total = (chosen_orders['price'] * chosen_orders['quantity']).sum()
         gen_records.append({
-            'tid': f'T{(i+1):06d}',
+            'uen': chosen_wholesaler,
+            'uid': consumer_id[i],
+            'products': products, # clarify with saffron currently returning pid but i think it should be an object
+            'total_price': total_price,
+            'date': random_day,
+            'status': status[0]
+        })
+
+    for i in range(history_records):
+        start_date = date.today().replace(day=1, month=1).toordinal()
+        end_date = date.today().toordinal()
+        random_day = date.fromordinal(random.randint(start_date, end_date)) # from the past
+        chosen_wholesaler = random.choice(wholesalers)
+        num_products = random.randint(1, 3)
+        products, total_price = choose_wholesaler_products(chosen_wholesaler, num_products)
+
+        gen_records.append({
+            'uen': chosen_wholesaler,
+            'uid': consumer_id[i],
+            'products': products,
+            'total_price': total_price,
+            'date': random_day,
+            'status': status[0]
+        })
+
+    df = pd.DataFrame(gen_records)
+    df.to_csv('./data/orders2.csv', index=False)
+
+def gen_cart():
+    transactions = pd.read_csv('./data/transactions.csv')
+    transaction_orders = transactions[transactions['type'] == 'IN-CART']
+    num_carts = 5
+    num_orders = [1, 2, 3, 2, 2] # for each consumer, preallocated
+    gen_records = []
+    count = 0
+
+    for i in range(num_carts):
+        chosen_orders = transaction_orders[count:num_orders[i]]
+        orders = '|'.join(chosen_orders['tid'].values)
+        total = (chosen_orders['price'] * chosen_orders['quantity']).sum() # check with saffron
+
+        gen_records.append({
             'uid': consumer_id[i],
             'orders': orders,
-            'total_price': f'{total:.2f}',
-            'date': random_day,
-            'status': status[random.randint(0, 2)]
+            'total_price': f'{total:.2f}', # check with saffron
         })
+        count += num_orders[i]
     df = pd.DataFrame(gen_records)
-    df.to_csv(f'./data/transactions.csv', index=False)
+    df.to_csv(f'./data/transactions2.csv', index=False)
+
+def gen_order_history():
+    transactions = pd.read_csv('./data/transactions.csv')
+    transaction_orders = transactions[transactions['type'] == 'PENDING-ACCEPTANCE']
+    num_history = 3
+    num_orders = [4, 2, 3] # for each consumer, preallocated
+    gen_records = []
+    count = 0
+
+    for i in range(num_history):
+        chosen_orders = transaction_orders[count:num_orders[i]]
+        orders = '|'.join(chosen_orders['tid'].values)
+        total = (chosen_orders['price'] * chosen_orders['quantity']).sum() # check with saffron
+
+        gen_records.append({
+            'uid': consumer_id[i],
+            'orders': orders,
+            'total_price': f'{total:.2f}', # check with saffron
+            'date': chosen_orders['date'].values[0],
+        })
+        count += num_orders[i]
+    df = pd.DataFrame(gen_records)
+    df.to_csv(f'./data/transactions2.csv', index=False)
 
 def gen_wholesalerproducts():
     docs = db.collection("products").stream()
-    wholesalerid = [doc.id for doc in docs]
-    num_records = 1000
+    productid = [doc.id for doc in docs]
     gen_records = []
-    for i in range(num_records):
-        chosen_wholesaler = random.choice(wholesalers)
-        chosen_id = random.choice(wholesalerid)
-        gen_records.append({
-            'uen': chosen_wholesaler,
-            'pid': chosen_id,
-            'price': round(random.uniform(0, 99.99), 2),
-            'stock': random.randint(50, 500),
-        })
+    for product in productid:
+        for wholesaler in wholesalers:
+            gen_records.append({
+                'uen': wholesaler,
+                'pid': product,
+                'price': round(random.uniform(0, 50.00), 2),
+                'stock': random.randint(50, 500),
+            })
     df = pd.DataFrame(gen_records)
     df.to_csv(f'./data/wholesalerproducts2.csv', index=False)
 
 task = 'wholesalerproducts'
-if task == 'order':
-    gen_orders()
+if task == 'wholesalerproducts': # plan for this is to create the same 20 products for each of the 5 wholesalers
+    gen_wholesalerproducts()
+elif task == 'transactions': # will create cart and order history records (in-cart / pending-acceptance only)
+    gen_transactions()
 elif task == 'cart':
     gen_cart()
-elif task == 'transaction':
-    gen_transaction()
-elif task == 'wholesalerproducts':
-    gen_wholesalerproducts()
+elif task == 'orderHistory':
+    gen_order_history()
