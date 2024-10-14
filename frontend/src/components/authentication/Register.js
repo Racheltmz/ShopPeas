@@ -11,62 +11,61 @@ const Register = ({ onBackPress, onLoginPress }) => {
 
   const renderChoice = () => (
     <View style={styles.container}>
-      <TouchableOpacity 
-          style={styles.backButton}
-          onPress={onBackPress}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={onBackPress}
       >
-          <Ionicons 
-            color={'#EBF3D1'}
-            size={20}
-            name="arrow-back-outline"
-          />
+        <Ionicons
+          color={'#EBF3D1'}
+          size={20}
+          name="arrow-back-outline"
+        />
       </TouchableOpacity>
       <Text style={styles.title}>Kick-start your food journey with us.</Text>
       <Text style={styles.subtitle}>I am a...</Text>
-      
+
       <View style={styles.optionOutline}>
-        <TouchableOpacity 
-          style={styles.option} 
+        <TouchableOpacity
+          style={styles.option}
           onPress={() => setCurrentState('consumer')}
         >
           <Text style={styles.optionText}>Consumer</Text>
         </TouchableOpacity>
         <View style={styles.iconContainer}>
-          <Image 
-            source={require('../../../assets/imgs/consumerIcon.png')} 
+          <Image
+            source={require('../../../assets/imgs/consumerIcon.png')}
             style={styles.icon}
           />
         </View>
       </View>
-      
+
       <View style={styles.optionOutline}>
         <View style={styles.iconContainer}>
-          <Image 
-            source={require('../../../assets/imgs/businessIcon.png')} 
+          <Image
+            source={require('../../../assets/imgs/businessIcon.png')}
             style={styles.icon}
           />
         </View>
-        <TouchableOpacity 
-          style={styles.option} 
+        <TouchableOpacity
+          style={styles.option}
           onPress={() => setCurrentState('business')}
         >
           <Text style={styles.optionText}>Business Owner</Text>
         </TouchableOpacity>
       </View>
-      
-      <TouchableOpacity 
-        style={styles.loginLink}
-        onPress={onLoginPress}
-      >
-        <Text style={styles.loginText}>Already have an account? Log in here</Text>
-      </TouchableOpacity>
-    </View>
+      <View>
+        <Text style={styles.loginText}>Already have an account? </Text>
+        <TouchableOpacity
+          onPress={() => setCurrentState('login')}>
+          <Text style={styles.loginLink}>Log In here!</Text>
+        </TouchableOpacity>
+      </View>
   );
 
   const renderConsumerForm = () => (
     <View style={styles.container}>
-      <RegisterCustomer 
-          onBackPress={() => setCurrentState('choice')}
+      <RegisterCustomer
+        onBackPress={() => setCurrentState('choice')}
       />
     </View>
   );
@@ -74,14 +73,14 @@ const Register = ({ onBackPress, onLoginPress }) => {
   const renderBusinessForm = () => (
     <View style={styles.container}>
       <RegisterWholesaler
-          onBackPress={() => setCurrentState('choice')}
+        onBackPress={() => setCurrentState('choice')}
       />
     </View>
   );
 
   const renderLogin = () => (
     <View style={styles.default}>
-      <Login 
+      <Login
         onBackPress={() => setCurrentState('choice')}
         onRegisterPress={() => setCurrentState('choice')}
       />
@@ -160,11 +159,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    lineHeight: 40,
     color: '#0C5E52',
-    marginBottom: 10,
+    marginBottom: 40,
   },
   subtitle: {
     fontSize: 18,
+    fontWeight: 'bold',
     color: '#0C5E52',
     marginBottom: 20,
   },
@@ -202,13 +203,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0C5E52',
   },
-  loginLink: {
-    marginTop: 20,
-  },
   loginText: {
     color: '#0C5E52',
     textAlign: 'center',
   },
+  loginLink: {
+    color: '#0C5E52',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  }
   image: {
     width: 300,
     height: "35%",

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from '../../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
+import { Divider } from 'react-native-paper';
 
 const AddCard = () => {
   const navigation = useNavigation();
@@ -60,10 +61,16 @@ const AddCard = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#0C5E52" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Add Card</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#0C5E52" />
+        </TouchableOpacity>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Add Card</Text>
+        </View>
+      </View>
+      <ScrollView>
+        <Divider />
       <View style={styles.form}>
         <Text style={styles.label}>Card Number:</Text>
         <TextInput
@@ -116,6 +123,7 @@ const AddCard = () => {
         <Text style={styles.submitButtonText}>Submit</Text>
         <Ionicons name="arrow-forward" size={24} color="white" />
       </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -123,8 +131,24 @@ const AddCard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    padding: 20,
+    backgroundColor: '#fff',
+    paddingTop: "5%",
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: 'white',
+    marginBottom: 10,
+    marginTop: 60,
+    marginHorizontal: 10,
+    borderRadius: 10,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    marginLeft: 10,
   },
   backButton: {
     marginTop: 40,
@@ -140,10 +164,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
-    marginBottom: 20,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#0C5E52',
     marginBottom: 5,
   },
@@ -165,16 +188,16 @@ const styles = StyleSheet.create({
   submitButton: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#0C5E52',
-    padding: 15,
+    padding: 16,
+    margin: 16,
     borderRadius: 10,
   },
   submitButtonText: {
-    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-    marginRight: 10,
+    color: 'white',
+    marginRight: 8,
   },
 });
 

@@ -11,7 +11,7 @@ import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 
 export default function App() {
   const { currentUser, isLoading, fetchUserInfo, userRole, resetUser } = useUserStore();
-  const backgroundImage = require("./assets/imgs/backGroundImage.png");
+  const backgroundImage = require("./assets/imgs/background.png");
 
   const navTheme = {
     ...DefaultTheme,
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    fontFamily: "Amiko",
   },
   backgroundImage: {
     flex: 1,

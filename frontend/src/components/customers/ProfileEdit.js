@@ -35,7 +35,7 @@ const ProfileEdit = ({ route, navigation }) => {
         </View>
         <View style={styles.profileCard}>
           <Image
-            source={require('../../../assets/imgs/DummyImage.jpg')}
+            source={require('../../../assets/imgs/profile.png')}
             style={styles.profilePicture}
           />
           <Text style={styles.name}>{userData.name}</Text>
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
   dateJoined: {
     fontSize: 16,
     color: "#666",
+    marginTop: 8,
   },
   label: {
     fontSize: 16,

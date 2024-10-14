@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 import RatingModal from '../../components/customers/RatingModal';
 import HistoryItems from '../../components/customers/HistoryItems';
 
@@ -73,12 +74,14 @@ const DUMMY_ITEMS = [
 ];
 
 const History = () => {
+  const navigation = useNavigation();
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerText}>Order History</Text>
+        <Text style={styles.headerTitle}>Order History</Text>
       </View>
-      <HistoryItems historyList={DUMMY_ITEMS}/>
+      <HistoryItems navigation={navigation} historyList={DUMMY_ITEMS}/>
     </View>
   );
 };
@@ -86,21 +89,23 @@ const History = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: "5%",
   },
   header: {
-    alignItems: "center",
-    backgroundColor: 'white',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 15,
-    marginVertical: "5%",
-    borderRadius: 15,
-    
+    backgroundColor: 'white',
+    marginBottom: 10,
+    marginTop: 60,
+    marginHorizontal: 10,
+    borderRadius: 10,
   },
-  headerText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#0C5E52",
-  }
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+  },
 
 });
 

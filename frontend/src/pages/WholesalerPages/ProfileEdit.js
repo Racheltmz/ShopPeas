@@ -33,7 +33,7 @@ const ProfileEdit = ({ navigation }) => {
 
         <View style={styles.profileSummary}>
           <Image
-            source={require('../../../assets/imgs/ProfileWholesaler.png')}
+            source={require('../../../assets/imgs/profile.png')}
             style={styles.profilePic}
           />
           <Text style={styles.name}>Happy Wholesaler</Text>
@@ -267,7 +267,7 @@ const ProfileEdit = ({ navigation }) => {
 
         <View style={styles.profileSummary}>
           <Image
-            source={require('../../../assets/imgs/ProfileWholesaler.png')}
+            source={require('../../../assets/imgs/profile.png')}
             style={styles.profilePic}
           />
           <Text style={styles.name}>Happy Wholesaler</Text>
