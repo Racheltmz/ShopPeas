@@ -18,3 +18,6 @@
 2024-Oct-08 15:55:02 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Resource location must not be null 
 2024-Oct-08 15:59:31 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Format specifier '%s' 
 2024-Oct-08 16:08:37 [http-nio-8080-exec-2] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 404 NOT_FOUND Record does not exist: Cannot invoke "com.fasterxml.jackson.databind.JsonNode.asText()" because the return value of "com.fasterxml.jackson.databind.JsonNode.get(String)" is null 
+2024-Oct-14 18:59:41 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-14 19:29:41 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 400 BAD_REQUEST Error due to unsupported request: No user record found for the given identifier (USER_NOT_FOUND). 
+2024-Oct-14 19:30:17 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 400 BAD_REQUEST Error due to unsupported request: No user record found for the given identifier (USER_NOT_FOUND). 
