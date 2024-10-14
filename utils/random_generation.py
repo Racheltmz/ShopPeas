@@ -79,12 +79,12 @@ def gen_cart():
     for i in range(num_carts):
         chosen_orders = transaction_orders[count:num_orders[i]]
         orders = '|'.join(chosen_orders['tid'].values)
-        total = (chosen_orders['price'] * chosen_orders['quantity']).sum() # check with saffron
+        total = (chosen_orders['price'] * chosen_orders['quantity']).sum()
 
         gen_records.append({
             'uid': consumer_id[i],
             'orders': orders,
-            'total_price': f'{total:.2f}', # check with saffron
+            'total_price': f'{total:.2f}',
         })
         count += num_orders[i]
     df = pd.DataFrame(gen_records)
@@ -101,12 +101,12 @@ def gen_order_history():
     for i in range(num_history):
         chosen_orders = transaction_orders[count:num_orders[i]]
         orders = '|'.join(chosen_orders['tid'].values)
-        total = (chosen_orders['price'] * chosen_orders['quantity']).sum() # check with saffron
+        total = (chosen_orders['price'] * chosen_orders['quantity']).sum()
 
         gen_records.append({
             'uid': consumer_id[i],
             'orders': orders,
-            'total_price': f'{total:.2f}', # check with saffron
+            'total_price': f'{total:.2f}',
             'date': chosen_orders['date'].values[0],
         })
         count += num_orders[i]
