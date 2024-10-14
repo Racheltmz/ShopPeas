@@ -4,7 +4,7 @@ import { FirebaseAuth } from '../../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useUserStore } from '../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
-import { register } from '../../service/AuthService';
+import authService from '../../service/AuthService';
 
 const Login = ({ onBackPress, onRegisterPress }) => {
     const auth = FirebaseAuth;
@@ -32,7 +32,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
             await fetchUserInfo(user.uid);
 
             // API call to add user details into database collections
-            register(userType, requestBody)
+            await authService.register(user.uid, userType, requestBody)
                 .catch((err) => {
                     console.log(err); // TODO: replace with show error alert
                 })
