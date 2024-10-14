@@ -6,7 +6,7 @@ import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 
 
-const RegisterWholesaler = ({onBackPress}) => {
+const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -32,7 +32,7 @@ const RegisterWholesaler = ({onBackPress}) => {
                 id: res.user.uid,
                 role: "wholesaler",
             })
-            alert("SUCCESS")
+            Alert('Success!')
 
         } catch (err) {
             console.log(err);

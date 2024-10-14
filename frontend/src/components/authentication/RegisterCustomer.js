@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity, Alert } from 'react-native';
 import { createUserWithEmailAndPassword , signInWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { setDoc, doc } from 'firebase/firestore';
@@ -36,8 +36,7 @@ const RegisterCustomer = ({onBackPress}) => {
                 created: new Date(),
                 type: "customer",
             })
-            alert("SUCCESS")
-
+            Alert('SUCCESS!')
         } catch (err) {
             console.log(err);
             alert("registration failed: " + err.message);

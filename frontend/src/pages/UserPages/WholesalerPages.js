@@ -10,6 +10,13 @@ import Profile from '../WholesalerPages/Profile';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
+const HomeStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="HomeMain" component={Home} />
+    <Stack.Screen name="Profile" component={Profile} />
+  </Stack.Navigator>
+);
+
 const WholesalerPages = () => {
   return (
     <Tab.Navigator
@@ -45,7 +52,7 @@ const WholesalerPages = () => {
         })
       )}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Home" component={HomeStack} />
       <Tab.Screen name="Transactions" component={Transactions} />
       <Tab.Screen name="Profile" component={Profile} />
     </Tab.Navigator>

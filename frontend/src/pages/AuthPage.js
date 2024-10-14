@@ -8,10 +8,10 @@ const AuthPage = () => {
     const renderDefault = () => (
         <View style={styles.default}>
             <Image
-                source={require('../../assets/imgs/loginImg.png')}
+                source={require('../../assets/imgs/shoppeas.png')}
                 style={styles.logo}
             />
-            
+            <Text style={styles.title}>Your One Stop Wholesale Grocer</Text>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity 
                     style={styles.loginButton}
@@ -36,14 +36,15 @@ const AuthPage = () => {
             onBackPress={() => setCurrentState('default')}
             onRegisterPress={() => setCurrentState('register')}
         />
-      </View>
+      </View>   
     );
 
     const renderRegister = () => (
         <View style={styles.default}>
-            <Register 
-              onBackPress={() => setCurrentState('default')}
-            />
+          <Register 
+            onBackPress={() => setCurrentState('default')}
+            onLoginPress={() => setCurrentState('login')}
+          />
         </View>
     );
 
@@ -78,10 +79,18 @@ const styles = StyleSheet.create({
         padding: '10%',
     },
     logo: {
-        width: '90%',  
+        width: '50%',  
         height: '30%', 
         resizeMode: 'contain',
-        marginBottom: '8%',
+        marginBottom: '3%',
+    },
+    title: {
+      fontFamily: 'Roboto, sans-serif', 
+      fontSize: '35',
+      color: '#0C5E52',
+      fontWeight: 'bold',
+      textAlign: 'left',
+      marginBottom: '10%',
     },
     buttonContainer: {
         justifyContent: 'center',
