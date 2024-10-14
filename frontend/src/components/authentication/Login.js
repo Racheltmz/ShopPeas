@@ -80,7 +80,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                 />
             </View>
             
-            <TouchableOpacity onPress={{/* rmb to do forget password popup/component */}}>
+            <TouchableOpacity onPress={{/* TODO: rmb to do forget password popup/component */}}>
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </TouchableOpacity>
             

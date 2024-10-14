@@ -11,14 +11,13 @@ const ProfileDetails = ({ userData, navigation }) => {
       <View style={styles.topPortion}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
-          {/* <Image source={require('../../../assets/imgs/DummyImage.jpg')} style={styles.peaIcon} /> */}
           <TouchableOpacity onPress={() => resetUser()}>
             <Image source={require('../../../assets/imgs/logout.png')} style={styles.logoutButton} />
           </TouchableOpacity>
         </View>
         <View style={styles.profileCard}>
           <View style={styles.profileCardLeft}>
-            <Image source={require('../../../assets/imgs/DummyImage.jpg')} style={styles.profilePicture} />
+            <Image source={require('../../../assets/imgs/profile.png')} style={styles.profilePicture} />
             <Text style={styles.name}>{userData.name}</Text>
           </View>
           <View style={styles.profileCardRight}>
@@ -42,13 +41,20 @@ const ProfileDetails = ({ userData, navigation }) => {
             <Ionicons name="create-outline" size={40} color="#0C5E52" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.detailText}>Contact: {userData.contact}</Text>
-        <Text style={styles.detailText}>Address: {`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
+        <View style={styles.row}>
+          <Text style={styles.detailText}>Email: </Text>
+          <Text style={styles.detailTextVal}>{userData.email}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.detailText}>Contact: </Text>
+          <Text style={styles.detailTextVal}>{userData.contact}</Text>
+        </View>
+        <Text style={styles.detailText}>Address: </Text>
+        <Text style={styles.detailTextVal}>{`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
         {/* <View style={styles.cardInfo}>
           <Ionicons name="card" size={24} color="#0C5E52" />
           <Text style={styles.cardText}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text>
         </View> */}
-        <Text style={styles.detailText}>Email: {userData.email}</Text>
       </View>
     </View>
   );
@@ -78,6 +84,11 @@ const styles = StyleSheet.create({
   peaIcon: {
     width: 24,
     height: 24,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   logoutButton: {
     width: 24,
@@ -112,12 +123,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   infoTitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-  infoValue: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#0C5E52',
+    marginBottom: 5,
+  },
+  infoValue: {
+    fontSize: 16,
     color: '#0C5E52',
   },
   accountDetails: {
@@ -139,6 +151,11 @@ const styles = StyleSheet.create({
     marginBottom: '5%',
   },
   detailText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: "5%",
+  },
+  detailTextVal: {
     fontSize: 16,
     marginBottom: "5%",
   },

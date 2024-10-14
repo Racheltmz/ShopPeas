@@ -113,14 +113,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerTitle: {
-    fontFamily: "Noto Sans",
+    fontFamily: "Amiko, Noto Sans",
     fontSize: 25,
     fontWeight: 'normal',
     color: '#0C5E52',
     marginLeft: 5,
   },
   subHeaderTitle: {
-    fontFamily: "Noto Sans",
+    fontFamily: "Amiko, Noto Sans",
     fontSize: 35,
     fontWeight: 'bold',
     color: '#0C5E52',
