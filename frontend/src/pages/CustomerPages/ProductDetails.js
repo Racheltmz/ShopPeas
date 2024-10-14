@@ -21,6 +21,13 @@ const ProductDetails = ({ route }) => {
   const { addItem } = useCart();
   const navigation = useNavigation();
 
+  const handleWholesalerPress = () => {
+    setShowModal(false);
+    navigation.navigate("ViewWholesaler", {
+      wholesalerName: selectedWholesaler.name,
+    });
+  };
+
   const DUMMY_WHOLESALERS = [
     {
       name: "Happy Wholesaler",
@@ -112,7 +119,7 @@ const ProductDetails = ({ route }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ProductDetailsHeader name={product.name} navigation={navigation}/>
+      <ProductDetailsHeader name={product.name} navigation={navigation} />
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
@@ -167,7 +174,11 @@ const ProductDetails = ({ route }) => {
               </TouchableOpacity>
               <Text style={styles.modalTitle}>{product.name}</Text>
               <Text>{product.quantity} Packet</Text>
-              <Text>{selectedWholesaler?.name}</Text>
+              <TouchableOpacity onPress={handleWholesalerPress}>
+                <Text style={styles.wholesalerName}>
+                  {selectedWholesaler?.name}
+                </Text>
+              </TouchableOpacity>
               <Text>
                 {selectedWholesaler?.location}, {selectedWholesaler?.timeAway}{" "}
                 Minutes away

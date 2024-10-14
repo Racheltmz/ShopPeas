@@ -11,6 +11,10 @@ import java.util.Map;
 @Repository
 public class AuthRepositoryImpl implements AuthRepository {
 
+    public void setUserClaims(String uid, Map<String, Object> claims) throws FirebaseAuthException {
+        FirebaseAuth.getInstance().setCustomUserClaims(uid, claims);
+    }
+
     public void updateConsumer(String uid, Map<String, Object> user) throws FirebaseAuthException {
         UserRecord.UpdateRequest request = new UserRecord.UpdateRequest(uid)
                 .setEmail(user.get("email").toString())

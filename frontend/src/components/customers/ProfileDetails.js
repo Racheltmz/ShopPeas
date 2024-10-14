@@ -4,7 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../lib/userStore';
 
 const ProfileDetails = ({ userData, navigation }) => {
-  const { resetUser } = useUserStore()
+  const { resetUser, paymentDetails } = useUserStore()
+
   return (
     <View style={styles.container}>
       <View style={styles.topPortion}>
@@ -43,10 +44,10 @@ const ProfileDetails = ({ userData, navigation }) => {
         </View>
         <Text style={styles.detailText}>Contact: {userData.contact}</Text>
         <Text style={styles.detailText}>Address: {`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
-        <View style={styles.cardInfo}>
+        {/* <View style={styles.cardInfo}>
           <Ionicons name="card" size={24} color="#0C5E52" />
-          <Text style={styles.cardText}>Card *1234</Text>
-        </View>
+          <Text style={styles.cardText}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text>
+        </View> */}
         <Text style={styles.detailText}>Email: {userData.email}</Text>
       </View>
     </View>
@@ -57,11 +58,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    paddingTop: "15%",
   },
   topPortion: {
     backgroundColor: '#D6E8A4',
-    paddingVertical: '5%',
+    paddingTop: "15%",
+    paddingBottom: '5%',
     paddingHorizontal: '8%',
   },
   header: {
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   accountDetails: {
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: '3%',
+    padding: '4%',
     margin: '5%',
   },
   accountHeader: {
@@ -139,12 +140,12 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 16,
-    marginBottom: 10,
+    marginBottom: "5%",
   },
   cardInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: "5%",
   },
   cardText: {
     fontSize: 16,

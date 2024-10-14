@@ -4,7 +4,6 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +20,6 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/consumer")
-    @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void registerConsumer(@RequestBody Map<String, Object> consumer) throws IOException, FirebaseAuthException {
         // Get UID
@@ -32,7 +30,6 @@ public class AuthController {
     }
 
     @PostMapping("/wholesaler")
-    @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void registerWholesaler(@RequestBody Map<String, Object> wholesaler) throws IOException, FirebaseAuthException {
         // Get UID

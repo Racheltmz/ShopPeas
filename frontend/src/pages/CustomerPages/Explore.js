@@ -9,30 +9,78 @@ const Explore = () => {
 
   const DUMMY_ITEMS = [
     {
-      name: "Bok Choy",
-      quantity: 1,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 1,
-    },
-      {
-      name: "Tomato",
-      quantity: 5,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 2,
-    },
-      {
-      name: "Lemonade",
-      quantity: 1,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 3,
-    },
-      {
-      name: "Potato",
-      quantity: 3,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 4,
-    },
-  ]
+    name: "Bok Choy",
+    quantity: 1,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 1,
+  },
+    {
+    name: "Tomato",
+    quantity: 5,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 2,
+  },
+    {
+    name: "Lemonade",
+    quantity: 1,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 3,
+  },
+    {
+    name: "Potato",
+    quantity: 3,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 4,
+  },
+    {
+    name: "Bok Choy",
+    quantity: 1,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 5,
+  },
+    {
+    name: "Tomato",
+    quantity: 5,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 6,
+  },
+    {
+    name: "Lemonade",
+    quantity: 1,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 7,
+  },
+    {
+    name: "Potato",
+    quantity: 3,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 8,
+  },
+    {
+    name: "Bok Choy",
+    quantity: 1,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 9,
+  },
+    {
+    name: "Tomato",
+    quantity: 5,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 10,
+  },
+    {
+    name: "Lemonade",
+    quantity: 1,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 11,
+  },
+    {
+    name: "Potato",
+    quantity: 3,
+    img: require("../../../assets/imgs/DummyImage.jpg"),
+    id: 12,
+  },
+]
 
   const handleProductPress = (item) => {
     navigation.navigate('ProductDetails', {product: item});
@@ -61,7 +109,7 @@ export default Explore;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent', 
+    backgroundColor: 'transparent',
   },
   header: {
     marginTop: 80,

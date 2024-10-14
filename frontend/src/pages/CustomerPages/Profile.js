@@ -9,8 +9,7 @@ import { useUserStore } from "../../lib/userStore";
 import ProfileEdit from "../../components/customers/ProfileEdit";
 
 const Profile = ({ navigation }) => {
-  const { currentUser, userAddress } = useUserStore();
-
+  const { currentUser, userAddress, paymentDetails} = useUserStore();
   const Stack = createStackNavigator();
 
   const [userData, setUserData] = [{

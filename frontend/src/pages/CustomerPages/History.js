@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
 import RatingModal from '../../components/customers/RatingModal';
+import HistoryItems from '../../components/customers/HistoryItems';
 
+// api call for items here
 const DUMMY_ITEMS = [
   {
     orderDate: "19/8/24",
@@ -71,48 +73,12 @@ const DUMMY_ITEMS = [
 ];
 
 const History = () => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-
-  const renderItem = ({ item }) => (
-    <View style={styles.orderItem}>
-      <Text style={styles.orderDate}>Order Date: {item.orderDate}</Text>
-      <Text style={styles.orderStatus}>Status: {item.Status}</Text>
-      <Text style={styles.orderTotal}>Total: ${item.TotalPrice.toFixed(2)}</Text>
-      {item.purchasedItemsViaWholesaler.map((wholesaler, index) => (
-        <View key={index} style={styles.wholesalerSection}>
-          <Text style={styles.wholesalerName}>{wholesaler.wholesalerName}</Text>
-          {wholesaler.items.map((product, productIndex) => (
-            <Text key={productIndex} style={styles.productItem}>
-              {product.name} - {product.Quantity} {product.Measurement} - ${product.price.toFixed(2)}
-            </Text>
-          ))}
-        </View>
-      ))}
-      <TouchableOpacity
-        style={styles.ratingButton}
-        onPress={() => {
-          setSelectedOrder(item);
-          setModalVisible(true);
-        }}
-      >
-        <Text style={styles.ratingButtonText}>Give Rating</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
-      <FlatList
-        data={DUMMY_ITEMS}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-      />
-      <RatingModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        order={selectedOrder}
-      />
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Order History</Text>
+      </View>
+      <HistoryItems historyList={DUMMY_ITEMS}/>
     </View>
   );
 };
@@ -120,50 +86,22 @@ const History = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    padding: "5%",
   },
-  orderItem: {
-    backgroundColor: '#f0f0f0',
+  header: {
+    alignItems: "center",
+    backgroundColor: 'white',
     padding: 15,
-    marginBottom: 10,
-    borderRadius: 5,
+    marginVertical: "5%",
+    borderRadius: 15,
+    
   },
-  orderDate: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  orderStatus: {
-    fontSize: 16,
-    color: 'green',
-  },
-  orderTotal: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginTop: 5,
-  },
-  wholesalerSection: {
-    marginTop: 10,
-  },
-  wholesalerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  productItem: {
-    fontSize: 14,
-    marginLeft: 10,
-  },
-  ratingButton: {
-    backgroundColor: '#007AFF',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    alignItems: 'center',
-  },
-  ratingButtonText: {
-    color: 'white',
-    fontSize: 16,
-  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#0C5E52",
+  }
+
 });
 
 export default History;

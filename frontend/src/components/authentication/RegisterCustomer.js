@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity, Alert } from 'react-native';
+import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword , signInWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
+import authService from '../../service/AuthService';
 
 const RegisterCustomer = ({onBackPress}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState('');
-    const [number, setNumber] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const auth = FirebaseAuth;
@@ -36,12 +38,11 @@ const RegisterCustomer = ({onBackPress}) => {
                 created: new Date(),
                 type: "customer",
             })
-            Alert('SUCCESS!')
+            alert('SUCCESS!')
         } catch (err) {
             console.log(err);
             alert("registration failed: " + err.message);
-        }
-        finally {
+        } finally {
             setIsLoading(false);
         }
     };
@@ -64,13 +65,23 @@ const RegisterCustomer = ({onBackPress}) => {
         />
         <TextInput 
           style={styles.input} 
-          placeholder="Username" 
+          value={firstName}
+          placeholder="First Name" 
           placeholderTextColor="#0C5E52"
           autoCapitalize="none" 
-          onChangeText={(text) => setUsername(text)}
+          onChangeText={(text) => setFirstName(text)}
         />
         <TextInput 
-          style={styles.input} 
+          style={styles.input}
+          value={lastName}
+          placeholder="Last Name" 
+          placeholderTextColor="#0C5E52"
+          autoCapitalize="none" 
+          onChangeText={(text) => setLastName(text)}
+        />
+        <TextInput 
+          style={styles.input}
+          value={email}
           placeholder="Email" 
           placeholderTextColor="#0C5E52"
           autoCapitalize="none" 
@@ -78,10 +89,11 @@ const RegisterCustomer = ({onBackPress}) => {
         />
         <TextInput 
           style={styles.input} 
+          value={phoneNumber}
           placeholder="Phone Number" 
           placeholderTextColor="#0C5E52"
           autoCapitalize="none" 
-          onChangeText={(text) => setNumber(text)}
+          onChangeText={(text) => setPhoneNumber(text)}
         />
         <TextInput 
           secureTextEntry={true} 
