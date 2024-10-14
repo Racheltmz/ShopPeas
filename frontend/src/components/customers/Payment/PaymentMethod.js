@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../../lib/userStore';
+import { Divider } from 'react-native-paper';
 
 const PaymentMethod = () => {
   const navigation = useNavigation();
@@ -14,11 +15,16 @@ const PaymentMethod = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Ionicons name="arrow-back" size={24} color="#0C5E52" />
-      </TouchableOpacity>
-      <Text style={styles.title}>Payment Method</Text>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={24} color="#0C5E52" />
+        </TouchableOpacity>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>Payment Method</Text>
+        </View>
+      </View>
       <ScrollView>
+        <Divider />
         <Text style={styles.sectionTitle}>Existing payment methods</Text>
         {paymentDetails && (
           <TouchableOpacity style={styles.cardItem}>
@@ -51,18 +57,27 @@ const PaymentMethod = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#fff',
     paddingTop: "5%",
   },
-  backButton: {
-    margin: 16,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: 'white',
+    marginBottom: 10,
+    marginTop: 60,
+    marginHorizontal: 10,
+    borderRadius: 10,
   },
-  title: {
+  headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#0C5E52',
-    marginLeft: 16,
-    marginBottom: 16,
+    marginLeft: 10,
+  },
+  backButton: {
+    margin: 16,
   },
   sectionTitle: {
     fontSize: 18,
@@ -115,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#0C5E52',
     padding: 16,
     margin: 16,
-    borderRadius: 8,
+    borderRadius: 10,
   },
   addButtonText: {
     fontSize: 18,

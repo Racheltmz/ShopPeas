@@ -4,68 +4,68 @@ import { Ionicons } from '@expo/vector-icons';
 import RegisterCustomer from "./RegisterCustomer";
 import RegisterWholesaler from "./RegisterWholesaler";
 import Login from "./Login";
+import Confirmation from "./Confirmation"; 
 
-const Register = ({ onBackPress }) => {
+const Register = ({ onBackPress, onLoginPress }) => {
   const [currentState, setCurrentState] = useState('choice');
 
   const renderChoice = () => (
     <View style={styles.container}>
-      <TouchableOpacity 
-          style={styles.backButton}
-          onPress={onBackPress}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={onBackPress}
       >
-          <Ionicons 
-            color={'#EBF3D1'}
-            size={20}
-            name="arrow-back-outline"
-          />
+        <Ionicons
+          color={'#EBF3D1'}
+          size={20}
+          name="arrow-back-outline"
+        />
       </TouchableOpacity>
       <Text style={styles.title}>Kick-start your food journey with us.</Text>
       <Text style={styles.subtitle}>I am a...</Text>
-      
+
       <View style={styles.optionOutline}>
-        <TouchableOpacity 
-          style={styles.option} 
+        <TouchableOpacity
+          style={styles.option}
           onPress={() => setCurrentState('consumer')}
         >
           <Text style={styles.optionText}>Consumer</Text>
         </TouchableOpacity>
         <View style={styles.iconContainer}>
-          <Image 
-            source={require('../../../assets/imgs/consumerIcon.png')} 
+          <Image
+            source={require('../../../assets/imgs/consumerIcon.png')}
             style={styles.icon}
           />
         </View>
       </View>
-      
+
       <View style={styles.optionOutline}>
         <View style={styles.iconContainer}>
-          <Image 
-            source={require('../../../assets/imgs/businessIcon.png')} 
+          <Image
+            source={require('../../../assets/imgs/businessIcon.png')}
             style={styles.icon}
           />
         </View>
-        <TouchableOpacity 
-          style={styles.option} 
+        <TouchableOpacity
+          style={styles.option}
           onPress={() => setCurrentState('business')}
         >
           <Text style={styles.optionText}>Business Owner</Text>
         </TouchableOpacity>
       </View>
-      
-      <TouchableOpacity 
-        style={styles.loginLink}
-        onPress={() => setCurrentState('login')}
-      >
-        <Text style={styles.loginText}>Already have an account? Log in here</Text>
-      </TouchableOpacity>
-    </View>
+      <View>
+        <Text style={styles.loginText}>Already have an account? </Text>
+        <TouchableOpacity
+          onPress={() => setCurrentState('login')}>
+          <Text style={styles.loginLink}>Log In here!</Text>
+        </TouchableOpacity>
+      </View>
   );
 
   const renderConsumerForm = () => (
     <View style={styles.container}>
-      <RegisterCustomer 
-          onBackPress={() => setCurrentState('choice')}
+      <RegisterCustomer
+        onBackPress={() => setCurrentState('choice')}
       />
     </View>
   );
@@ -73,17 +73,53 @@ const Register = ({ onBackPress }) => {
   const renderBusinessForm = () => (
     <View style={styles.container}>
       <RegisterWholesaler
-          onBackPress={() => setCurrentState('choice')}
+        onBackPress={() => setCurrentState('choice')}
       />
     </View>
   );
 
   const renderLogin = () => (
     <View style={styles.default}>
-      <Login 
+      <Login
         onBackPress={() => setCurrentState('choice')}
         onRegisterPress={() => setCurrentState('choice')}
       />
+    </View>
+  );
+
+  const renderCustomerConfirmation = () => (
+    <View style={styles.container}>
+      <Image
+          source={require('../../../assets/imgs/Confirmation.png')}
+          style={styles.image}
+        />
+      <Text style={styles.regComp}>Registration Complete!</Text>
+      <Text style={styles.regSub}>Welcome to Shoppeas!</Text>
+      <TouchableOpacity 
+        style={styles.loginButton}
+        onPress={() => setCurrentState('login')}
+      >
+        <Text style={styles.loginButtonText}>Login</Text>
+        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderWholesalerConfirmation = () => (
+    <View style={styles.contianer}>
+      <Image
+          source={require('../../../assets/imgs/Confirmation.png')}
+          style={styles.image}
+        />
+      <Text style={styles.regComp}>Registration Complete!</Text>
+      <Text style={styles.regSub}>Welcome to Shoppeas!</Text>
+      <TouchableOpacity 
+        style={styles.loginButton}
+        onPress={() => setCurrentState('login')}
+      >
+        <Text style={styles.loginButtonText}>Login</Text>
+        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
+      </TouchableOpacity>
     </View>
   );
 
@@ -93,6 +129,8 @@ const Register = ({ onBackPress }) => {
       {currentState === 'consumer' && renderConsumerForm()}
       {currentState === 'business' && renderBusinessForm()}
       {currentState === 'login' && renderLogin()}
+      {currentState === 'cus_confirm' && renderCustomerConfirmation()}
+      {currentState === 'biz_confirm' && renderWholesalerConfirmation()}
     </SafeAreaView>
   );
 };
@@ -121,11 +159,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    lineHeight: 40,
     color: '#0C5E52',
-    marginBottom: 10,
+    marginBottom: 40,
   },
   subtitle: {
     fontSize: 18,
+    fontWeight: 'bold',
     color: '#0C5E52',
     marginBottom: 20,
   },
@@ -163,12 +203,54 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0C5E52',
   },
-  loginLink: {
-    marginTop: 20,
-  },
   loginText: {
     color: '#0C5E52',
     textAlign: 'center',
+  },
+  loginLink: {
+    color: '#0C5E52',
+    textAlign: 'center',
+    fontWeight: 'bold',
+  }
+  image: {
+    width: 300,
+    height: "35%",
+    resizeMode: 'contain',
+    marginBottom: '5%',
+  },
+  regComp: {
+    fontSize: '25%',
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    alignSelf: 'center',
+  },
+  regSub: {
+    fontSize: '20%',
+    color: '#0C5E52',
+    alignSelf: 'center',
+    marginTop: '2%',
+  },
+  loginButton: {
+    flexDirection: 'row',
+    backgroundColor: '#0C5E52',
+    width: '100%',
+    height: '5%',
+    borderRadius: '20%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: '7%',
+  },
+  loginButtonText: {
+      fontSize: '20%',
+      color: '#EBF3D1',
+      fontWeight: 'bold',
+      marginRight: "30%",
+      alignSelf: 'center',
+  },
+  arrowIcon: {
+      position: 'absolute',
+      right: '5%',
+      alignSelf: 'center',
   },
 });
 

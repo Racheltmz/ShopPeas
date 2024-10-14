@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
+import AddProduct from '../../components/wholesalers/AddProduct';
 
-const Home = ({ navigation }) => {
+const Home = () => {
+  const [searchText, setSearchText] = useState("");
+  const [showAddProduct, setShowAddProduct] = useState(false);
+  const navigation = useNavigation();
+
   const [products, setProducts] = useState([
     {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
     {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
@@ -25,6 +31,10 @@ const Home = ({ navigation }) => {
     );
   };
 
+  const handleAddProduct = (newProduct) => {
+    setProducts(currentProducts => [...currentProducts, newProduct]);
+  };
+
   return (
     <SafeAreaView style = {styles.container}>
         <View style={styles.searchBar}>
@@ -33,8 +43,11 @@ const Home = ({ navigation }) => {
             style={styles.searchInput}
             placeholder="Search Products"
             placeholderTextColor="#0C5E52"
+            value={searchText}
+            autoCapitalize="none"
+            onChangeText={(text) => setSearchText(text)}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
             <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
             </TouchableOpacity>
         </View>
@@ -51,7 +64,7 @@ const Home = ({ navigation }) => {
         </View>
         
         <View style={styles.addProductContainer}>
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
                 <Ionicons name="add-circle-outline" size={24} color="white" />
             </TouchableOpacity>
             <Text style={styles.addButtonText}>Add New Product</Text>
@@ -74,6 +87,12 @@ const Home = ({ navigation }) => {
           />
         ))}
       </ScrollView>
+
+      <AddProduct
+        visible={showAddProduct}
+        onClose={() => setShowAddProduct(false)}
+        onAddProduct={handleAddProduct}
+      />
     </SafeAreaView>
   );
 };
@@ -81,12 +100,6 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  pageTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    padding: 15,
     backgroundColor: 'white',
   },
   searchBar: {
@@ -106,37 +119,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginLeft: 20,
-    marginTop: 5,
+    marginLeft: '5%',
+    marginTop: '1%',
   },
   headerTextContainer: {
     flex: 1,
   },
   headerTitle: {
-    fontFamily: "Noto Sans",
+    fontFamily: "Amiko, Noto Sans",
     fontSize: 25,
     fontWeight: 'normal',
     color: '#0C5E52',
-    marginLeft: 5,
+    marginLeft: '2%',
   },
   subHeaderTitle: {
-    fontFamily: "Noto Sans",
+    fontFamily: "Amiko, Noto Sans",
     fontSize: 35,
     fontWeight: 'bold',
     color: '#0C5E52',
-    margin: 5,
+    margin: '2%',
   },
   headerImage: {
     width: '18%', 
-    height: '100%',
-    marginRight: "28.2%",
+    height: '65%',
+    marginRight: "29.2%",
   },
   addProductContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
-    marginLeft: 20,
-    marginBottom: 5,
+    marginTop: '1%',
+    marginLeft: '6%',
+    marginBottom: '1%',
   },
   addButton: {
     backgroundColor: '#FF7B5F',
@@ -148,14 +161,13 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: '#0C5E52',
     marginLeft: 10,
-    fontSize: 22,
+    fontSize: '20%',
     fontWeight: 'normal',
   },
   filterButton: {
-    padding: 5,
-    borderRadius: 10,
+    padding: '1%',
     marginLeft: "auto",
-    marginRight: 10,
+    marginRight: '3%',
   },
 });
 

@@ -22,36 +22,40 @@ const ViewWholesaler = ({ route }) => {
     averageRating: 4.9,
     ratingCounts: [100, 50, 10, 5, 2],
     products: [
-      { name: "Bok Choy", quantity: "1 Packet" },
-      { name: "Tomatoes", quantity: "1 Packet" },
-      { name: "Spinach", quantity: "1 Packet" },
-      { name: "Carrots", quantity: "1 Kg" },
+      { name: "Bok Choy", quantity: "1 Packet", id: 1 },
+      { name: "Tomatoes", quantity: "1 Packet", id: 2 },
+      { name: "Spinach", quantity: "1 Packet", id: 3 },
+      { name: "Carrots", quantity: "1 Kg", id: 4 },
     ],
   };
 
+  const handleProductPress = (item) => {
+    navigation.navigate('ProductDetails', { product: item });
+  }
+
   return (
     <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color="#0C5E52" />
-          </TouchableOpacity>
-          <View style={styles.headerContent}>
-            <View style={styles.headerInfo}>
-              <Text style={styles.wholesalerName}>{wholesalerData.name}</Text>
-              <Text style={styles.location}>📍{wholesalerData.location}</Text>
-              <Text style={styles.addressHeader}>Address</Text>
-              <Text style={styles.address}>{wholesalerData.address}</Text>
-            </View>
-            <Image
-              source={require("../../../assets/imgs/DummyImage.jpg")}
-              style={styles.avatar}
-            />
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="#0C5E52" />
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <View style={styles.headerInfo}>
+            <Text style={styles.wholesalerName}>{wholesalerData.name}</Text>
+            <Text style={styles.location}>📍{wholesalerData.location}</Text>
+            <Text style={styles.addressHeader}>Address</Text>
+            <Text style={styles.address}>{wholesalerData.address}</Text>
           </View>
+          <Image
+            source={require("../../../assets/imgs/profile.png")}
+            style={styles.avatar}
+          />
         </View>
+      </View>
+      <ScrollView>
         <View style={styles.body}>
           <Text style={styles.sectionTitle}>Ratings</Text>
           <View style={styles.ratingSection}>
@@ -73,10 +77,9 @@ const ViewWholesaler = ({ route }) => {
                       style={[
                         styles.bar,
                         {
-                          width: `${
-                            (count / Math.max(...wholesalerData.ratingCounts)) *
+                          width: `${(count / Math.max(...wholesalerData.ratingCounts)) *
                             100
-                          }%`,
+                            }%`,
                         },
                       ]}
                     />
@@ -85,15 +88,19 @@ const ViewWholesaler = ({ route }) => {
               ))}
             </View>
           </View>
+          <Text style={styles.sectionTitle}>Products</Text>
           <View style={styles.productsSection}>
-            <Text style={styles.sectionTitle}>Products</Text>
             <View style={styles.productGrid}>
               {wholesalerData.products.map((product, index) => (
-                <View key={index} style={styles.productItem}>
-                  <Image style={styles.productImagePlaceholder} source={require("../../../assets/imgs/DummyImage.jpg")} />
-                  <Text style={styles.productName}>{product.name}</Text>
-                  <Text style={styles.productQuantity}>{product.quantity}</Text>
-                </View>
+                <TouchableOpacity
+                  onPress={() => { handleProductPress(product) }}
+                >
+                  <View key={index} style={styles.productItem}>
+                    <Image style={styles.productImagePlaceholder} source={require("../../../assets/imgs/DummyImage.jpg")} />
+                    <Text style={styles.productName}>{product.name}</Text>
+                    <Text style={styles.productQuantity}>{product.quantity}</Text>
+                  </View>
+                </TouchableOpacity>
               ))}
             </View>
           </View>
@@ -114,7 +121,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 8,
     marginBottom: "4%",
-    marginTop: 40,
+    marginBottom: 10,
+    marginTop: 60,
     padding: "3%",
     marginHorizontal: "3%",
     borderRadius: "15",
@@ -156,9 +164,10 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   sectionTitle: {
-    fontSize: 25,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#0C5E52",
+    marginTop: 4,
     marginBottom: 16,
   },
   body: {
@@ -167,9 +176,10 @@ const styles = StyleSheet.create({
     padding: "5%",
   },
   ratingSection: {
-    backgroundColor: "#CEE5E1",
+    backgroundColor: "#0C5E5220",
     padding: 16,
     borderRadius: 8,
+    marginBottom: 16,
   },
   ratingOverview: {
     flexDirection: "row",
@@ -187,8 +197,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   averageRatingText: {
-    fontSize: 14,
-    color: "#666",
+    fontSize: 16,
+    color: "#444",
   },
   ratingBars: {
     marginTop: 8,
@@ -215,26 +225,21 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     maxWidth: "100%",
   },
-  productsSection: {
-    margin: 16,
-  },
   productGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
   productItem: {
-    width: "48%",
     backgroundColor: "white",
     borderRadius: 8,
     padding: 16,
     marginBottom: 16,
-    alignItems: "center",
     backgroundColor: "#E4F2BC",
   },
   productImagePlaceholder: {
-    width: 120,
-    height: 120,
+    width: 140,
+    height: 140,
     backgroundColor: "#E0E0E0",
     borderRadius: 8,
     marginBottom: 8,
@@ -243,12 +248,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "#0C5E52",
-    textAlign: "center",
+    textAlign: "left",
   },
   productQuantity: {
     fontSize: 14,
     color: "#666",
-    textAlign: "center",
+    textAlign: "left",
   },
 });
 

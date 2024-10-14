@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
-import { createUserWithEmailAndPassword , signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword , getAuth } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
+import authService from '../../service/AuthService';
 
 const RegisterCustomer = ({onBackPress}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [username, setUsername] = useState('');
-    const [number, setNumber] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     const auth = FirebaseAuth;
@@ -20,29 +22,32 @@ const RegisterCustomer = ({onBackPress}) => {
 
         try {
             const res = await createUserWithEmailAndPassword(auth, email, password);
-            await setDoc(doc(db, "users", res.user.uid), {
-                username: username,
-                email: email,
-                number: number,
-                id: res.user.uid,
-                created: new Date(),
-                type: "customer",
-            })
-            await setDoc(doc(db, "cart", res.user.uid), {
-                username: username,
-                email: email,
-                number: number,
-                id: res.user.uid,
-                created: new Date(),
-                type: "customer",
-            })
-            alert("SUCCESS")
 
+            // // TODO: Update these fields with the respective records
+            const requestBody = {
+              "first_name": firstName,
+              "last_name": lastName,
+              "email": email,
+              "phone_number": `+65 ${phoneNumber}`,
+              "name": `${firstName} ${lastName}`,
+              "street_name": "10 Ang Mo Kio Road",
+              "unit_no": "#10-19",
+              "building_name": null,
+              "city": "Singapore",
+              "postal_code": "387458"
+            }
+            
+            // API call to add user details into database collections
+            authService.register(res.user.uid, "consumer", requestBody)
+                .catch((err) => {
+                    console.log(err); // TODO: replace with show error alert
+                })
+
+            // TODO: Navigate to login page
         } catch (err) {
             console.log(err);
             alert("registration failed: " + err.message);
-        }
-        finally {
+        } finally {
             setIsLoading(false);
         }
     };
@@ -59,19 +64,32 @@ const RegisterCustomer = ({onBackPress}) => {
               name="arrow-back-outline"
             />
         </TouchableOpacity>
-        <Image
-          source={require('../../../assets/imgs/CustReg.png')}
-          style={styles.image}
-        />
+        <View style={styles.headerContainer}>
+          <Text style={styles.regText}>Register as a Consumer.</Text>
+          <Image
+            source={require('../../../assets/imgs/consumerIcon.png')}
+            style={styles.image}
+          />
+        </View>
         <TextInput 
           style={styles.input} 
-          placeholder="Username" 
+          value={firstName}
+          placeholder="First Name" 
           placeholderTextColor="#0C5E52"
           autoCapitalize="none" 
-          onChangeText={(text) => setUsername(text)}
+          onChangeText={(text) => setFirstName(text)}
         />
         <TextInput 
-          style={styles.input} 
+          style={styles.input}
+          value={lastName}
+          placeholder="Last Name" 
+          placeholderTextColor="#0C5E52"
+          autoCapitalize="none" 
+          onChangeText={(text) => setLastName(text)}
+        />
+        <TextInput 
+          style={styles.input}
+          value={email}
           placeholder="Email" 
           placeholderTextColor="#0C5E52"
           autoCapitalize="none" 
@@ -79,10 +97,11 @@ const RegisterCustomer = ({onBackPress}) => {
         />
         <TextInput 
           style={styles.input} 
+          value={phoneNumber}
           placeholder="Phone Number" 
           placeholderTextColor="#0C5E52"
           autoCapitalize="none" 
-          onChangeText={(text) => setNumber(text)}
+          onChangeText={(text) => setPhoneNumber(text)}
         />
         <TextInput 
           secureTextEntry={true} 
@@ -123,6 +142,25 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    headerContainer: {
+      flexDirection: 'row',
+      width: '95%',
+      backgroundColor: '#EBF3D1',
+      padding: '6%', 
+      borderRadius: '10%',
+      marginBottom: '5%',
+    },
+    regText: {
+      color: '#0C5E52',
+      fontWeight: 'bold',
+      fontSize: '25%',
+      alignSelf: 'left',
+    },
+    image: {
+      width: '40%',
+      height: "100%",
+      marginBottom: '5%',
+    },
     input: {
       borderWidth: 1,
       borderColor: '#0C5E52',
@@ -131,12 +169,7 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       width: '80%',
     },
-    image: {
-      width: 300,
-      height: "15%",
-      resizeMode: 'contain',
-      marginBottom: '5%',
-    },
+    
     regButton: {
       flexDirection: 'row',
       backgroundColor: '#0C5E52',

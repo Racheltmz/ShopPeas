@@ -23,7 +23,7 @@ const Profile = ({ navigation }) => {
         <View style={styles.profileCard}>
           <View style={styles.profileLeft}>
             <Image
-              source={require('../../../assets/imgs/ProfileWholesaler.png')}
+              source={require('../../../assets/imgs/profile.png')}
               style={styles.profilePic}
             />
             <View style={styles.nameContainer}>
