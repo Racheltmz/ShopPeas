@@ -88,12 +88,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private ConsumerAccountDTO createConsumerAccountFromMap(Map<String, Object> user) {
-        return new ConsumerAccountDTO(
-            Long.valueOf(user.get("card_no").toString()),
-            user.get("expiry_date").toString(),
-            Integer.valueOf(user.get("cvv").toString()),
-            user.get("name").toString()
-        );
+        ArrayList<Object> paymentM = (ArrayList) user.get("paymentMtds");
+        /*String listStr = user.get("paymentMethodList").toString();
+        listStr = listStr.replace("[","");
+        listStr = listStr.replace("]","");
+        ArrayList<String> paymentM = new ArrayList<String>(Arrays.asList(listStr.split(",")));*/
+        return new ConsumerAccountDTO(paymentM);
     }
 
     private ConsumerAddressDTO createConsumerAddressFromMap(Map<String, Object> user) {
