@@ -8,7 +8,7 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 
 # Use a service account
-cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-0e6ec030a9.json')
+cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d9624e3bf1.json')
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
@@ -123,34 +123,34 @@ def consumerAddress(df, collection):
 
 def transactions(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['tid']).set({
+        db.collection(collection).add({
+            "uen": record['uen'],
             "uid": record['uid'],
-            "orders": record['orders'].split('|'),
+            "products": record['products'].split('|'),
             "total_price": record['total_price'],
             "date": record['date'],
             "status": record['status'],
         })
     print(f'Sucessfully created transaction records.')
 
-def orders(df, collection):
+def order_history(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['oid']).set({
-            "swp_id": record['swp_id'],
-            "quantity": record['quantity'],
-            "price": record['price'],
-            "type": record['type'],
+        db.collection(collection).add({
+            "uid": record['uid'],
+            "orders": record['orders'].split('|'),
+            "date": record['date'],
         })
-    print(f'Sucessfully created order records.')
+    print(f'Sucessfully created order history records.')
 
-def product(df, collection):
+def products(df, collection):
     for _, record in df.iterrows():
         if record['package_size'] == 'null':
             record['package_size'] = None
-        if pd.isnull(record['Image']) or record['Image'] == 'null':
+        if pd.isnull(record['image']) or record['image'] == 'null':
             image_url = None  # Set image URL to None if not available
         else:
-            image_url = record['Image']
-        db.collection(collection).document(str(record['pid'])).set({
+            image_url = record['image']
+        db.collection(collection).add({
             "name": record['name'],  # Product name
             "package_size": record['package_size'],  # Package size
             "image_url": image_url  # Image URL from the CSV file
@@ -163,7 +163,7 @@ def wholesalerProduct(df, collection):
             record['price'] = None
         if record['stock'] == 'null':
             record['stock'] = None
-        db.collection(collection).document(record['swp_id']).set({
+        db.collection(collection).add({
             "uen": record['uen'],
             "pid": record['pid'],
             "price": record['price'],
@@ -174,7 +174,7 @@ def wholesalerProduct(df, collection):
 
 def shoppingCart(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['cid']).set({
+        db.collection(collection).add({
             "uid": record['uid'],
             "orders": record['orders'].split('|'),
             "total_price": record['total_price'],
@@ -200,11 +200,13 @@ elif(collection == 'consumer_address'):
     consumerAddress(df, collection)
 elif(collection == 'transactions'):
     transactions(df, collection)
-elif(collection == 'orders'):
-    orders(df, collection)
-elif (collection == 'product'):
-    product(df, collection)
+elif(collection == 'order_history'):
+    order_history(df, collection)
+elif (collection == 'products'):
+    products(df, collection)
 elif(collection == 'wholesaler_products'):
     wholesalerProduct(df, collection)
 elif(collection == 'shopping_cart'):
     shoppingCart(df, collection)
+else:
+    print("Please enter a valid collection name.")

@@ -11,7 +11,7 @@ const AuthPage = () => {
                 source={require('../../assets/imgs/shoppeas.png')}
                 style={styles.logo}
             />
-            <Text style={styles.title}>Your One Stop Wholesale Grocer</Text>
+            <Text style={styles.title}>Your one-stop wholesale grocer.</Text>
             <View style={styles.buttonContainer}>
                 <TouchableOpacity 
                     style={styles.loginButton}
@@ -79,14 +79,13 @@ const styles = StyleSheet.create({
         padding: '10%',
     },
     logo: {
-        width: '50%',  
-        height: '30%', 
-        resizeMode: 'contain',
+        width: '40%',  
+        height: '20%',
         marginBottom: '3%',
     },
     title: {
       fontFamily: 'Roboto, sans-serif', 
-      fontSize: '35',
+      fontSize: '30%',
       color: '#0C5E52',
       fontWeight: 'bold',
       textAlign: 'left',
