@@ -4,8 +4,9 @@ import { Ionicons } from '@expo/vector-icons';
 import RegisterCustomer from "./RegisterCustomer";
 import RegisterWholesaler from "./RegisterWholesaler";
 import Login from "./Login";
+import Confirmation from "./Confirmation"; 
 
-const Register = ({ onBackPress }) => {
+const Register = ({ onBackPress, onLoginPress }) => {
   const [currentState, setCurrentState] = useState('choice');
 
   const renderChoice = () => (
@@ -52,7 +53,6 @@ const Register = ({ onBackPress }) => {
           <Text style={styles.optionText}>Business Owner</Text>
         </TouchableOpacity>
       </View>
-
       <View>
         <Text style={styles.loginText}>Already have an account? </Text>
         <TouchableOpacity
@@ -60,7 +60,6 @@ const Register = ({ onBackPress }) => {
           <Text style={styles.loginLink}>Log In here!</Text>
         </TouchableOpacity>
       </View>
-    </View>
   );
 
   const renderConsumerForm = () => (
@@ -88,12 +87,50 @@ const Register = ({ onBackPress }) => {
     </View>
   );
 
+  const renderCustomerConfirmation = () => (
+    <View style={styles.container}>
+      <Image
+          source={require('../../../assets/imgs/Confirmation.png')}
+          style={styles.image}
+        />
+      <Text style={styles.regComp}>Registration Complete!</Text>
+      <Text style={styles.regSub}>Welcome to Shoppeas!</Text>
+      <TouchableOpacity 
+        style={styles.loginButton}
+        onPress={() => setCurrentState('login')}
+      >
+        <Text style={styles.loginButtonText}>Login</Text>
+        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderWholesalerConfirmation = () => (
+    <View style={styles.contianer}>
+      <Image
+          source={require('../../../assets/imgs/Confirmation.png')}
+          style={styles.image}
+        />
+      <Text style={styles.regComp}>Registration Complete!</Text>
+      <Text style={styles.regSub}>Welcome to Shoppeas!</Text>
+      <TouchableOpacity 
+        style={styles.loginButton}
+        onPress={() => setCurrentState('login')}
+      >
+        <Text style={styles.loginButtonText}>Login</Text>
+        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {currentState === 'choice' && renderChoice()}
       {currentState === 'consumer' && renderConsumerForm()}
       {currentState === 'business' && renderBusinessForm()}
       {currentState === 'login' && renderLogin()}
+      {currentState === 'cus_confirm' && renderCustomerConfirmation()}
+      {currentState === 'biz_confirm' && renderWholesalerConfirmation()}
     </SafeAreaView>
   );
 };
@@ -175,6 +212,46 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
   }
+  image: {
+    width: 300,
+    height: "35%",
+    resizeMode: 'contain',
+    marginBottom: '5%',
+  },
+  regComp: {
+    fontSize: '25%',
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    alignSelf: 'center',
+  },
+  regSub: {
+    fontSize: '20%',
+    color: '#0C5E52',
+    alignSelf: 'center',
+    marginTop: '2%',
+  },
+  loginButton: {
+    flexDirection: 'row',
+    backgroundColor: '#0C5E52',
+    width: '100%',
+    height: '5%',
+    borderRadius: '20%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: '7%',
+  },
+  loginButtonText: {
+      fontSize: '20%',
+      color: '#EBF3D1',
+      fontWeight: 'bold',
+      marginRight: "30%",
+      alignSelf: 'center',
+  },
+  arrowIcon: {
+      position: 'absolute',
+      right: '5%',
+      alignSelf: 'center',
+  },
 });
 
 export default Register;

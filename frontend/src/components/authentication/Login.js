@@ -51,12 +51,11 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                   name="arrow-back-outline"
                 />
             </TouchableOpacity>
-            
-            <Image
-                source={require('../../../assets/imgs/welcome.png')}
-                style={styles.welcome}
-            />
-            
+
+            <View style={styles.headerContainer}>
+                <Text style={styles.header}>Welcome Back.</Text>
+                <Text style={styles.subHeader}>Log in to your account</Text>
+            </View>
             <View style={styles.inputContainer}>
                 <Ionicons name="mail-outline" size={24} color="#0C5E52" style={styles.inputIcon} />
                 <TextInput 
@@ -79,7 +78,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                     onChangeText={setPassword} 
                 />
             </View>
-            
+         
             <TouchableOpacity onPress={{/* TODO: rmb to do forget password popup/component */}}>
                 <Text style={styles.forgotPassword}>Forgot Password?</Text>
             </TouchableOpacity>
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 20,
+        paddingHorizontal: '5%',
     },
     backButton: {
         position: 'absolute',
@@ -123,11 +122,23 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    welcome: {
-        width: 300,
-        height: "15%",
-        resizeMode: 'contain',
-        marginBottom: '5%',
+    headerContainer: {
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: '1%',
+        marginBottom:'12%'
+    },
+    header: {
+        fontSize: '35%',
+        color: '#0C5E52',
+        fontWeight: 'bold',
+        alignSelf: 'left',
+        marginBottom: '2%',
+    },
+    subHeader: {
+        fontSize: '15%',
+        color: '#0C5E52',
+        alignSelf: 'left'
     },
     inputContainer: {
         flexDirection: 'row',

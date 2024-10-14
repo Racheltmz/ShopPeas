@@ -126,12 +126,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  pageTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    padding: 15,
-    backgroundColor: 'white',
-  },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -149,8 +143,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginLeft: 20,
-    marginTop: 5,
+    marginLeft: '5%',
+    marginTop: '1%',
   },
   headerTextContainer: {
     flex: 1,
@@ -160,18 +154,18 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'normal',
     color: '#0C5E52',
-    marginLeft: 5,
+    marginLeft: '2%',
   },
   subHeaderTitle: {
     fontFamily: "Amiko, Noto Sans",
     fontSize: 35,
     fontWeight: 'bold',
     color: '#0C5E52',
-    margin: 5,
+    margin: '2%',
   },
   headerImage: {
     width: '18%', 
-    height: '100%',
-    marginRight: "28.2%",
+    height: '60%',
+    marginRight: "26.2%",
   },
 })
