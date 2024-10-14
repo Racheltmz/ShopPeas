@@ -6,7 +6,7 @@ import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 
 
-const RegisterWholesaler = ({onBackPress}) => {
+const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
@@ -32,7 +32,7 @@ const RegisterWholesaler = ({onBackPress}) => {
                 id: res.user.uid,
                 role: "wholesaler",
             })
-            alert("SUCCESS")
+            Alert('Success!')
 
         } catch (err) {
             console.log(err);
@@ -55,10 +55,14 @@ const RegisterWholesaler = ({onBackPress}) => {
                   name="arrow-back-outline"
                 />
             </TouchableOpacity>
-            <Image
-                source={require('../../../assets/imgs/BizReg.png')}
-                style={styles.image}
-            />
+
+            <View style={styles.headerContainer}>
+                <Text style={styles.regText}>Register as a Business Owner.</Text>
+                <Image
+                    source={require('../../../assets/imgs/businessIcon.png')}
+                    style={styles.image}
+                />
+            </View>
             <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUsername(text)}></TextInput>
             <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setEmail(text)}></TextInput>
             <TextInput style={styles.input} placeholder="UEN" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUen(text)}></TextInput>
@@ -88,18 +92,32 @@ const styles = StyleSheet.create({
     backButton: {
         position: 'absolute',
         top: '0%',
-        left: '-8%',
-        width: '13%',
+        left: '-7%',
+        width: '12%',
         height: '5.2%',
         borderRadius: '100%',
         backgroundColor: '#0C5E52',
         justifyContent: 'center',
         alignItems: 'center',
-      },
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        width: '100%',
+        backgroundColor: '#EBF3D1',
+        padding: '6%', 
+        borderRadius: '10%',
+        marginBottom: '5%',
+    },
+    regText: {
+        color: '#0C5E52',
+        fontWeight: 'bold',
+        fontSize: '26%',
+        alignSelf: 'left',
+    },
     image: {
-        width: 300,
-        height: "15%",
-        resizeMode: 'contain',
+        width: '28%',
+        height: "100%",
+        marginBottom: '5%',
     },
     input: {
         borderWidth: 1,

@@ -66,10 +66,13 @@ const RegisterCustomer = ({onBackPress}) => {
               name="arrow-back-outline"
             />
         </TouchableOpacity>
-        <Image
-          source={require('../../../assets/imgs/CustReg.png')}
-          style={styles.image}
-        />
+        <View style={styles.headerContainer}>
+          <Text style={styles.regText}>Register as a Consumer.</Text>
+          <Image
+            source={require('../../../assets/imgs/consumerIcon.png')}
+            style={styles.image}
+          />
+        </View>
         <TextInput 
           style={styles.input} 
           value={firstName}
@@ -141,6 +144,25 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
     },
+    headerContainer: {
+      flexDirection: 'row',
+      width: '95%',
+      backgroundColor: '#EBF3D1',
+      padding: '6%', 
+      borderRadius: '10%',
+      marginBottom: '5%',
+    },
+    regText: {
+      color: '#0C5E52',
+      fontWeight: 'bold',
+      fontSize: '25%',
+      alignSelf: 'left',
+    },
+    image: {
+      width: '40%',
+      height: "100%",
+      marginBottom: '5%',
+    },
     input: {
       borderWidth: 1,
       borderColor: '#0C5E52',
@@ -149,12 +171,7 @@ const styles = StyleSheet.create({
       borderRadius: 5,
       width: '80%',
     },
-    image: {
-      width: 300,
-      height: "15%",
-      resizeMode: 'contain',
-      marginBottom: '5%',
-    },
+    
     regButton: {
       flexDirection: 'row',
       backgroundColor: '#0C5E52',
