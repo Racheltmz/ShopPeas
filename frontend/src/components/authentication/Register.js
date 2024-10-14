@@ -24,7 +24,7 @@ const Register = ({ onBackPress, onLoginPress }) => {
       <Text style={styles.title}>Kick-start your food journey with us.</Text>
       <Text style={styles.subtitle}>I am a...</Text>
       
-      <View style={styles.optionOutline}>
+      <View style={styles.optionOutlineCus}>
         <TouchableOpacity 
           style={styles.option} 
           onPress={() => setCurrentState('consumer')}
@@ -39,7 +39,7 @@ const Register = ({ onBackPress, onLoginPress }) => {
         </View>
       </View>
       
-      <View style={styles.optionOutline}>
+      <View style={styles.optionOutlineBiz}>
         <View style={styles.iconContainer}>
           <Image 
             source={require('../../../assets/imgs/businessIcon.png')} 
@@ -174,13 +174,19 @@ const styles = StyleSheet.create({
   optionsContainer: {
     marginBottom: '3%',
   },
-  optionOutline: {
+  optionOutlineCus: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,
-    borderRadius: 15,
-    padding: '3%',
+    borderRadius: 10,
     backgroundColor: '#EBF3D1',
+  },
+  optionOutlineBiz: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderRadius: 10,
+    backgroundColor: '#0C5E5230',
   },
   iconContainer: {
     width: 60,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, View, TextInput, TouchableOpacity, Image } from 'react-native';
-import { createUserWithEmailAndPassword , signInWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,7 +13,12 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     const [number, setNumber] = useState('');
     const [address, setAddress] = useState('')
     const [uen, setUen] = useState('')
-    const [isLoading, setIsLoading] = useState(false);
+    // const [streetName, setStreetName] = useState('');
+    // const [unitNo, setUnitNo] = useState('');
+    // const [buildingName, setBuildingName] = useState('');
+    // const [city, setCity] = useState('');
+    // const [postalCode, setPostalCode] = useState('')
+    // const [isLoading, setIsLoading] = useState(false);
 
     const auth = FirebaseAuth;
     const db = FirebaseDb;
@@ -63,12 +68,22 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
                     style={styles.image}
                 />
             </View>
-            <TextInput style={styles.input} placeholder="Username" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUsername(text)}></TextInput>
-            <TextInput style={styles.input} placeholder="Email" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setEmail(text)}></TextInput>
-            <TextInput style={styles.input} placeholder="UEN" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUen(text)}></TextInput>
-            <TextInput style={styles.input} placeholder="Phone Number" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setNumber(text)}></TextInput>
-            <TextInput style={styles.input} placeholder="Address" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setAddress(text)}></TextInput>
-            <TextInput secureTextEntry={true} style={styles.input} placeholderTextColor="#0C5E52" value={password} placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)}></TextInput>
+
+            <Text style={styles.formLabel}>Company Details</Text>
+            <TextInput style={styles.formInput} placeholder="Company Name" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUsername(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="Email" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setEmail(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="UEN" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUen(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="Phone Number" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setNumber(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="Address" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setAddress(text)}></TextInput>
+            <TextInput secureTextEntry={true} style={styles.formInput} placeholderTextColor="#0C5E52" value={password} placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)}></TextInput>
+
+            {/* <Text style={styles.formLabel}>Registered Address</Text>
+            <TextInput style={styles.formInput} placeholder="Street Name" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUsername(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="Unit No." placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setEmail(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="Building Name" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setUen(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="City, Country" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setNumber(text)}></TextInput>
+            <TextInput style={styles.formInput} placeholder="Postal Code" placeholderTextColor="#0C5E52" autoCapitalize="none" onChangeText={(text) => setAddress(text)}></TextInput>
+            <TextInput secureTextEntry={true} style={styles.formInput} placeholderTextColor="#0C5E52" value={password} placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)}></TextInput> */}
 
             <TouchableOpacity 
                 style={styles.regButton}
@@ -103,7 +118,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         flexDirection: 'row',
         width: '100%',
-        backgroundColor: '#EBF3D1',
+        backgroundColor: '#0C5E5230',
         padding: '6%', 
         borderRadius: '10%',
         marginBottom: '5%',
@@ -119,14 +134,21 @@ const styles = StyleSheet.create({
         height: "100%",
         marginBottom: '5%',
     },
-    input: {
+    formLabel: {
+        color: '#0C5E52',
+        fontWeight: 'bold',
+        fontSize: 18,
+        alignSelf: 'left',
+        marginBottom: 2,
+    },
+    formInput: {
         borderWidth: 1,
         borderColor: '#0C5E52',
         backgroundColor: '#fff',
         padding: 10,
         marginVertical: 5,
         borderRadius: 5,
-        width: 200,
+        width: '100%',
     },
     regButton: {
         flexDirection: 'row',

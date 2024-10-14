@@ -27,8 +27,8 @@ const Profile = ({ navigation }) => {
               style={styles.profilePic}
             />
             <View style={styles.nameContainer}>
-              <Text style={styles.name}>Happy</Text>
-              <Text style={styles.name}>Wholesaler</Text>
+              <Text style={styles.wholesalerName}>Happy</Text>
+              <Text style={styles.wholesalerName}>Wholesaler</Text>
             </View>
           </View>
           <View style={styles.profileRight}>
@@ -69,6 +69,7 @@ const Profile = ({ navigation }) => {
               <Ionicons name="create-outline" size={24} color="#0C5E52" />
             </TouchableOpacity>
           </View>
+          <InfoRow label="Email:" value="contact@happywholesaler.com" />
           <View style={styles.accountInfo}>
             <View style={styles.accountColumn}>
               <InfoRow label="Contact:" value="+65 9863 3472" />
@@ -85,7 +86,6 @@ const Profile = ({ navigation }) => {
               />
             </View>
           </View>
-          <InfoRow label="Email:" value="contact@happywholesaler.com" />
         </View>
 
         {/* My Products Button */}
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
   nameContainer: {
     alignItems: 'center',
   },
-  name: {
+  wholesalerName: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#0C5E52',
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   ratingsSection: {
-    backgroundColor: '#EBF3D1',
+    backgroundColor: '#0C5E5220',
     padding: 16,
     margin: 16,
     borderRadius: 8,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   },
   ratingBarContainer: {
     height: 10,
-    backgroundColor: '#D3EBCD',
+    backgroundColor: '#94BEB8',
     flex: 1,
     borderRadius: 5,
     marginLeft: 8,

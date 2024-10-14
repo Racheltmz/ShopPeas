@@ -122,9 +122,6 @@ const styles = StyleSheet.create({
     marginLeft: '5%',
     marginTop: '1%',
   },
-  headerTextContainer: {
-    flex: 1,
-  },
   headerTitle: {
     fontFamily: "Amiko, Noto Sans",
     fontSize: 25,

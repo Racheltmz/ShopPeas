@@ -144,7 +144,6 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
       flexDirection: 'row',
-      width: '95%',
       backgroundColor: '#EBF3D1',
       padding: '6%', 
       borderRadius: '10%',
@@ -167,7 +166,7 @@ const styles = StyleSheet.create({
       padding: 10,
       marginVertical: 5,
       borderRadius: 5,
-      width: '80%',
+      width: '100%',
     },
     
     regButton: {

@@ -178,8 +178,8 @@ const styles = StyleSheet.create({
   ratingSection: {
     backgroundColor: "#0C5E5220",
     padding: 16,
+    margin: 16,
     borderRadius: 8,
-    marginBottom: 16,
   },
   ratingOverview: {
     flexDirection: "row",
