@@ -10,6 +10,10 @@ const Home = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const navigation = useNavigation();
 
+  const navigateToProfile = () => {
+    navigation.navigate('Profile');
+  };
+
   const [products, setProducts] = useState([
     {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
     {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
@@ -47,7 +51,7 @@ const Home = () => {
             autoCapitalize="none"
             onChangeText={(text) => setSearchText(text)}
             />
-            <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+            <TouchableOpacity onPress={navigateToProfile}>
             <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
             </TouchableOpacity>
         </View>
