@@ -9,6 +9,7 @@ const Payment = () => {
   const navigation = useNavigation();
   const { currentUser, paymentDetails } = useUserStore();
   const { cart, getTotal } = useCart();
+  console.log(paymentDetails);
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
@@ -43,7 +44,7 @@ const Payment = () => {
           <Text style={styles.paymentMethodText}>Payment Method</Text>
           <View style={styles.cardInfo}>
             <Ionicons name="card" size={24} color="#0C5E52" />
-            <Text style={styles.cardNumber}>Card *{paymentDetails?.card_no.toString().slice(-4)}</Text>
+            {/* <Text style={styles.cardNumber}>Card *{paymentDetails?.card_no.toString().slice(-4)}</Text> */}
             <Ionicons name="chevron-forward" size={24} color="#0C5E52" />
           </View>
         </TouchableOpacity>

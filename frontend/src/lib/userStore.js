@@ -49,7 +49,7 @@ export const useUserStore = create((set, get) => ({
         const addressDocRef = doc(db, userRole + "_address", uid);
         const addressDocSnap = await getDoc(addressDocRef);
 
-        console.log(addressDocSnap.data());
+        // console.log(addressDocSnap.data());
 
         if (docSnap.exists()) {
           set({ userAddress: addressDocSnap.data(), isLoading: false });
