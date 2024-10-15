@@ -1,11 +1,13 @@
 package com.peaslimited.shoppeas.controller;
 
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
+import com.peaslimited.shoppeas.dto.TransactionsDTO;
+import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerTransactionsDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
-import com.peaslimited.shoppeas.service.CurrencyService;
-import com.peaslimited.shoppeas.service.ShoppingCartService;
-import com.peaslimited.shoppeas.service.WholesalerTransactionsService;
+import com.peaslimited.shoppeas.service.*;
 import com.peaslimited.shoppeas.dto.mapper.WholesalerTransactionMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
@@ -39,7 +39,16 @@ public class TransactionController {
     private ShoppingCartService cartService;
 
     @Autowired
-    private CartController cartController;
+    private WholesalerService wholesalerService;
+
+    /*@Autowired
+    private CartController cartController;*/
+
+    @Autowired
+    private TransactionsService transactionService;
+
+    @Autowired
+    private WholesalerProductService wholesalerProductService;
 
     // CONSUMER METHODS
 
@@ -47,37 +56,170 @@ public class TransactionController {
 
 
 
-    
-    @PostMapping("/add")
+
+    /**
+     * Adds or updates a transaction record based on ADD TO CART
+     * Called in CartController in the add to cart function.
+     * @param data
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    /*@PostMapping("/newTransaction")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.CREATED)*/
+    public void newTransaction(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        //input: Single "item": swp_id, quantity, uen
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+
+        String swp_id = data.get("swp_id").toString();
+        int quantity = Integer.parseInt(data.get("quantity").toString());
+        String uen = data.get("uen").toString();
+
+        System.out.println("find existing");
+        TransactionsDTO transaction = transactionService.getTransactionByUID(uid, "IN-CART");
+        System.out.println("found");
+
+        //ACTION: transaction record exists and product is from the same wholesaler
+        if(transaction != null && transaction.getUen().equals(uen))
+        {
+            //update
+            System.out.println("1");
+            transactionService.updateTransactionProduct(data, uid, "IN-CART");
+        }
+        //ACTION: transaction record exists and product is from different wholesaler
+        else if(transaction != null && !transaction.getUen().equals(uen))
+        {
+            System.out.println("2");
+            createTransactionRecord(swp_id, quantity, uid, uen);
+        }
+        else if(transaction == null) //ACTION: transaction record DNE
+        {
+            System.out.println("3");
+            createTransactionRecord(swp_id, quantity, uid, uen);
+        }
+    }
+
+
+    public void createTransactionRecord(String swp_id, int quantity, String uid, String uen) throws ExecutionException, InterruptedException {
+        Map<String, Object> productMap = new HashMap<>();
+        productMap.put("quantity", quantity);
+        productMap.put("swp_id", swp_id);
+
+        ArrayList<Object> productsList = new ArrayList<>();
+        productsList.add(productMap);
+
+        //find unit price
+        float price = getProductPrice(swp_id,uen);
+        if(price != 0)
+        {
+            TransactionsDTO transaction = new TransactionsDTO(
+                    productsList,
+                    "IN-CART",
+                    price*quantity,
+                    uen,
+                    uid);
+
+            transactionService.createTransaction(transaction);
+
+        }
+
+    }
+
+    public float getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProd =  wholesalerProductService.getBySwp_id(swp_id);
+        return wholesalerProd.getPrice();
+    }
+
+
+    @GetMapping("/gettransactionsbyuen")
+    @PreAuthorize("hasRole('WHOLESALER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public Map<String,Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot>  docList = transactionService.getDocByUENAndStatus(uen, status);
+        System.out.println(docList);
+
+        ArrayList<Object> transactionList = new ArrayList<>();
+        Map<String, Object> dataMap = new HashMap<>();
+
+        DocumentSnapshot document = null;
+        for(int i = 0; i < docList.size(); i++)
+        {
+            if(docList.get(i) != null)
+            {
+                document = docList.get(i);
+
+                String uid = document.get("uid").toString();
+                double total_price = (double) document.get("total_price");
+                float price = (float) total_price;
+                dataMap.put("uid", uid);
+                dataMap.put("total_price", price);
+                dataMap.put("items", transactionService.getProductListfromTransaction(document, false));
+                transactionList.add(dataMap);
+            }
+        }
+        return dataMap;
+    }
+
+    @PatchMapping("/updatetransactionstatus")
+    @PreAuthorize("hasRole('WHOLESALER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public void updateTransactionStatus(@RequestBody Map<String, Object> data)
+    {
+        transactionService.updateTransactionStatus(data);
+    }
+
+
+    @PostMapping("/checkout")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void makePayment(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
+    public void checkout(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         // Get UID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
         //ACTION: GET TRANSACTION DATA
         //convert order data to array
-        String orderStr = data.get("orders").toString();
-        orderStr = orderStr.replace("[","");
-        orderStr = orderStr.replace("]","");
-        ArrayList<String> orders = new ArrayList<String>(Arrays.asList(orderStr.split(",")));
+        String cart = data.get("cart items").toString();
+        cart = cart.replace("[","");
+        cart = cart.replace("]","");
+        ArrayList<String> cartList = new ArrayList<String>(Arrays.asList(cart.split(",")));
 
-        //remainder of transaction data
-        String tid = data.get("tid").toString();
-        double price = Double.parseDouble(data.get("price").toString());
-        //String status = data.get("status").toString();
-        String status = "PENDING-ACCEPTANCE";
-        String date = data.get("date").toString();
+        //ACTION: get transaction IDs (tid)
+        ArrayList<String> transactionList = new ArrayList<>();
+        System.out.println(cartList);
+        for(int i = 0; i< cartList.size(); i++)
+        {
+            String orderDataString = cartList.get(i);
+            System.out.println(orderDataString);
+            if(orderDataString.contains("wholesaler="))
+            {
+                orderDataString = orderDataString.replace("{","");
+                orderDataString = orderDataString.replace("}","");
+                String[] pairs = orderDataString.split("=");
+                String wholesalerName = pairs[1];
+                System.out.println(wholesalerName);
+                String tid = getTransactionFromUIDandWName(uid, wholesalerName);
+                transactionList.add(tid);
 
-        //ACTION: ADDS TRANSACTION RECORD
-        WholesalerTransactionsDTO transaction = WholesalerTransactionMapper.toWTransactionDTO(uid, orders, price, date, status);
-        wholesalerTransactionService.addWTransaction(tid, transaction);
+                //ACTION: update transaction status
+                Map<String, Object> updateTStatus = new HashMap<>();
+                updateTStatus.put("tid", tid);
+                updateTStatus.put("tid", "PENDING-ACCEPTANCE");
+                transactionService.updateTransactionStatus(updateTStatus);
 
-        // ACTION: only if the wholesaler's selected currency is MYR, will the currency api be invoked
+            }
+        }
+
+        //ACTION: delete cart
+        ShoppingCart cartNow = cartService.getCartByUID_NonDTO(uid);
+        String cid = cartNow.getCid();
+        cartService.deleteWholeCart(cid);
+
+        //only if the wholesaler's selected currency is MYR, will the currency api be invoked
         // shifted above
         //double price = Double.parseDouble(data.get("price").toString());
-        String preferredCurrency = data.get("currency").toString();
+        /*String preferredCurrency = data.get("currency").toString();
         double exchangeRate = 0.0;
         double finalPrice = 0.0;
 
@@ -87,22 +229,17 @@ public class TransactionController {
             finalPrice = price * exchangeRate;
             // NOTE: temporary print statement to validate output
             System.out.println(finalPrice);
-        }
+        }*/
 
-        //ACTION: empty shopping cart
-        String cid = cartController.getCID(uid);
-        cartService.deleteWholeCart(cid);
+    }
 
-        /*
-        -> get specific payment method from API call
-        -> find payment method
-        -> if exists, return true (payment success)
-        assume by default that all payments are successful
+    public String getTransactionFromUIDandWName(String uid, String wholesalerName) throws ExecutionException, InterruptedException {
+        DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
 
-
-
-         */
-
+        String uen = doc.get("uen").toString();
+        DocumentSnapshot transactionDoc = transactionService.getDocByUENAndWName(uen, uid);
+        String tid = transactionDoc.getId();
+        return tid;
 
     }
 

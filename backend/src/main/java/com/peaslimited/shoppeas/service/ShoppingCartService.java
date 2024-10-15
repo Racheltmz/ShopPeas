@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public interface ShoppingCartService {
-    void createCart(String cid, ShoppingCartDTO orderDTO);
+    void createCart(ShoppingCartDTO orderDTO);
 
     ShoppingCartDTO getCartByCID(String cid) throws ExecutionException, InterruptedException;
     ShoppingCartDTO getCartByUID(String uid) throws ExecutionException, InterruptedException;
     ShoppingCart getCartByUID_NonDTO(String UID)throws ExecutionException, InterruptedException;
-    void updateCartByOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException;
+    void updateCartByOrder(String cid, int quantity, String tid, float newPrice) throws ExecutionException, InterruptedException;
 
     void deleteWholeCart(String cid) throws ExecutionException, InterruptedException;
     void deleteItemByOID(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException;

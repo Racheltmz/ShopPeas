@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.service.implementation;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
@@ -45,6 +46,12 @@ public class WholesalerServiceImpl implements WholesalerService {
     @Override
     public void addRating(String UEN, Integer rating) throws ExecutionException, InterruptedException {
         wholesalerRepository.updateRatingByUEN(UEN, rating);
+    }
+
+    @Override
+    public DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException
+    {
+        return wholesalerRepository.findDocByWholesalerName(name);
     }
 
 }

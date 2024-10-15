@@ -9,14 +9,14 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public interface ShoppingCartRepository {
-    void addByCID(String CID, ShoppingCartDTO cartDTO);
+    void addByCID(ShoppingCartDTO cartDTO);
 
     ShoppingCartDTO findByCID(String cid) throws ExecutionException, InterruptedException;
     DocumentSnapshot findDocByUID(String UID) throws ExecutionException, InterruptedException;
     ShoppingCartDTO findByUID(String UID) throws ExecutionException, InterruptedException;
     ShoppingCart findByUID_NonDTO(String UID) throws ExecutionException, InterruptedException;
 
-    void updateCartWithOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException;
+    void updateCartWithOrder(String cid, int quantity, String tid, float newPrice) throws ExecutionException, InterruptedException;
 
     void deleteWholeCart(String cid) throws ExecutionException, InterruptedException;
     void deleteCartItem(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException;

@@ -22,9 +22,9 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
     private Firestore firestore;
 
     @Override
-    public void addByCID(String CID, ShoppingCartDTO cart)
+    public void addByCID(ShoppingCartDTO cart)
     {
-        firestore.collection(COLLECTION).document(CID).set(cart);
+        firestore.collection(COLLECTION).document().set(cart);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
     //or quantity is updated
     //cart/ order repos are then updated
     @Override
-    public void updateCartWithOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException
+    public void updateCartWithOrder(String cid, int quantity, String tid, float newPrice) throws ExecutionException, InterruptedException
     {
         DocumentReference docRef = firestore.collection(COLLECTION).document(cid);
         ApiFuture<DocumentSnapshot> future = docRef.get();
@@ -105,13 +105,12 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
             ArrayList<String> orderList = cart.getOrders();
             Double price = cart.getTotal_price();
 
-            String newOrderOID = data.get("oid").toString();
-            Double newPrice = Double.parseDouble(data.get("price").toString());
+
             // ACTION: UPDATE QUANTITY
             boolean updateQuantity = false;
             for(int i = 0; i < orderList.size(); i++)
             {
-                if(orderList.get(i).equals(newOrderOID))
+                if(orderList.get(i).equals(tid))
                 {
                     updateQuantity = true;
                     break;
@@ -120,16 +119,19 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
             if(updateQuantity)
             {
                 //update in order
-                DocumentReference docRefOrder = firestore.collection("orders").document(newOrderOID);
-                docRefOrder.update("price", newPrice);
-                docRefOrder.update("quantity", Integer.parseInt(data.get("quantity").toString()));
+                DocumentReference docRefOrder = firestore.collection("transactions").document(tid);
+                ApiFuture<DocumentSnapshot> futureDoc = docRef.get();
+                DocumentSnapshot doc = futureDoc.get();
+
+                int currQuantity = Integer.parseInt(doc.get("quantity").toString());
+                docRefOrder.update("quantity",currQuantity + quantity);
                 //update in transaction
                 price += newPrice;
                 docRef.update("total_price", price);
             }
             else // ACTION: ADD NEW ORDER TO EXISTING CART
             {
-                orderList.add(newOrderOID);
+                orderList.add(tid);
                 price += newPrice;
 
                 docRef.update("orders", orderList);

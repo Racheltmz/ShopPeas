@@ -39,7 +39,6 @@ public class ConsumerAccountRepositoryImpl implements ConsumerAccountRepository 
     @Override
     public void addByUID(String UID, ConsumerAccountDTO data) {
         firestore.collection(COLLECTION).document(UID).set(data);
-        System.out.println(data.getPaymentMtds());
     }
 
     @Override

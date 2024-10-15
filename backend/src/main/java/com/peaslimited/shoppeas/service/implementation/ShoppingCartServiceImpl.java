@@ -16,9 +16,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     private ShoppingCartRepository cartRepo;
 
     @Override
-    public void createCart(String cid, ShoppingCartDTO cartDTO)
+    public void createCart(ShoppingCartDTO cartDTO)
     {
-        cartRepo.addByCID(cid, cartDTO);
+        cartRepo.addByCID(cartDTO);
     }
 
     @Override
@@ -40,9 +40,9 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void updateCartByOrder(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException
+    public void updateCartByOrder(String cid, int quantity, String tid, float newPrice) throws ExecutionException, InterruptedException
     {
-        cartRepo.updateCartWithOrder(cid, data);
+        cartRepo.updateCartWithOrder(cid, quantity, tid, newPrice);
     }
 
     @Override
