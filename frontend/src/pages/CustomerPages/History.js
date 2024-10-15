@@ -72,6 +72,7 @@ const DUMMY_ITEMS = [
   },
 ];
 
+
 const History = () => {
   return (
     <View style={styles.container}>

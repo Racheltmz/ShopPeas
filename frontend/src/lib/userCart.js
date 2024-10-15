@@ -4,7 +4,7 @@ import { FirebaseDb } from "./firebase";
 
 // const db = FirebaseDb;
 
-const DUMMY_CART_ITEMS = [
+const DUMMY_CART_ITEMS = [  
     {
         wholesaler: "Happy Wholesaler",
         // get location and distance using api and apply in the item itself in actual implementation
@@ -92,10 +92,10 @@ export const useCart = create((set) => ({
         }
         return wholesaler;
       }).filter(wholesaler => wholesaler.items.length > 0);
-  
-      return { cart: updatedCart };
+      
+      return { cart: updatedCart }; 
     }),
-  
+    
     updateItemQuantity: (wholesalerName, itemName, newQuantity) => set((state) => {
       const updatedCart = state.cart.map(wholesaler => {
         if (wholesaler.wholesaler === wholesalerName) {
@@ -111,7 +111,6 @@ export const useCart = create((set) => ({
         }
         return wholesaler;
       }).filter(wholesaler => wholesaler.items.length > 0);
-  
       return { cart: updatedCart };
     }),
   
