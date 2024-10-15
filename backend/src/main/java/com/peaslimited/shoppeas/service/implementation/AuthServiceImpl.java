@@ -39,11 +39,9 @@ public class AuthServiceImpl implements AuthService {
     public void registerConsumer(String UID, Map<String, Object> user) throws FirebaseAuthException {
         // Create and add consumer
         ConsumerDTO consumer = createConsumerFromMap(user);
+        // Set custom claims
+        authRepository.setUserClaims(UID, Map.of("consumer", true));
         consumerService.addConsumer(UID, consumer);
-
-        // Create and add wholesaler account
-        ConsumerAccountDTO consumerAccount = createConsumerAccountFromMap(user);
-        consumerAccountService.addConsumerAccount(UID, consumerAccount);
 
         // Create and add wholesaler address
         ConsumerAddressDTO consumerAddress = createConsumerAddressFromMap(user);
@@ -61,6 +59,8 @@ public class AuthServiceImpl implements AuthService {
         String UEN = user.get("uen").toString();
         // Create and add wholesaler
         WholesalerDTO wholesaler = createWholesalerFromMap(user);
+        // Set custom claims
+        authRepository.setUserClaims(UID, Map.of("wholesaler", true));
         wholesalerService.addWholesaler(UID, wholesaler);
 
         // Create and add wholesaler account
@@ -84,15 +84,6 @@ public class AuthServiceImpl implements AuthService {
             user.get("last_name").toString(),
             user.get("email").toString(),
             user.get("phone_number").toString()
-        );
-    }
-
-    private ConsumerAccountDTO createConsumerAccountFromMap(Map<String, Object> user) {
-        return new ConsumerAccountDTO(
-            Long.valueOf(user.get("card_no").toString()),
-            user.get("expiry_date").toString(),
-            Integer.valueOf(user.get("cvv").toString()),
-            user.get("name").toString()
         );
     }
 

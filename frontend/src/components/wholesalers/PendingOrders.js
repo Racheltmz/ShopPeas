@@ -19,7 +19,7 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
   }, [selectedStatus, orders]);
 
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.statusTabs}>
         <TouchableOpacity 
           style={[styles.statusTab, selectedStatus === 'to_be_accepted' && styles.activeTab]}
@@ -46,12 +46,16 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
         renderItem={({ item }) => <Order order={item} onAccept={onAccept} onComplete={onComplete}/>}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.orderList}
+        style={styles.flatList}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   statusTabs: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -83,6 +87,9 @@ const styles = StyleSheet.create({
   },
   orderList: {
     paddingHorizontal: 10,
+  },
+  flatList: {
+    flex: 1,
   },
 });
 

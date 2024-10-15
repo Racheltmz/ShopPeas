@@ -19,29 +19,39 @@ const Payment = () => {
     console.log('Processing payment...');
   };
 
+  const handleWholesalerPress = (wholesalerName) => {
+    navigation.navigate('ViewWholesaler', { wholesalerName });
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#0C5E52" />
         </TouchableOpacity>
-        <Text style={styles.title}>Payment</Text>
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>{currentUser?.name}</Text>
-          <Text style={styles.userEmail}>{currentUser?.email}</Text>
-          <Text style={styles.userPhone}>{currentUser?.phone}</Text>
+        <View>
+          <Text style={styles.headerTitle}>Payment</Text>
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>{currentUser?.name}</Text>
+            <Text style={styles.userEmail}>{currentUser?.email}</Text>
+            <Text style={styles.userPhone}>{currentUser?.phone}</Text>
+          </View>
         </View>
+      </View>
+      <ScrollView>
         <TouchableOpacity style={styles.paymentMethod} onPress={handlePaymentMethodPress}>
           <Text style={styles.paymentMethodText}>Payment Method</Text>
           <View style={styles.cardInfo}>
             <Ionicons name="card" size={24} color="#0C5E52" />
             <Text style={styles.cardNumber}>Card *{paymentDetails?.card_no.toString().slice(-4)}</Text>
+            <Ionicons name="chevron-forward" size={24} color="#0C5E52" />
           </View>
-          <Ionicons name="chevron-forward" size={24} color="#0C5E52" />
         </TouchableOpacity>
         {cart.map((wholesaler, index) => (
           <View key={index} style={styles.wholesalerContainer}>
-            <Text style={styles.wholesalerName}>{wholesaler.wholesaler}</Text>
+            <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.wholesaler)}>
+              <Text style={styles.wholesalerName}>{wholesaler.wholesaler} <Ionicons name="chevron-forward" size={14} color="#0C5E52" /></Text>
+            </TouchableOpacity>
             <Text style={styles.wholesalerLocation}>{wholesaler.location}, {wholesaler.distance} Minutes away</Text>
             {wholesaler.items.map((item, itemIndex) => (
               <View key={itemIndex} style={styles.itemContainer}>
@@ -75,11 +85,25 @@ const Payment = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
-    paddingTop: "5%",
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: 'white',
+    marginBottom: 10,
+    marginTop: 60,
+    marginHorizontal: 10,
+    borderRadius: 10,
+  },
+  headerTitle: {
+    flexDirection: 'row',
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#0C5E52',
   },
   backButton: {
-    margin: 16,
+    marginRight: 16,
   },
   title: {
     fontSize: 24,
@@ -90,10 +114,6 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     backgroundColor: 'white',
-    padding: 16,
-    marginHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 16,
   },
   userName: {
     fontSize: 18,
@@ -114,12 +134,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     padding: 16,
-    marginHorizontal: 16,
+    marginHorizontal: 10,
     borderRadius: 8,
     marginBottom: 16,
   },
   paymentMethodText: {
     fontSize: 16,
+    fontWeight: 'bold',
     color: '#0C5E52',
   },
   cardInfo: {
@@ -127,13 +148,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cardNumber: {
-    marginLeft: 8,
+    marginHorizontal: 8,
     color: '#666',
   },
   wholesalerContainer: {
     backgroundColor: 'white',
     padding: 16,
-    marginHorizontal: 16,
+    marginHorizontal: 10,
     borderRadius: 8,
     marginBottom: 16,
   },
@@ -141,6 +162,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#0C5E52',
+    marginBottom: 5,
   },
   wholesalerLocation: {
     fontSize: 14,
@@ -192,6 +214,7 @@ const styles = StyleSheet.create({
   },
   totalText: {
     fontSize: 18,
+    fontWeight: 'bold',
     color: 'white',
   },
   totalAmount: {
@@ -202,6 +225,7 @@ const styles = StyleSheet.create({
   makePaymentButton: {
     backgroundColor: '#B5D75F',
     padding: 16,
+    marginBottom: 10,
     borderRadius: 8,
     alignItems: 'center',
   },

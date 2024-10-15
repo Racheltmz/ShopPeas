@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Text } from 'react-native';
-import Products from '../../components/customers/Products';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Searchbar } from 'react-native-paper';
+import Products from '../../components/customers/Products';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
@@ -89,12 +90,11 @@ const Explore = () => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TextInput 
-          style={styles.searchBox}
-          placeholder='Search ShopPeas'
+        <Searchbar
+          placeholder="Search ShopPeas"
+          onChangeText={setSearchText}
           value={searchText}
-          autoCapitalize="none"
-          onChangeText={(text) => setSearchText(text)}
+          style={styles.searchBox}
         />
       </View>
       <View style={{ flex: 2 , justifyContent: 'center'}}>
@@ -103,8 +103,6 @@ const Explore = () => {
     </View>
   );
 };
-
-export default Explore;
 
 const styles = StyleSheet.create({
   container: {
@@ -116,8 +114,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   searchBox: {
-    backgroundColor: 'rgba(255, 255, 255, 1)', // Semi-transparent white
-    borderRadius: 20,
-    padding: 10,
+    backgroundColor: '#FAF9F6',
+    borderRadius: 10,
   },
 });
+
+export default Explore;

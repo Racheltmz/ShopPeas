@@ -11,7 +11,7 @@ const ProductItem = ({ name, quantity, imageUrl, isGridView, onPress }) => {
         source={imageUrl}
         style={[styles.image, isGridView ? styles.gridImage : styles.listImage]}
       />
-      <View style={{ flex: 1, marginLeft: isGridView ? 0 : 10 }}>
+      <View style={{ flex: 1, marginLeft: isGridView ? 0 : 15 }}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.quantity}>{quantity} Packet</Text>
       </View>
@@ -21,13 +21,13 @@ const ProductItem = ({ name, quantity, imageUrl, isGridView, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#D6E8A4",
     borderRadius: 10,
     padding: 10,
-    margin: 5,
+    margin: 10,
   },
   gridItem: {
-    width: "47%",
+    width: "44%",
   },
   listItem: {
     flexDirection: "row",
@@ -46,8 +46,10 @@ const styles = StyleSheet.create({
     height: 80,
   },
   name: {
+    marginBottom: 5,
     fontSize: 16,
     fontWeight: "bold",
+    color: '#0C5E52',
   },
   quantity: {
     fontSize: 14,
