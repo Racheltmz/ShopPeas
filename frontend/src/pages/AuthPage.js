@@ -44,6 +44,7 @@ const AuthPage = () => {
           <Register 
             onBackPress={() => setCurrentState('default')}
             onLoginPress={() => setCurrentState('login')}
+            onRegComplete={() => setCurrentState('login')}
           />
         </View>
     );
