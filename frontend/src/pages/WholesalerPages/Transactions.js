@@ -82,9 +82,6 @@ const Transactions = ({ defaultValue }) => {
             placeholder="Search Orders"
             placeholderTextColor="#0C5E52"
             />
-            <TouchableOpacity>
-            <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
-            </TouchableOpacity>
         </View>
         <View style={styles.header}>
           <View style={styles.headerTextContainer}>

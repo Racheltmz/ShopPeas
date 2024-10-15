@@ -2,8 +2,13 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useUserStore } from '../../lib/userStore';
+import { useNavigation } from '@react-navigation/native';
 
-const Profile = ({ navigation }) => {
+const Profile = () => {
+  const { resetUser, paymentDetails } = useUserStore()
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -12,11 +17,8 @@ const Profile = ({ navigation }) => {
             <Text style={styles.headerTitle}>Profile</Text>
             <Image source={require('../../../assets/imgs/pea.png')} style={styles.peaIcon} />
           </View>
-          <TouchableOpacity 
-            style={styles.settingsButton}
-            onPress={() => navigation.navigate('ProfileEdit')}
-          >
-            <Ionicons name="settings-outline" size={24} color="#0C5E52" />
+          <TouchableOpacity onPress={() => resetUser()}>
+            <Ionicons name="log-out-outline" size={24} color="#0C5E52" />
           </TouchableOpacity>
         </View>
 
@@ -97,7 +99,7 @@ const Profile = ({ navigation }) => {
           <Ionicons name="chevron-forward" size={24} color="#0C5E52" />
         </TouchableOpacity>
 
-        {/* Log Out Panel */}
+        {/* Log Out Panel 
         <TouchableOpacity
           style={styles.logOutButton}
           onPress={() => {
@@ -105,7 +107,7 @@ const Profile = ({ navigation }) => {
           }}
         >
           <Text style={styles.logOutButtonText}>Log Out</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
       </ScrollView>
     </SafeAreaView>
@@ -131,7 +133,7 @@ const InfoRow = ({ label, value, multiline }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
-  settingsButton: {
+  logoutButton: {
     padding: 8,
   },
   profileCard: {
