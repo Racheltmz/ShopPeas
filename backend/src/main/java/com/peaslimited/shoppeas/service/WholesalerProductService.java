@@ -10,9 +10,10 @@ public interface WholesalerProductService {
     // to find a particular product but different wholesalers
     List<WholesalerProductDTO> findByPid(String pid) throws ExecutionException, InterruptedException;
 
-
     // method to find all the products by a particular wholesaler
     List<WholesalerProductDTO> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException;
+
+    WholesalerProductDTO getBySwp_id(String swp_id) throws ExecutionException, InterruptedException;
 
     // other crud methods
     void addWholesalerProduct(WholesalerProductDTO product);
@@ -21,4 +22,5 @@ public interface WholesalerProductService {
 
     void deleteWholesalerProduct(String swpid);
 
+    String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException;
 }

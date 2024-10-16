@@ -12,8 +12,10 @@ public interface WholesalerProductRepository {
     // method to find the wholesaler by uen
     List<WholesalerProducts> findByUEN(String uen) throws ExecutionException, InterruptedException;
 
-    // method to find a product by productid
+    // method to find a product by product id
     List<WholesalerProductDTO> findByPid(String pid) throws ExecutionException, InterruptedException;
+
+    WholesalerProductDTO findBySwp_id(String swp_id) throws ExecutionException, InterruptedException;
 
     void addWholesalerProduct(WholesalerProductDTO product);
 
@@ -21,4 +23,5 @@ public interface WholesalerProductRepository {
 
     void deleteWholesalerProduct(String id);
 
+    String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException;
 }

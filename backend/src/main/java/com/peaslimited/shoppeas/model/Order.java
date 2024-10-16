@@ -8,12 +8,21 @@ import org.springframework.data.annotation.Id;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WholesalerProducts {
+public class Order {
     @Id
-    private String swpid;
-    private String uen;
-    private String pid;
+
+    //order ID
+    private String oid;
+
+    //seller, product ID
+    private String swp_id;
+
+    //quantity of product
+    private int quanity;
+
+    //price of order
     private double price;
-    private Integer stock;
-    private Boolean active;
+
+    //type: TRANSACTION, CART
+    private String type;
 }

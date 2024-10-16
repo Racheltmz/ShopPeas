@@ -59,6 +59,26 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
     }
 
     @Override
+    public DocumentSnapshot findDocByWholesalerName(String name) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", name).get();
+
+        // Asynchronously retrieve the document
+        QuerySnapshot querySnapshot = query.get();
+
+        // Convert document to Wholesaler object
+        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+
+        // Check if any documents match
+        DocumentSnapshot document = null;
+        if (!documents.isEmpty()) {
+            // Get the first matching document and return its ID
+            document = documents.getFirst();
+        }
+
+        return document;
+    }
+
+    @Override
     public WholesalerDTO findByUEN(String UEN) throws ExecutionException, InterruptedException {
         DocumentSnapshot document = findDocByUEN(UEN);
         return document.toObject(WholesalerDTO.class);
