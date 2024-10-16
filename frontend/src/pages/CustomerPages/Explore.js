@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { Searchbar } from 'react-native-paper';
 import Products from '../../components/customers/Products';
 
 const Explore = () => {
@@ -9,20 +9,23 @@ const Explore = () => {
   const navigation = useNavigation();
 
   const handleProductPress = (item) => {
-    navigation.navigate('ProductDetails', {product: item});
+    navigation.navigate('ProductDetails', { product: item });
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Searchbar
-          placeholder="Search ShopPeas"
-          onChangeText={setSearchText}
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={24} color="#0C5E52" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search Products"
+          placeholderTextColor="#0C5E52"
           value={searchText}
-          style={styles.searchBox}
+          autoCapitalize="none"
+          onChangeText={(text) => setSearchText(text)}
         />
       </View>
-      <View style={{ flex: 2 , justifyContent: 'center'}}>
+      <View style={{ flex: 2, justifyContent: 'center' }}>
         <Products onProductPress={handleProductPress} />
       </View>
     </View>
@@ -34,13 +37,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  header: {
+  searchBar: {
     marginTop: 80,
     paddingHorizontal: 20,
-  },
-  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#FAF9F6',
-    borderRadius: 10,
+    margin: 10,
+    padding: 14,
+    borderRadius: 25,
+  },
+  searchInput: {
+    marginLeft: 10,
   },
 });
 
