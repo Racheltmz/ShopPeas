@@ -13,6 +13,6 @@ public class ProductMapper {
     }
 
     public static WholesalerProductDTO wholesalerToDTO(WholesalerProducts wholesalerProducts) {
-        return new WholesalerProductDTO(wholesalerProducts.getUen(), wholesalerProducts.getPid(), wholesalerProducts.getPrice(), wholesalerProducts.getStock());
+        return new WholesalerProductDTO(wholesalerProducts.getUen(), wholesalerProducts.getPid(), wholesalerProducts.getPrice(), wholesalerProducts.getStock(), wholesalerProducts.getActive());
     }
 }

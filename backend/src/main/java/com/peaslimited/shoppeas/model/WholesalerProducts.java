@@ -15,12 +15,5 @@ public class WholesalerProducts {
     private String pid;
     private float price;
     private float stock;
-
-    public WholesalerProducts(String uen, String pid, float price, float stock) {
-        this.uen = uen;
-        this.pid = pid;
-        this.price = price;
-        this.stock = stock;
-    }
-
+    private Boolean active;
 }

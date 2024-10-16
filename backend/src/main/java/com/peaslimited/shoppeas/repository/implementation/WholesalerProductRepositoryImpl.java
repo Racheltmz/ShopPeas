@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class WholesalerProductRepositoryImpl implements WholesalerProductRepository {
+
     private final String COLLECTION = "wholesaler_products";
 
     @Autowired
@@ -65,7 +66,9 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Override
     public void deleteWholesalerProduct(String swpid) {
-        firestore.collection(COLLECTION).document(swpid).delete();
+        // Update an existing document
+        DocumentReference docRef = firestore.collection(COLLECTION).document(swpid);
+        docRef.update("active", false);
     }
 
 }

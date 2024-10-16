@@ -12,4 +12,5 @@ public class WholesalerProductDTO {
     private String pid;
     private float price;
     private float stock;
+    private Boolean active;
 }
