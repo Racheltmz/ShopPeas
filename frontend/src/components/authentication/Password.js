@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-const WholesalerPassword = ({ formData, handleInputChange }) => {
+const Password = ({ formData, handleInputChange }) => {
   return (
     <View>
         <View style={styles.textContainer}>
@@ -29,7 +29,7 @@ const WholesalerPassword = ({ formData, handleInputChange }) => {
   );
 };
 
-export default WholesalerPassword;
+export default Password;
 
 const styles = StyleSheet.create({
     textContainer:{

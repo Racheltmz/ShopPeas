@@ -5,9 +5,9 @@ import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import WholesalerDetails from './WholesalerDetails';
-import WholesalerAddress from './WholesalerAddress';
+import Address from './Address';
 import WholesalerBank from './WholesalerBank';
-import WholesalerPassword from './WholesalerPassword';
+import Password from './Password';
 import Alert from './Alert';
 
 const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
@@ -19,6 +19,7 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         name: '',
         uen: '',
         email: '',
+        phone_number: '',
         street_name: '',
         unit_no: '',
         building_name: '',
@@ -31,6 +32,9 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         confirm_password: '',
     });
 
+    const auth = FirebaseAuth;
+    const db = FirebaseDb;
+
     const handleInputChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
     }
@@ -40,12 +44,51 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         return regex.test(password);
     };
 
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
+
+    const validatePhone = (phone_number) => {
+        const regex = /^\d{8}$/; 
+        return regex.test(phone_number);
+    };
+
+    const validateField = (field, value) => {
+        return value.trim() !== '';
+    };
+
+    const formatFieldName = (fieldName) => {
+        return fieldName
+            .split('_')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+    };
+
     const showAlert = (title, message, onConfirm) => {
         setCustomAlert({ title, message, onConfirm });
         setAlertVisible(true);
     };
 
     const handleRegister = async () => {
+        const requiredFields = ['name', 'uen', 'email', 'phone_number', 'street_name', 'unit_no', 'building_name', 'city', 'postal_code', 'bank_account_name', 'account_no', 'bank', 'password', 'confirm_password'];
+        for (let field of requiredFields) {
+            if (!validateField(field, formData[field])) {
+                showAlert("Error", `${formatFieldName(field)} cannot be empty`, () => setAlertVisible(false));
+                return;
+            }
+        }
+
+        if (!validateEmail(formData.email)) {
+            showAlert("Error", "Please enter a valid email address", () => setAlertVisible(false));
+            return;
+        }
+
+        if (!validatePhone(formData.phone_number)) {
+            showAlert("Error", "Please enter a valid 8-digit phone number", () => setAlertVisible(false));
+            return;
+        }
+
         if (formData.password !== formData.confirm_password) {
             showAlert("Error", "Passwords do not match", () => setAlertVisible(false));
             return;
@@ -58,11 +101,12 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
 
         setIsLoading(true);
         try {
-            const res = await createUserWithEmailAndPassword(FirebaseAuth, formData.email, formData.password);
-            await setDoc(doc(FirebaseDb, "users", res.user.uid), {
+            const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+            await setDoc(doc(db, "users", res.user.uid), {
                 name: formData.name,
                 uen: formData.uen,
                 email: formData.email,
+                phone_number: formData.phone_number,
                 address: `${formData.street_name}, ${formData.unit_no}, ${formData.building_name}, ${formData.city}, ${formData.postal_code}`,
                 bank_account_name: formData.bank_account_name,
                 account_no: formData.account_no,
@@ -76,7 +120,8 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
                 "Your account has been created successfully!",
                 () => {
                     setAlertVisible(false);
-                    onRegComplete();
+                    // onRegComplete();
+                    navigation.navigate('RegistrationConfirmed'); 
                 }
             );
         } catch (err) {
@@ -115,11 +160,11 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
             case 1:
                 return <WholesalerDetails formData={formData} handleInputChange={handleInputChange} />;
             case 2:
-                return <WholesalerAddress formData={formData} handleInputChange={handleInputChange} />;
+                return <Address formData={formData} handleInputChange={handleInputChange} />;
             case 3:
                 return <WholesalerBank formData={formData} handleInputChange={handleInputChange} />;
             case 4:
-                return <WholesalerPassword formData={formData} handleInputChange={handleInputChange} />;
+                return <Password formData={formData} handleInputChange={handleInputChange} />;
             default:
                 return null;
         }
@@ -183,7 +228,7 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         flexDirection: 'row',
-        width: '100%',
+        width: '95%',
         backgroundColor: '#0C5E5230',
         padding: '6%', 
         borderRadius: '10%',
