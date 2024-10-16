@@ -75,7 +75,7 @@ def wholesalerAccount(df, collection):
         db.collection(collection).document(record['uen']).set({
             "bank": record['bank'],
             "bank_account_name": record['bank_account_name'],
-            "bank_account_no": record['bank_account_no'],
+            "bank_account_no": str(record['bank_account_no']),
         })
     print(f'Sucessfully created new wholesaler record.')
 
@@ -90,18 +90,17 @@ def wholesalerAddress(df, collection):
             "unit_no": record['unit_no'],
             "building_name": record['building_name'],
             "city": record['city'],
-            "postal_code": record['postal_code'],
+            "postal_code": str(record['postal_code']),
         })
     print(f'Sucessfully created new wholesaler address.')
 
 def consumerAccount(df, collection):
     for _, record in df.iterrows():
-        db.collection(collection).document(record['uid']).set({
-            "uid": record['uid'],
+        db.collection(collection).add({
             "name": record['name'],
-            "card_no": record['card_no'],
+            "card_no": str(record['card_no']),
             "expiry_date": record['expiry_date'],
-            "cvv": record['cvv'],
+            "cvv": str(record['cvv']),
         })
     print(f'Sucessfully created new consumer account.')
 
@@ -112,12 +111,11 @@ def consumerAddress(df, collection):
         if record['building_name'] == 'null':
             record['building_name'] = None
         db.collection(collection).document(record['uid']).set({
-            "uid": record['uid'],
             "street_name": record['street_name'],
             "unit_no": record['unit_no'],
             "building_name": record['building_name'],
             "city": record['city'],
-            "postal_code": record['postal_code'],
+            "postal_code": str(record['postal_code']),
         })
     print(f'Sucessfully created new consumer address.')
 
