@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.controller;
 
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.service.AuthService;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;

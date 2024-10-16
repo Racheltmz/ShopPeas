@@ -21,7 +21,4 @@ public class Product {
         this.package_size = package_size;
         this.image_url = image_url;
     }
-
-
-
 }

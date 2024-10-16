@@ -12,6 +12,7 @@ public interface ProductRepository {
     ProductDTO findByPID(String PID) throws ExecutionException, InterruptedException;
 
     List<Product> findAll() throws ExecutionException, InterruptedException;
+
     void addByPID(String PID, ProductDTO product);
 
     void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;

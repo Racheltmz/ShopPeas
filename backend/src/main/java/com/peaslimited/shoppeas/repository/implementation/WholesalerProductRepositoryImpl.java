@@ -1,8 +1,6 @@
 package com.peaslimited.shoppeas.repository.implementation;
 
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
@@ -69,10 +67,5 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     public void deleteWholesalerProduct(String swpid) {
         firestore.collection(COLLECTION).document(swpid).delete();
     }
-
-
-
-
-
 
 }

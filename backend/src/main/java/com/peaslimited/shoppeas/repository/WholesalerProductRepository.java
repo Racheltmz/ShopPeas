@@ -15,9 +15,10 @@ public interface WholesalerProductRepository {
     // method to find a product by productid
     List<WholesalerProductDTO> findByPid(String pid) throws ExecutionException, InterruptedException;
 
-
     void addWholesalerProduct(WholesalerProductDTO product);
+
     void updateWholesalerProduct(String id, Map<String, Object> updates) throws ExecutionException, InterruptedException;
+
     void deleteWholesalerProduct(String id);
 
 }
