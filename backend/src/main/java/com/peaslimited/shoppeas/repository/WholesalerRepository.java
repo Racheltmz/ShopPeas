@@ -22,4 +22,6 @@ public interface WholesalerRepository {
     RatingDTO findRatingByUEN(String UEN) throws ExecutionException, InterruptedException;
 
     void updateRatingByUEN(String UEN, Integer rating) throws ExecutionException, InterruptedException;
+
+    DocumentSnapshot findDocByWholesalerName(String name) throws ExecutionException, InterruptedException;
 }

@@ -4,14 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-
 import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumerAccount {
+public class ShoppingCart {
+
     @Id
-    private String UID;
-    private ArrayList<Object> paymentMtds;
+    String cid;
+    ArrayList<String> orders;
+    String uid;
+    double total_price;
 }

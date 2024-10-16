@@ -43,10 +43,21 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
+    public WholesalerProductDTO getBySwp_id(String swp_id) throws ExecutionException, InterruptedException
+    {
+        return wholesalerProductRepository.findBySwp_id(swp_id);
+    }
+
+    @Override
     public void deleteWholesalerProduct(String swpid) {
         wholesalerProductRepository.deleteWholesalerProduct(swpid);
     }
 
+    @Override
+    public String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException
+    {
+        return wholesalerProductRepository.getWholesalerProductName(swpid);
+    }
 
 
 }

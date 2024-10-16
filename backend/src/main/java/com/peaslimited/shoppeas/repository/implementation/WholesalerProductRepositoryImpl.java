@@ -1,11 +1,16 @@
 package com.peaslimited.shoppeas.repository.implementation;
 
+import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
+import com.peaslimited.shoppeas.dto.ConsumerAccountDTO;
+import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
+import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +26,9 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Autowired
     private Firestore firestore;
+
+    @Autowired
+    private ProductService productService;
 
     @Override
     // Fetch wholesaler products by uen
@@ -47,6 +55,22 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public WholesalerProductDTO findBySwp_id(String swp_id) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(swp_id);
+
+        // Asynchronously retrieve the document
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+
+        // Convert document to Consumer object
+        WholesalerProductDTO wholesalerProductDTO = null;
+        if (document.exists()) {
+            wholesalerProductDTO = document.toObject(WholesalerProductDTO.class);
+        }
+        return wholesalerProductDTO;
+    }
+
 
     // Add a new wholesaler product
     @Override
@@ -71,5 +95,20 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         DocumentReference docRef = firestore.collection(COLLECTION).document(swpid);
         docRef.update("active", false);
     }
+
+    @Override
+    public String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException {
+        System.out.println(swpid);
+        System.out.println("--");
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swpid);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getName();
+    }
+
+
+
 
 }

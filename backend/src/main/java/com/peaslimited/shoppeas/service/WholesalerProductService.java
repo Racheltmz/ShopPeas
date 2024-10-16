@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.service;
 
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 
 import java.util.Map;
 import java.util.List;
@@ -13,6 +14,7 @@ public interface WholesalerProductService {
 
     // method to find all the products by a particular wholesaler
     List<WholesalerProductDTO> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException;
+    WholesalerProductDTO getBySwp_id(String swp_id) throws ExecutionException, InterruptedException;
 
     // other crud methods
     void addWholesalerProduct(WholesalerProductDTO product);
@@ -20,5 +22,7 @@ public interface WholesalerProductService {
     void updateWholesalerProduct(String swpid, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
     void deleteWholesalerProduct(String swpid);
+    void updateWholesalerProduct(String swpid, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
+    String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException;
 }
