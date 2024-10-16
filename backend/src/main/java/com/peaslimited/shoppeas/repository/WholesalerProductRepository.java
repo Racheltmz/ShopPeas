@@ -1,7 +1,8 @@
 package com.peaslimited.shoppeas.repository;
 
+import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.model.WholesalerProducts;
+import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 
 import java.util.Map;
 import java.util.List;
@@ -10,10 +11,10 @@ import java.util.concurrent.ExecutionException;
 public interface WholesalerProductRepository {
 
     // method to find the wholesaler by uen
-    List<WholesalerProducts> findByUEN(String uen) throws ExecutionException, InterruptedException;
+    List<ProductDTO> findByUEN(String uen) throws ExecutionException, InterruptedException;
 
     // method to find a product by product id
-    List<WholesalerProductDTO> findByPid(String pid) throws ExecutionException, InterruptedException;
+    List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException;
 
     WholesalerProductDTO findBySwp_id(String swp_id) throws ExecutionException, InterruptedException;
 

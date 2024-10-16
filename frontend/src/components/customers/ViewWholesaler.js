@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -9,25 +9,54 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useUserStore } from "../../lib/userStore";
+import ProductItem from "./ProductItem";
+import Alert from '../utils/Alert';
+import wholesalerService from "../../service/WholesalerService";
 
 const ViewWholesaler = ({ route }) => {
   const navigation = useNavigation();
-  const { wholesalerName } = route.params;
+  const { userUid } = useUserStore();
+  const { wholesalerUEN } = route.params;
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [isGridView, setIsGridView] = useState(true);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => {} });
+  const [wholesalerInfo, setWholesalerInfo] = useState({
+    name: '',
+    location: '',
+    address: '',
+    averageRating: 0,
+    ratingCounts: [],
+    products: [],
+  });
 
-  // Dummy data (replace with actual data fetching logic later)
-  const wholesalerData = {
-    name: wholesalerName,
-    location: "Bishan, 39 Minutes away",
-    address: "123 Bishan Street 10, #01-45\nHappy Building\nS23491",
-    averageRating: 4.9,
-    ratingCounts: [100, 50, 10, 5, 2],
-    products: [
-      { name: "Bok Choy", quantity: "1 Packet", id: 1 },
-      { name: "Tomatoes", quantity: "1 Packet", id: 2 },
-      { name: "Spinach", quantity: "1 Packet", id: 3 },
-      { name: "Carrots", quantity: "1 Kg", id: 4 },
-    ],
-  };
+  useEffect(() => {
+    wholesalerService.viewWholesaler(userUid, wholesalerUEN)
+      .then((res) => {
+        const data = {
+          name: res.wholesaler.name,
+          location: "Bishan, 39 Minutes away",
+          address: `${res.wholesalerAddress.street_name}, ${res.wholesalerAddress.unit_no}\n${res.wholesalerAddress.city}, ${res.wholesalerAddress.postal_code}`,
+          averageRating: res.wholesaler.rating.toFixed(1),
+          ratingCounts: Array.from(res.wholesaler.num_ratings),
+          products: Array.from(res.wholesalerProducts),
+        }
+        setWholesalerInfo(data);
+      })
+      .catch((err) => {
+        setAlertVisible(true);
+        <Alert
+            visible={alertVisible}
+            title={err.response.status}
+            message={err.message}
+            onConfirm={() => {
+              setAlertVisible(false);
+              customAlert.onConfirm();
+            }}
+            onCancel={() => setAlertVisible(false)}
+        />
+      });
+  }, [userUid, wholesalerUEN]);
 
   const handleProductPress = (item) => {
     navigation.navigate('ProductDetails', { product: item });
@@ -44,10 +73,10 @@ const ViewWholesaler = ({ route }) => {
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <View style={styles.headerInfo}>
-            <Text style={styles.wholesalerName}>{wholesalerData.name}</Text>
-            <Text style={styles.location}>📍{wholesalerData.location}</Text>
+            <Text style={styles.wholesalerName}>{wholesalerInfo.name}</Text>
+            <Text style={styles.location}>📍{wholesalerInfo.location}</Text>
             <Text style={styles.addressHeader}>Address</Text>
-            <Text style={styles.address}>{wholesalerData.address}</Text>
+            <Text style={styles.address}>{wholesalerInfo.address}</Text>
           </View>
           <Image
             source={require("../../../assets/imgs/profile.png")}
@@ -63,13 +92,13 @@ const ViewWholesaler = ({ route }) => {
               <View style={styles.starRating}>
                 <Ionicons name="star" size={24} color="#FFD700" />
                 <Text style={styles.averageRating}>
-                  {wholesalerData.averageRating}
+                  {wholesalerInfo.averageRating}
                 </Text>
               </View>
               <Text style={styles.averageRatingText}>Average Rating</Text>
             </View>
             <View style={styles.ratingBars}>
-              {wholesalerData.ratingCounts.map((count, index) => (
+              {wholesalerInfo.ratingCounts.map((count, index) => (
                 <View key={index} style={styles.ratingBar}>
                   <Text style={styles.ratingNumber}>{5 - index}</Text>
                   <View style={styles.barContainer}>
@@ -77,7 +106,7 @@ const ViewWholesaler = ({ route }) => {
                       style={[
                         styles.bar,
                         {
-                          width: `${(count / Math.max(...wholesalerData.ratingCounts)) *
+                          width: `${(count / Math.max(...wholesalerInfo.ratingCounts)) *
                             100
                             }%`,
                         },
@@ -91,16 +120,14 @@ const ViewWholesaler = ({ route }) => {
           <Text style={styles.sectionTitle}>Products</Text>
           <View style={styles.productsSection}>
             <View style={styles.productGrid}>
-              {wholesalerData.products.map((product, index) => (
-                <TouchableOpacity
-                  onPress={() => { handleProductPress(product) }}
-                >
-                  <View key={index} style={styles.productItem}>
-                    <Image style={styles.productImagePlaceholder} source={require("../../../assets/imgs/DummyImage.jpg")} />
-                    <Text style={styles.productName}>{product.name}</Text>
-                    <Text style={styles.productQuantity}>{product.quantity}</Text>
-                  </View>
-                </TouchableOpacity>
+              {wholesalerInfo.products.map((product, index) => (
+                <ProductItem
+                  name={product.name}
+                  packageSize={product.packageSize}
+                  imageUrl={require("../../../assets/imgs/DummyImage.jpg")}
+                  isGridView={isGridView}
+                  onPress={() => handleProductPress(product)}
+                />
               ))}
             </View>
           </View>
@@ -231,6 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   productItem: {
+    width: "50%",
     backgroundColor: "white",
     borderRadius: 8,
     padding: 16,

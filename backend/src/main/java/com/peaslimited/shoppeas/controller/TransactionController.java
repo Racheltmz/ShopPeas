@@ -2,13 +2,10 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.dto.WholesalerTransactionsDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.*;
-import com.peaslimited.shoppeas.dto.mapper.WholesalerTransactionMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin

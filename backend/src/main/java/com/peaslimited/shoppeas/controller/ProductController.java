@@ -2,6 +2,8 @@ package com.peaslimited.shoppeas.controller;
 
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
+import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
+import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
@@ -42,7 +44,7 @@ public class ProductController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<ProductDTO> getAllProducts() throws ExecutionException, InterruptedException {
+    public List<Product> getAllProducts() throws ExecutionException, InterruptedException {
         return productService.getAllProducts();
     }
 
@@ -53,7 +55,7 @@ public class ProductController {
     @GetMapping("/{pid}")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<WholesalerProductDTO> getWholesalersByPid(@PathVariable String pid) throws ExecutionException, InterruptedException {
+    public List<WholesalerProductDetailsDTO> getWholesalersByPid(@PathVariable String pid) throws ExecutionException, InterruptedException {
         return wholesalerProductService.findByPid(pid);
     }
 
@@ -64,7 +66,7 @@ public class ProductController {
     @GetMapping("/wholesaler/{uen}")
     @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<WholesalerProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
+    public List<ProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductService.getByWholesalerUEN(uen);
     }
 
