@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
-import WholesalerService from '../../service/WholesalerService';
+import wholesalerService from '../../service/WholesalerService';
 import { useUserStore } from '../../lib/userStore';
 
 const Home = () => {
@@ -13,47 +13,38 @@ const Home = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
-  const { userUid } = useUserStore();
-
-  console.log('Current userUid:', userUid);
-
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      console.log('Fetching profile for userUid:', userUid);
-      const fetchedProfile = await WholesalerService.retrieveProfile(userUid);
-      console.log('Fetched profile:', fetchedProfile);
-      setProfile(fetchedProfile);
-    } catch (err) {
-      console.error('Error loading profile:', err);
-      setError('Failed to load profile. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { currentUser, userUid } = useUserStore();
 
   useEffect(() => {
-    console.log(userUid)
-    if (userUid) {
-      loadProfile();
-    } else {
-      setError('User ID is missing. Please ensure you are logged in.');
-      setLoading(false);
-    }
-  }, []);
-  
+    setProfile(currentUser.name);
+  }, [currentUser])
+
+  // const loadProfile = async () => {
+  //   try {
+  //     setLoading(true);
+  //     console.log('Fetching profile for userUid:', userUid);
+  //     const fetchedProfile = await wholesalerService.retrieveProfile(userUid);
+  //     console.log('Fetched profile:', fetchedProfile);
+  //     // setProfile(fetchedProfile);
+  //   } catch (err) {
+  //     console.error('Error loading profile:', err);
+  //     setError('Failed to load profile. Please try again later.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
 
   const [products, setProducts] = useState([
-    {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
-    {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
-    {name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing'},
-    {name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats'},
-    {name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
-    {name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground'},
+    { name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22, description: 'Veggies' },
+    { name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
+    { name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing' },
+    { name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats' },
+    { name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
+    { name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground' },
   ]);
 
   const removeProduct = (index) => {
@@ -61,8 +52,8 @@ const Home = () => {
   };
 
   const editProduct = (index, updatedProduct) => {
-    setProducts(currentProducts => 
-      currentProducts.map((product, i) => 
+    setProducts(currentProducts =>
+      currentProducts.map((product, i) =>
         i === index ? { ...product, ...updatedProduct } : product
       )
     );
@@ -73,43 +64,43 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style = {styles.container}>
-        <View style={styles.searchBar}>
-            <Ionicons name="search" size={24} color="#0C5E52" />
-            <TextInput 
-            style={styles.searchInput}
-            placeholder="Search Products"
-            placeholderTextColor="#0C5E52"
-            value={searchText}
-            autoCapitalize="none"
-            onChangeText={(text) => setSearchText(text)}
-            />
-            <TouchableOpacity onPress={navigateToProfile}>
-            <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
-            </TouchableOpacity>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={24} color="#0C5E52" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search Products"
+          placeholderTextColor="#0C5E52"
+          value={searchText}
+          autoCapitalize="none"
+          onChangeText={(text) => setSearchText(text)}
+        />
+        <TouchableOpacity onPress={navigateToProfile}>
+          <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.header}>
-          <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>{profile.name}</Text>
-              <Text style={styles.subHeaderTitle}>My Products</Text>
-          </View>
-          <Image
-              source={require('../../../assets/imgs/pea.png')}
-              style={styles.headerImage}
-          />
+      <View style={styles.header}>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>{profile}</Text> 
+          <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
-        
-        <View style={styles.addProductContainer}>
-            <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
-                <Ionicons name="add-circle-outline" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.addButtonText}>Add New Product</Text>
-            <TouchableOpacity style={styles.filterButton}>
-                <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
-            </TouchableOpacity>
-        </View>
-        <ScrollView style={styles.productList}>
+        <Image
+          source={require('../../../assets/imgs/pea.png')}
+          style={styles.headerImage}
+        />
+      </View>
+
+      <View style={styles.addProductContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
+          <Ionicons name="add-circle-outline" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.addButtonText}>Add New Product</Text>
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
+        </TouchableOpacity>
+      </View>
+      <ScrollView style={styles.productList}>
         {products.map((product, index) => (
           <WholesalerProduct
             key={index}
@@ -174,7 +165,7 @@ const styles = StyleSheet.create({
     margin: '2%',
   },
   headerImage: {
-    width: '18%', 
+    width: '18%',
     height: '65%',
     marginRight: "29.2%",
   },
