@@ -68,6 +68,9 @@ const Register = ({ onBackPress, onLoginPress }) => {
     <View style={styles.container}>
       <RegisterCustomer 
           onBackPress={() => setCurrentState('choice')}
+          onRegComplete={() => {
+            setTimeout(() => setCurrentState('login'), 500);
+          }}
       />
     </View>
   );
@@ -89,50 +92,12 @@ const Register = ({ onBackPress, onLoginPress }) => {
     </View>
   );
 
-  const renderCustomerConfirmation = () => (
-    <View style={styles.container}>
-      <Image
-          source={require('../../../assets/imgs/Confirmation.png')}
-          style={styles.image}
-        />
-      <Text style={styles.regComp}>Registration Complete!</Text>
-      <Text style={styles.regSub}>Welcome to Shoppeas!</Text>
-      <TouchableOpacity 
-        style={styles.loginButton}
-        onPress={() => setCurrentState('login')}
-      >
-        <Text style={styles.loginButtonText}>Login</Text>
-        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderWholesalerConfirmation = () => (
-    <View style={styles.contianer}>
-      <Image
-          source={require('../../../assets/imgs/Confirmation.png')}
-          style={styles.image}
-        />
-      <Text style={styles.regComp}>Registration Complete!</Text>
-      <Text style={styles.regSub}>Welcome to Shoppeas!</Text>
-      <TouchableOpacity 
-        style={styles.loginButton}
-        onPress={() => setCurrentState('login')}
-      >
-        <Text style={styles.loginButtonText}>Login</Text>
-        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
-      </TouchableOpacity>
-    </View>
-  );
-
   return (
     <SafeAreaView style={styles.safeArea}>
       {currentState === 'choice' && renderChoice()}
       {currentState === 'consumer' && renderConsumerForm()}
       {currentState === 'business' && renderBusinessForm()}
       {currentState === 'login' && renderLogin()}
-      {currentState === 'cus_confirm' && renderCustomerConfirmation()}
-      {currentState === 'biz_confirm' && renderWholesalerConfirmation()}
     </SafeAreaView>
   );
 };

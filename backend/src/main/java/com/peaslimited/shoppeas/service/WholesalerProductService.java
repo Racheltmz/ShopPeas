@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.service;
 
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.model.WholesalerProducts;
 
 import java.util.Map;
 import java.util.List;
@@ -17,7 +16,9 @@ public interface WholesalerProductService {
 
     // other crud methods
     void addWholesalerProduct(WholesalerProductDTO product);
+
     void deleteWholesalerProduct(String swpid);
+
     void updateWholesalerProduct(String swpid, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
 }
