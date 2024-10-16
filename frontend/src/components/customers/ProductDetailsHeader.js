@@ -17,11 +17,7 @@ const ProductDetailsHeader = ({ name, desc }) => {
       </TouchableOpacity>
       <View styles={styles.row}>
         <Text style={styles.headerTitle}>{name}</Text>
-        {/* <Text style={styles.headerSubtitle}>{desc}</Text> */}
       </View>
-      {/* <TouchableOpacity onPress={navigateToCart}>
-        <Ionicons name="cart-outline" size={24} color="#0C5E52" />
-      </TouchableOpacity> */}
     </View>
   );
 };
@@ -29,7 +25,6 @@ const ProductDetailsHeader = ({ name, desc }) => {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     padding: 15,
     backgroundColor: 'white',
@@ -39,16 +34,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0C5E52',
-    textAlign: 'center',
-  },
-  headerSubtitle: {
-    fontSize: 18,
-    color: '#0C5E52',
-    textAlign: 'center',
-    marginTop: 2,
+    textAlign: 'left',
+    paddingHorizontal: 10,
   },
   row: {
     flexDirection: 'row',
