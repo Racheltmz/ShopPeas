@@ -4,7 +4,6 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 

@@ -9,7 +9,6 @@ import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.OrderService;
 import com.peaslimited.shoppeas.service.ShoppingCartService;
 import com.peaslimited.shoppeas.service.TransactionsService;
-import com.peaslimited.shoppeas.service.WholesalerTransactionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
