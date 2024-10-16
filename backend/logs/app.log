@@ -31,3 +31,5 @@
 2024-Oct-14 23:28:25 [http-nio-8080-exec-2] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
 2024-Oct-14 23:57:55 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
 2024-Oct-15 00:01:13 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-16 12:16:57 [http-nio-8080-exec-4] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 401 UNAUTHORIZED Unauthenticated access: No user record found for the provided user ID: undefined 
+2024-Oct-16 12:16:57 [http-nio-8080-exec-4] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
