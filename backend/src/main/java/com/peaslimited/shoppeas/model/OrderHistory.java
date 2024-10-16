@@ -17,6 +17,6 @@ public class OrderHistory {
     private String oid;
     private ArrayList<String> orders; //list of tid
     private LocalDateTime date;
-    private float total_price;
+    private double total_price;
     private String uid;
 }

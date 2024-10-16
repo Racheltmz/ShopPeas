@@ -110,7 +110,7 @@ public class TransactionController {
         productsList.add(productMap);
 
         //find unit price
-        float price = getProductPrice(swp_id,uen);
+        double price = getProductPrice(swp_id,uen);
         if(price != 0)
         {
             TransactionsDTO transaction = new TransactionsDTO(
@@ -126,7 +126,7 @@ public class TransactionController {
 
     }
 
-    public float getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
+    public double getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProd =  wholesalerProductService.getBySwp_id(swp_id);
         return wholesalerProd.getPrice();
     }
@@ -151,7 +151,7 @@ public class TransactionController {
 
                 String uid = document.get("uid").toString();
                 double total_price = (double) document.get("total_price");
-                float price = (float) total_price;
+                double price = (double) total_price;
                 dataMap.put("uid", uid);
                 dataMap.put("total_price", price);
                 dataMap.put("items", transactionService.getProductListfromTransaction(document, false));

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShoppingCart {
-
     @Id
     String cid;
     ArrayList<String> orders;

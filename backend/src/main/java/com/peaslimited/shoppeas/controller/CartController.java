@@ -84,7 +84,7 @@ public class CartController {
         DocumentSnapshot transactionDoc = transactionsService.findDocByUIDandStatus(uid, "IN-CART");
         String tid = transactionDoc.getId();
         double total_price = (double) transactionDoc.get("total_price");
-        float price = (float) total_price;
+        double price = (double) total_price;
 
         //ACTION: ADDS ORDER TO CART
         if(cartService.getCartByUID(uid) == null)

@@ -92,7 +92,7 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
     //or quantity is updated
     //cart/ order repos are then updated
     @Override
-    public void updateCartWithOrder(String cid, int quantity, String tid, float newPrice) throws ExecutionException, InterruptedException
+    public void updateCartWithOrder(String cid, int quantity, String tid, double newPrice) throws ExecutionException, InterruptedException
     {
         DocumentReference docRef = firestore.collection(COLLECTION).document(cid);
         ApiFuture<DocumentSnapshot> future = docRef.get();

@@ -40,7 +40,7 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             System.out.println(document);
             String uen = document.get("uen").toString();
             double total_price = (double) document.get("total_price");
-            float price = (float) total_price;
+            double price = (double) total_price;
             ArrayList<Object> products = (ArrayList<Object>) document.get("products");
             return new TransactionsDTO(products,status,price,uen,uid);
         }
@@ -118,9 +118,9 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         DocumentSnapshot transaction = findDocByUIDandStatus(uid, status);
         System.out.println(transaction);
 
-        float price = getProductPrice(swp_id,uen);
+        double price = getProductPrice(swp_id,uen);
         double total_price = (double) transaction.get("total_price");
-        float oldprice = (float) total_price;
+        double oldprice = (double) total_price;
 
         Map<String, Object> productMap = new HashMap<>();
         productMap.put("quantity", quantity);
@@ -166,7 +166,7 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return documents;
     }
 
-    public float getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
+    public double getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProd =  wholesalerProductService.getBySwp_id(swp_id);
         return wholesalerProd.getPrice();
     }

@@ -16,7 +16,7 @@ public class Transactions {
     private ArrayList<Object> products;
     // IN-CART, PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED
     private String status;
-    private float total_price;
+    private double total_price;
     private String uen;
     private String uid;
 }

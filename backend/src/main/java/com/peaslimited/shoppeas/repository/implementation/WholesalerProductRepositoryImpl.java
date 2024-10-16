@@ -5,7 +5,6 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
-import com.peaslimited.shoppeas.dto.ConsumerAccountDTO;
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
@@ -107,8 +106,5 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
         return product.getName();
     }
-
-
-
 
 }
