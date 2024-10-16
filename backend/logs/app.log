@@ -38,3 +38,5 @@
 2024-Oct-16 14:29:31 [http-nio-8080-exec-4] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
 2024-Oct-16 18:11:18 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
 2024-Oct-16 18:11:52 [http-nio-8080-exec-2] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Failed to evaluate expression 'hasRole('CONSUMER', 'WHOLESALER')' 
+2024-Oct-16 20:15:28 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 401 UNAUTHORIZED Unauthenticated access: No user record found for the provided user ID: undefined 
+2024-Oct-16 20:15:28 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
