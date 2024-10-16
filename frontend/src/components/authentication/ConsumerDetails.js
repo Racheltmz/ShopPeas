@@ -10,7 +10,7 @@ const WholesalerDetails = ({ formData, handleInputChange }) => {
                 <TextInput
                     style={styles.nameInput}
                     value={formData.first_name}
-                    onChangeText={(text) => handleInputChange('name', text)}
+                    onChangeText={(text) => handleInputChange('first_name', text)}
                 />
             </View>
             <View style={styles.nameContainer}>
@@ -18,7 +18,7 @@ const WholesalerDetails = ({ formData, handleInputChange }) => {
                 <TextInput
                     style={styles.nameInput}
                     value={formData.last_name}
-                    onChangeText={(text) => handleInputChange('name', text)}
+                    onChangeText={(text) => handleInputChange('last_name', text)}
                 />
             </View>
         </View>
@@ -27,7 +27,7 @@ const WholesalerDetails = ({ formData, handleInputChange }) => {
         <TextInput
             style={styles.input}
             value={formData.email}
-            onChangeText={(text) => handleInputChange('uen', text)}
+            onChangeText={(text) => handleInputChange('email', text)}
         />
         <Text style={styles.stepTitle}>Phone Number: </Text>
         <TextInput

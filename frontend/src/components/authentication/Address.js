@@ -9,19 +9,19 @@ const Address = ({ formData, handleInputChange }) => {
         style={styles.input}
         placeholder="Street Name"
         value={formData.street_name}
-        onChangeText={(text) => handleInputChange('streetName', text)}
+        onChangeText={(text) => handleInputChange('street_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Unit No."
         value={formData.unit_no}
-        onChangeText={(text) => handleInputChange('unitNo', text)}
+        onChangeText={(text) => handleInputChange('unit_no', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Building Name"
         value={formData.building_name}
-        onChangeText={(text) => handleInputChange('buildingName', text)}
+        onChangeText={(text) => handleInputChange('building_name', text)}
       />
       <TextInput
         style={styles.input}
@@ -33,7 +33,7 @@ const Address = ({ formData, handleInputChange }) => {
         style={styles.input}
         placeholder="Postal Code"
         value={formData.postal_code}
-        onChangeText={(text) => handleInputChange('postalCode', text)}
+        onChangeText={(text) => handleInputChange('postal_code', text)}
       />
     </View>
   );

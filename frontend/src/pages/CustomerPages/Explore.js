@@ -5,6 +5,7 @@ import Products from '../../components/customers/Products';
 import { fetchProductData } from '../../api/ApiCallFunctions';
 import Fuse from 'fuse.js';
 import { useUserStore } from '../../lib/userStore';
+import { Searchbar } from 'react-native-paper';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");

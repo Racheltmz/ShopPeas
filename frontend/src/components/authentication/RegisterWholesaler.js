@@ -4,6 +4,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
+import authService from '../../service/AuthService';
 import WholesalerDetails from './WholesalerDetails';
 import Address from './Address';
 import WholesalerBank from './WholesalerBank';
@@ -71,7 +72,8 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     };
 
     const handleRegister = async () => {
-        const requiredFields = ['name', 'uen', 'email', 'phone_number', 'street_name', 'unit_no', 'building_name', 'city', 'postal_code', 'bank_account_name', 'account_no', 'bank', 'password', 'confirm_password'];
+        // left building name out of required fields for now
+        const requiredFields = ['name', 'uen', 'email', 'phone_number', 'street_name', 'unit_no', 'city', 'postal_code', 'bank_account_name', 'account_no', 'bank', 'password', 'confirm_password'];
         for (let field of requiredFields) {
             if (!validateField(field, formData[field])) {
                 showAlert("Error", `${formatFieldName(field)} cannot be empty`, () => setAlertVisible(false));
@@ -102,28 +104,14 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         setIsLoading(true);
         try {
             const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-            await setDoc(doc(db, "users", res.user.uid), {
-                name: formData.name,
-                uen: formData.uen,
-                email: formData.email,
-                phone_number: formData.phone_number,
-                address: `${formData.street_name}, ${formData.unit_no}, ${formData.building_name}, ${formData.city}, ${formData.postal_code}`,
-                bank_account_name: formData.bank_account_name,
-                account_no: formData.account_no,
-                bank: formData.bank,
-                created: new Date(),
-                id: res.user.uid,
-                role: "wholesaler",
-            });
-            showAlert(
-                "Registration Successful",
-                "Your account has been created successfully!",
-                () => {
-                    setAlertVisible(false);
-                    // onRegComplete();
-                    navigation.navigate('RegistrationConfirmed'); 
-                }
-            );
+
+            // API call to add user details into database collections
+            authService.register(res.user.uid, "wholesaler", formData)
+            .catch((err) => {
+                console.log(err); // TODO: replace with show error alert
+            })
+
+            // TODO: fix this navigation it jumps to auth page after reg
         } catch (err) {
         console.error(err)
             showAlert("Error", "Registration failed: " + err.message, () => setAlertVisible(false));

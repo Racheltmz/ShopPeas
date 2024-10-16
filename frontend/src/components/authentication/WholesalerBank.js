@@ -9,13 +9,13 @@ const WholesalerBank = ({ formData, handleInputChange }) => {
         style={styles.input}
         placeholder="Full Name in your Bank Account"
         value={formData.bank_account_name}
-        onChangeText={(text) => handleInputChange('bankAccountName', text)}
+        onChangeText={(text) => handleInputChange('bank_account_name', text)}
       />
       <TextInput
         style={styles.input}
         placeholder="Account No."
         value={formData.account_no}
-        onChangeText={(text) => handleInputChange('accountNo', text)}
+        onChangeText={(text) => handleInputChange('account_no', text)}
       />
       <TextInput
         style={styles.input}

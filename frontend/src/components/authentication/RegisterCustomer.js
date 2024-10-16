@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword , getAuth } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
-import { setDoc, doc } from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
@@ -99,27 +98,13 @@ const RegisterCustomer = ({onBackPress}) => {
       setIsLoading(true)
 
       try {
-          const res = await createUserWithEmailAndPassword(auth, email, password);
+          const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-          // // TODO: Update these fields with the respective records
-          const requestBody = {
-            "first_name": firstName,
-            "last_name": lastName,
-            "email": email,
-            "phone_number": `+65 ${phoneNumber}`,
-            "name": `${firstName} ${lastName}`,
-            "street_name": "10 Ang Mo Kio Road",
-            "unit_no": "#10-19",
-            "building_name": null,
-            "city": "Singapore",
-            "postal_code": "387458"
-          }
-          
           // API call to add user details into database collections
-          authService.register(res.user.uid, "consumer", requestBody)
-              .catch((err) => {
-                  console.log(err); // TODO: replace with show error alert
-              })
+          authService.register(res.user.uid, "consumer", formData)
+            .catch((err) => {
+                console.log(err); // TODO: replace with show error alert
+            })
 
           // TODO: Navigate to login page
       } catch (err) {
