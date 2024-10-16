@@ -19,11 +19,11 @@ export const useUserStore = create((set, get) => ({
       if (userRole) {
         const docRef = doc(db, userRole, uid);
         const docSnap = await getDoc(docRef);
-
+        
+        // if user exists
         if (docSnap.exists()) {
           const user = FirebaseAuth.currentUser;
           const signupDate = new Date(user.metadata.creationTime);
-
           // Format the date as "DD-MM-YYYY"
           const formattedSignupDate = signupDate
             .toLocaleDateString("en-GB", {
@@ -49,6 +49,8 @@ export const useUserStore = create((set, get) => ({
         const addressDocRef = doc(db, userRole + "_address", uid);
         const addressDocSnap = await getDoc(addressDocRef);
 
+        // console.log(addressDocSnap.data());
+
         if (docSnap.exists()) {
           set({ userAddress: addressDocSnap.data(), isLoading: false });
         } else {
@@ -60,6 +62,7 @@ export const useUserStore = create((set, get) => ({
         const paymentDetailsDocSnap = await getDoc(paymentDetailsDocRef);
 
         if (docSnap.exists()) {
+          console.log(paymentDetailsDocSnap.data())
           set({
             paymentDetails: paymentDetailsDocSnap.data(),
             isLoading: false,

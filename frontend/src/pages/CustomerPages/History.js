@@ -73,6 +73,7 @@ const DUMMY_ITEMS = [
   },
 ];
 
+
 const History = () => {
   const navigation = useNavigation();
   

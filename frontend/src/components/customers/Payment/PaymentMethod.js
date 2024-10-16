@@ -33,9 +33,9 @@ const PaymentMethod = () => {
             </View>
             <View style={styles.cardDetails}>
               <Text style={styles.cardType}>
-                {paymentDetails.card_no.toString().startsWith('4') ? 'Visa' : 'Mastercard'}
+                {/* {paymentDetails.card_no.toString().startsWith('4') ? 'Visa' : 'Mastercard'} */}
               </Text>
-              <Text style={styles.cardNumber}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text>
+              {/* <Text style={styles.cardNumber}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text> */}
             </View>
             <Ionicons name="radio-button-on" size={24} color="#0C5E52" />
           </TouchableOpacity>
