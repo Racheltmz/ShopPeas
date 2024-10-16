@@ -53,7 +53,7 @@ public class ProductController {
      * @return list of products for each wholesaler
      */
     @GetMapping("/wholesaler/{uen}")
-    @PreAuthorize("hasRole('WHOLESALER')")
+    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public List<WholesalerProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductService.getByWholesalerUEN(uen);
@@ -67,7 +67,6 @@ public class ProductController {
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code=HttpStatus.CREATED)
     public void addProduct(@RequestBody WholesalerProductDTO wholesalerProductDTO){
-        String generatedSWPID = "SWP6000"; // update this in the future to increment from last PID in firebase
         wholesalerProductService.addWholesalerProduct(wholesalerProductDTO);
     }
 
@@ -86,7 +85,7 @@ public class ProductController {
      * Delete a wholesaler product by Pid
      * @return void
      */
-    @DeleteMapping("/delete/{swpid}")
+    @PatchMapping("/delete/{swpid}")
     @PreAuthorize(("hasRole('WHOLESALER')"))
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {

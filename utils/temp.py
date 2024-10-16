@@ -20,7 +20,16 @@ default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-docs = db.collection("wholesalerproducts").stream()
+# Reference to the collection
+collection_ref = db.collection("wholesaler_products")
+
+# Stream the documents
+docs = collection_ref.stream()
 
 for doc in docs:
-    print(f"{doc.id} => {doc.to_dict()}")
+    # Get a reference to the document directly from the snapshot
+    doc_ref = doc.reference
+    
+    # Update the document
+    doc_ref.update({'active': True})
+    

@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Repository
 public class WholesalerProductRepositoryImpl implements WholesalerProductRepository {
+
     private final String COLLECTION = "wholesaler_products";
 
     @Autowired
@@ -24,7 +25,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     @Override
     // Fetch wholesaler products by uen
     public List<WholesalerProducts> findByUEN(String uen) throws ExecutionException, InterruptedException {
-        QuerySnapshot snapshot = firestore.collection(COLLECTION).whereEqualTo("uen", uen).get().get();
+        QuerySnapshot snapshot = firestore.collection(COLLECTION).whereEqualTo("uen", uen).whereEqualTo("active", true).get().get();
 
         return snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
@@ -37,6 +38,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         // Query Firestore to get all wholesaler products with the given PID
         QuerySnapshot snapshot = firestore.collection(COLLECTION)
                 .whereEqualTo("pid", pid)
+                .whereEqualTo("active", true)
                 .get().get();
 
         // Map each matching document to a WholesalerProductDTO object
@@ -65,7 +67,9 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Override
     public void deleteWholesalerProduct(String swpid) {
-        firestore.collection(COLLECTION).document(swpid).delete();
+        // Update an existing document
+        DocumentReference docRef = firestore.collection(COLLECTION).document(swpid);
+        docRef.update("active", false);
     }
 
 }
