@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConsumerAccountDTO {
-    private Long card_no;
+    private String card_no;
     private String expiry_date;
-    private Integer cvv;
+    private String cvv;
     private String name;
 }

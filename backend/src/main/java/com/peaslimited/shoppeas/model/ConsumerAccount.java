@@ -11,9 +11,9 @@ import org.springframework.data.annotation.Id;
 public class ConsumerAccount {
     @Id
     private String UID;
-    private Long card_no;
+    private String card_no;
     private String expiry_date;
-    private Integer cvv;
+    private String cvv;
     private String name;
 
 }

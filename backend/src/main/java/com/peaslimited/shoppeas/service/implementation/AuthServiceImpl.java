@@ -107,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
             unit_no,
             building_name,
             user.get("city").toString(),
-            Integer.valueOf(user.get("postal_code").toString())
+            user.get("postal_code").toString()
         );
     }
 
@@ -131,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
         return new WholesalerAccountDTO(
             user.get("bank").toString(),
             user.get("bank_account_name").toString(),
-            Long.valueOf(user.get("bank_account_no").toString())
+            user.get("bank_account_no").toString()
         );
     }
 
@@ -155,7 +155,7 @@ public class AuthServiceImpl implements AuthService {
             unit_no,
             building_name,
             user.get("city").toString(),
-            Integer.valueOf(user.get("postal_code").toString())
+            user.get("postal_code").toString()
         );
     }
 

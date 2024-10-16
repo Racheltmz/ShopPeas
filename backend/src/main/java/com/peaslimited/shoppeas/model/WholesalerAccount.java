@@ -13,6 +13,6 @@ public class WholesalerAccount {
     private String UEN;
     private String bank;
     private String bank_account_name;
-    private Long bank_account_no;
+    private String bank_account_no;
 
 }
