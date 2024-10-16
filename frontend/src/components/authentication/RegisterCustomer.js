@@ -1,182 +1,180 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, TextInput, Button, Image, TouchableOpacity } from 'react-native';
-import { createUserWithEmailAndPassword , getAuth } from 'firebase/auth';
+import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
-import { setDoc, doc } from 'firebase/firestore';
-import { Ionicons } from '@expo/vector-icons';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
 import Address from './Address';
 import Password from './Password';
-import Alert from './Alert';
+import Alert from '../utils/Alert';
 
-const RegisterCustomer = ({onBackPress}) => {
-    const [step, setStep] = useState(1);
-    const [isLoading, setIsLoading] = useState(false);
-    const [alertVisible, setAlertVisible] = useState(false);
-    const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => {} });
-    const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        email: '',
-        phone_number: '',
-        street_name: '',
-        unit_no: '',
-        building_name: '',
-        city: '',
-        postal_code: '',
-        password: '',
-        confirm_password: '',
-    });
+const RegisterCustomer = ({ onBackPress }) => {
+  const [step, setStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone_number: '',
+    street_name: '',
+    unit_no: '',
+    building_name: '',
+    city: '',
+    postal_code: '',
+    password: '',
+    confirm_password: '',
+  });
 
-    const auth = FirebaseAuth;
-    const db = FirebaseDb;
+  const auth = FirebaseAuth;
+  const db = FirebaseDb;
 
-    const handleInputChange = (field, value) => {
-      setFormData({ ...formData, [field]: value });
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  }
+
+  const validatePassword = (password) => {
+    const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{12,}$/;
+    return regex.test(password);
+  };
+
+  const validateEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  const validatePhone = (phone_number) => {
+    const regex = /^\d{8}$/;
+    return regex.test(phone_number);
+  };
+
+  const validateField = (field, value) => {
+    return value.trim() !== '';
+  };
+
+  const formatFieldName = (fieldName) => {
+    return fieldName
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const showAlert = (title, message, onConfirm) => {
+    setCustomAlert({ title, message, onConfirm });
+    setAlertVisible(true);
+  };
+
+  const handleRegister = async () => {
+    const requiredFields = ['first_name', 'last_name', 'email', 'phone_number', 'street_name', 'unit_no', 'building_name', 'city', 'postal_code', 'password', 'confirm_password'];
+    for (let field of requiredFields) {
+      if (!validateField(field, formData[field])) {
+        showAlert("Error", `${formatFieldName(field)} cannot be empty`, () => setAlertVisible(false));
+        return;
+      }
     }
 
-    const validatePassword = (password) => {
-        const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{12,}$/;
-        return regex.test(password);
-    };
+    if (!validateEmail(formData.email)) {
+      showAlert("Error", "Please enter a valid email address", () => setAlertVisible(false));
+      return;
+    }
 
-    const validateEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
+    if (!validatePhone(formData.phone_number)) {
+      showAlert("Error", "Please enter a valid 8-digit phone number", () => setAlertVisible(false));
+      return;
+    }
 
-    const validatePhone = (phone_number) => {
-        const regex = /^\d{8}$/; 
-        return regex.test(phone_number);
-    };
+    if (formData.password !== formData.confirm_password) {
+      showAlert("Error", "Passwords do not match", () => setAlertVisible(false));
+      return;
+    }
 
-    const validateField = (field, value) => {
-        return value.trim() !== '';
-    };
+    if (!validatePassword(formData.password)) {
+      showAlert("Error", "Password does not meet the required criteria", () => setAlertVisible(false));
+      return;
+    }
 
-    const formatFieldName = (fieldName) => {
-        return fieldName
-            .split('_')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
-    };
+    setIsLoading(true)
 
-    const showAlert = (title, message, onConfirm) => {
-      setCustomAlert({ title, message, onConfirm });
-      setAlertVisible(true);
-    };
+    try {
+      const res = await createUserWithEmailAndPassword(auth, email, password);
 
-    const handleRegister = async () => {
-      const requiredFields = ['first_name', 'last_name', 'email', 'phone_number', 'street_name', 'unit_no', 'building_name', 'city', 'postal_code', 'password', 'confirm_password'];
-      for (let field of requiredFields) {
-          if (!validateField(field, formData[field])) {
-              showAlert("Error", `${formatFieldName(field)} cannot be empty`, () => setAlertVisible(false));
-              return;
-          }
+      // // TODO: Update these fields with the respective records
+      const requestBody = {
+        "first_name": firstName,
+        "last_name": lastName,
+        "email": email,
+        "phone_number": `+65 ${phoneNumber}`,
+        "name": `${firstName} ${lastName}`,
+        "street_name": "10 Ang Mo Kio Road",
+        "unit_no": "#10-19",
+        "building_name": null,
+        "city": "Singapore",
+        "postal_code": "387458"
       }
 
-      if (!validateEmail(formData.email)) {
-          showAlert("Error", "Please enter a valid email address", () => setAlertVisible(false));
-          return;
-      }
+      // API call to add user details into database collections
+      authService.register(res.user.uid, "consumer", requestBody)
+        .catch((err) => {
+          console.log(err); // TODO: replace with show error alert
+        })
 
-      if (!validatePhone(formData.phone_number)) {
-          showAlert("Error", "Please enter a valid 8-digit phone number", () => setAlertVisible(false));
-          return;
-      }
+      // TODO: Navigate to login page
+    } catch (err) {
+      console.log(err);
+      alert("registration failed: " + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-      if (formData.password !== formData.confirm_password) {
-          showAlert("Error", "Passwords do not match", () => setAlertVisible(false));
-          return;
-      }
-    
-      if (!validatePassword(formData.password)) {
-          showAlert("Error", "Password does not meet the required criteria", () => setAlertVisible(false));
-          return;
-      }
-
-      setIsLoading(true)
-
-      try {
-          const res = await createUserWithEmailAndPassword(auth, email, password);
-
-          // // TODO: Update these fields with the respective records
-          const requestBody = {
-            "first_name": firstName,
-            "last_name": lastName,
-            "email": email,
-            "phone_number": `+65 ${phoneNumber}`,
-            "name": `${firstName} ${lastName}`,
-            "street_name": "10 Ang Mo Kio Road",
-            "unit_no": "#10-19",
-            "building_name": null,
-            "city": "Singapore",
-            "postal_code": "387458"
-          }
-          
-          // API call to add user details into database collections
-          authService.register(res.user.uid, "consumer", requestBody)
-              .catch((err) => {
-                  console.log(err); // TODO: replace with show error alert
-              })
-
-          // TODO: Navigate to login page
-      } catch (err) {
-          console.log(err);
-          alert("registration failed: " + err.message);
-      } finally {
-          setIsLoading(false);
-      }
-    };
-
-    const handleNext = () => {
-      if (step < 3) {
-          setStep(step + 1);
-      } else {
-          handleRegister();
-      }
+  const handleNext = () => {
+    if (step < 3) {
+      setStep(step + 1);
+    } else {
+      handleRegister();
+    }
   };
 
   const handleBack = () => {
-      if (step > 1) {
-          setStep(step - 1);
-      } else {
-          showAlert(
-              "Exit Registration",
-              "Are you sure you want to exit? All entered data will be lost.",
-              () => {
-              setFormData(formData);
-              onBackPress();
-              }
-          );
-      }
+    if (step > 1) {
+      setStep(step - 1);
+    } else {
+      showAlert(
+        "Exit Registration",
+        "Are you sure you want to exit? All entered data will be lost.",
+        () => {
+          setFormData(formData);
+          onBackPress();
+        }
+      );
+    }
   };
 
   const renderStep = () => {
-      switch(step) {
-          case 1:
-              return <ConsumerDetails formData={formData} handleInputChange={handleInputChange} />;
-          case 2:
-              return <Address formData={formData} handleInputChange={handleInputChange} />;
-          case 3:
-            return <Password formData={formData} handleInputChange={handleInputChange} />;
-          default:
-              return null;
-      }
+    switch (step) {
+      case 1:
+        return <ConsumerDetails formData={formData} handleInputChange={handleInputChange} />;
+      case 2:
+        return <Address formData={formData} handleInputChange={handleInputChange} />;
+      case 3:
+        return <Password formData={formData} handleInputChange={handleInputChange} />;
+      default:
+        return null;
+    }
   };
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.backButton}
         onPress={handleBack}
       >
-          <Ionicons 
-            color={'#EBF3D1'}
-            size={20}
-            name="arrow-back-outline"
-          />
+        <Ionicons
+          color={'#EBF3D1'}
+          size={20}
+          name="arrow-back-outline"
+        />
       </TouchableOpacity>
       <View style={styles.headerContainer}>
         <Text style={styles.regText}>Register as a Consumer.</Text>
@@ -191,19 +189,19 @@ const RegisterCustomer = ({onBackPress}) => {
       <Text style={styles.stepIndicator}>Step {step}/3</Text>
 
       <TouchableOpacity style={styles.nextButton} onPress={handleNext} disabled={isLoading}>
-          <Text style={styles.nextButtonText}>{step === 3 ? 'REGISTER' : 'NEXT'}</Text>
-          <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
+        <Text style={styles.nextButtonText}>{step === 3 ? 'REGISTER' : 'NEXT'}</Text>
+        <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
       </TouchableOpacity>
 
       <Alert
-          visible={alertVisible}
-          title={customAlert.title}
-          message={customAlert.message}
-          onConfirm={() => {
+        visible={alertVisible}
+        title={customAlert.title}
+        message={customAlert.message}
+        onConfirm={() => {
           setAlertVisible(false);
           customAlert.onConfirm();
-          }}
-          onCancel={() => setAlertVisible(false)}
+        }}
+        onCancel={() => setAlertVisible(false)}
       />
     </View>
   );
@@ -230,9 +228,9 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    justifyContent:'space-between',
+    justifyContent: 'space-between',
     backgroundColor: '#EBF3D1',
-    padding: '6%', 
+    padding: '6%',
     borderRadius: '10%',
     marginBottom: '5%',
     width: '90%'
