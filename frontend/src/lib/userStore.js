@@ -10,6 +10,7 @@ export const useUserStore = create((set, get) => ({
   userAddress: null,
   paymentDetails: null,
   isLoading: true,
+  userUid: "",
   fetchUserInfo: async (uid) => {
     if (!uid) return set({ currentUser: null, userRole: "", isLoading: false });
 
@@ -40,7 +41,7 @@ export const useUserStore = create((set, get) => ({
             signupDate: formattedSignupDate,
           };
 
-          set({ currentUser: userData, isLoading: false });
+          set({ currentUser: userData, isLoading: false, userUid: uid });
         } else {
           set({ currentUser: null, isLoading: false });
         }

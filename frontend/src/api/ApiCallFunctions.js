@@ -1,14 +1,16 @@
 import axios from "axios";
+import { useUserStore } from "../lib/userStore";
 
-const fetchProductData = async () => {
+
+
+const fetchProductData = async (uid) => {
     const API_URL = "/products/all"; //
     const fullUrl = `http://localhost:8080${API_URL}`;
     console.log("Attempting to fetch from:", fullUrl);
-    
     try {
         const response = await axios.get(fullUrl, {
             headers: {
-                Authorization: "Bearer mx6376gHypOYG22wVJXF2YBHG393",
+                Authorization: `Bearer ${uid}`,
                 Accept: "application/json",
             },
             timeout: 10000, 

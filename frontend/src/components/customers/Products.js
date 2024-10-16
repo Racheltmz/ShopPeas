@@ -10,29 +10,9 @@ import { Ionicons } from "@expo/vector-icons";
 import ProductItem from "./ProductItem";
 import { checkServerConnection, fetchProductData, logDeviceInfo } from "../../api/ApiCallFunctions";
 
-const Products = ({ onProductPress }) => {
+const Products = ({ productData, onProductPress }) => {
   const [isGridView, setIsGridView] = useState(true);
   const numColumns = isGridView ? 2 : 1;
-  const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState([]);
-  const [error, setError] = ("");
- 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        const productsList = await fetchProductData();
-        setProducts(productsList);
-      } catch (err) {
-        console.error('Error loading products:', err);
-        setError('Failed to load products. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadProducts();
-  }, []);
 
   const renderItem = ({ item }) => (
     <ProductItem
@@ -79,9 +59,8 @@ const Products = ({ onProductPress }) => {
           </TouchableOpacity>
         </View>
       </View>
-      {loading && <Text>Loading...</Text>}
       <FlatList
-        data={products}
+        data={productData}
         renderItem={renderItem}
         keyExtractor={(item) => item.name}
         numColumns={numColumns}
