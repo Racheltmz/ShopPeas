@@ -36,3 +36,5 @@
 2024-Oct-16 14:27:50 [http-nio-8080-exec-2] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
 2024-Oct-16 14:29:31 [http-nio-8080-exec-4] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - 401 UNAUTHORIZED Unauthenticated access: Unknown error while making a remote service call: Operation timed out 
 2024-Oct-16 14:29:31 [http-nio-8080-exec-4] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-16 18:11:18 [http-nio-8080-exec-3] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
+2024-Oct-16 18:11:52 [http-nio-8080-exec-2] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Failed to evaluate expression 'hasRole('CONSUMER', 'WHOLESALER')' 

@@ -53,7 +53,7 @@ public class ProductController {
      * @return list of products for each wholesaler
      */
     @GetMapping("/wholesaler/{uen}")
-    @PreAuthorize("hasRole('WHOLESALER')")
+    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public List<WholesalerProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductService.getByWholesalerUEN(uen);

@@ -13,7 +13,7 @@ public class WholesalerProducts {
     private String swpid;
     private String uen;
     private String pid;
-    private float price;
-    private float stock;
+    private double price;
+    private double stock;
     private Boolean active;
 }
