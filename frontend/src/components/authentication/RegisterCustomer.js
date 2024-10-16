@@ -102,9 +102,9 @@ const RegisterCustomer = ({onBackPress}) => {
 
           // API call to add user details into database collections
           authService.register(res.user.uid, "consumer", formData)
-            .catch((err) => {
-                console.log(err); // TODO: replace with show error alert
-            })
+              .catch((err) => {
+                  console.log(err); // TODO: replace with show error alert
+              })
 
           // TODO: Navigate to login page
       } catch (err) {

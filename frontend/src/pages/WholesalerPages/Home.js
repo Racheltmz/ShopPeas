@@ -1,14 +1,47 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
+import WholesalerService from '../../service/WholesalerService';
+import { useUserStore } from '../../lib/userStore';
 
 const Home = () => {
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const { userUid } = useUserStore();
+
+  console.log('Current userUid:', userUid);
+
+  const loadProfile = async () => {
+    try {
+      setLoading(true);
+      console.log('Fetching profile for userUid:', userUid);
+      const fetchedProfile = await WholesalerService.retrieveProfile(userUid);
+      console.log('Fetched profile:', fetchedProfile);
+      setProfile(fetchedProfile);
+    } catch (err) {
+      console.error('Error loading profile:', err);
+      setError('Failed to load profile. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log(userUid)
+    if (userUid) {
+      loadProfile();
+    } else {
+      setError('User ID is missing. Please ensure you are logged in.');
+      setLoading(false);
+    }
+  }, []);
+  
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
@@ -58,7 +91,7 @@ const Home = () => {
 
         <View style={styles.header}>
           <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Happy Wholesaler</Text>
+              <Text style={styles.headerTitle}>{profile.name}</Text>
               <Text style={styles.subHeaderTitle}>My Products</Text>
           </View>
           <Image
