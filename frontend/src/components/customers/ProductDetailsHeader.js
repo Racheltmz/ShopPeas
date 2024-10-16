@@ -17,11 +17,11 @@ const ProductDetailsHeader = ({ name, desc }) => {
       </TouchableOpacity>
       <View styles={styles.row}>
         <Text style={styles.headerTitle}>{name}</Text>
-        <Text style={styles.headerSubtitle}>{desc}</Text>
+        {/* <Text style={styles.headerSubtitle}>{desc}</Text> */}
       </View>
-      <TouchableOpacity onPress={navigateToCart}>
+      {/* <TouchableOpacity onPress={navigateToCart}>
         <Ionicons name="cart-outline" size={24} color="#0C5E52" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
