@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
-const WholesalerAddress = ({ formData, handleInputChange }) => {
+const Address = ({ formData, handleInputChange }) => {
   return (
     <View>
       <Text style={styles.stepTitle}>Registered Address</Text>
@@ -39,7 +39,7 @@ const WholesalerAddress = ({ formData, handleInputChange }) => {
   );
 };
 
-export default WholesalerAddress;
+export default Address;
 
 const styles = StyleSheet.create({
   stepTitle: {
