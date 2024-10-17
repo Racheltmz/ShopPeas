@@ -1,7 +1,8 @@
 package com.peaslimited.shoppeas.service.implementation;
 
+import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.dto.mapper.ProductMapper;
+import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Service
 public class WholesalerProductServiceImpl implements WholesalerProductService {
@@ -19,17 +19,13 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     WholesalerProductRepository wholesalerProductRepository;
 
     @Override
-    public List<WholesalerProductDTO> findByPid(String pid) throws ExecutionException, InterruptedException {
+    public List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.findByPid(pid);
     }
 
-
     @Override
-    public List<WholesalerProductDTO> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
-        return wholesalerProductRepository.findByUEN(uen)
-                .stream()
-                .map(ProductMapper::wholesalerToDTO)
-                .collect(Collectors.toList());
+    public List<ProductDTO> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
+        return wholesalerProductRepository.findByUEN(uen);
     }
 
     @Override
@@ -43,10 +39,21 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
+    public WholesalerProductDTO getBySwp_id(String swp_id) throws ExecutionException, InterruptedException
+    {
+        return wholesalerProductRepository.findBySwp_id(swp_id);
+    }
+
+    @Override
     public void deleteWholesalerProduct(String swpid) {
         wholesalerProductRepository.deleteWholesalerProduct(swpid);
     }
 
+    @Override
+    public String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException
+    {
+        return wholesalerProductRepository.getWholesalerProductName(swpid);
+    }
 
 
 }

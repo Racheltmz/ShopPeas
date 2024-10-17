@@ -48,7 +48,11 @@ public class ProductRepositoryImpl implements ProductRepository {
 
         // Map each firebase document to a product object
         return snapshot.getDocuments().stream()
-                .map(doc -> doc.toObject(Product.class))
+                .map(doc -> {
+                    Product product = doc.toObject(Product.class);
+                    product.setPid(doc.getId());
+                    return product;
+                })
                 .collect(Collectors.toList());
     }
 

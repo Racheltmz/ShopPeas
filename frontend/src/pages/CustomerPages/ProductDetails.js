@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,10 +11,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useNavigation } from "@react-navigation/native";
 import { Divider } from 'react-native-paper';
+import { useUserStore } from "../../lib/userStore";
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
+import productService from "../../service/ProductService";
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
+  const { userUid } = useUserStore();
+  const [wholesalerInfo, setWholesalerInfo] = useState([]);
   const [sortBy, setSortBy] = useState("price");
   const [showModal, setShowModal] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
@@ -22,62 +26,38 @@ const ProductDetails = ({ route }) => {
   const { addItem } = useCart();
   const navigation = useNavigation();
 
+  useEffect(() => {
+    productService.getDetailsByPID(userUid, product.pid)
+      .then((res) => {
+        console.log(res);
+        let data = []
+        for (let i=0; i<res.length; i++) {
+          let record = {
+            'name': res[i].name,
+            'location': res[i].location,
+            'timeAway': 39, // TODO
+            'stocks': res[i].stocks,
+            'price': res[i].price,
+            'ratings': res[i].ratings.toFixed(1),
+            'uen': res[i].uen
+          }
+          data.push(record);
+        }
+        setWholesalerInfo(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [product.pid, userUid]);
+
   const handleWholesalerPress = () => {
     setShowModal(false);
     navigation.navigate("ViewWholesaler", {
-      wholesalerName: selectedWholesaler.name,
+      wholesalerUEN: selectedWholesaler.uen,
     });
   };
 
-  const DUMMY_WHOLESALERS = [
-    {
-      name: "Happy Wholesaler",
-      location: "Bishan",
-      timeAway: 39,
-      stocks: 39,
-      price: 1.29,
-      ratings: 4.9,
-      uen: 123456,
-    },
-    {
-      name: "Cheap Wholesaler",
-      location: "Serangoon",
-      timeAway: 47,
-      stocks: 45,
-      price: 1.27,
-      ratings: 4.3,
-      uen: 12342323,
-    },
-    {
-      name: "Quality buy",
-      location: "Bishan",
-      timeAway: 39,
-      stocks: 80,
-      price: 1.51,
-      ratings: 4.7,
-      uen: 123452316,
-    },
-    {
-      name: "Value Dollar",
-      location: "Punggol",
-      timeAway: 71,
-      stocks: 15,
-      price: 1.19,
-      ratings: 4.5,
-      uen: 123456213231,
-    },
-    {
-      name: "Big Box",
-      location: "Jurong East",
-      timeAway: 41,
-      stocks: 28,
-      price: 1.49,
-      ratings: 4.9,
-      uen: 123451232316,
-    },
-  ];
-
-  const sortedWholesalers = [...DUMMY_WHOLESALERS].sort((a, b) => {
+  const sortedWholesalers = [...wholesalerInfo].sort((a, b) => {
     if (sortBy === "price") return a.price - b.price;
     if (sortBy === "duration") return a.timeAway - b.timeAway;
     if (sortBy === "stocks") return b.stocks - a.stocks;
@@ -188,7 +168,7 @@ const ProductDetails = ({ route }) => {
               <Text style={styles.modalText}>{product.quantity} Packet</Text>
               <TouchableOpacity onPress={handleWholesalerPress}>
                 <Text style={styles.wholesalerName}>
-                  {selectedWholesaler?.name} 
+                  {selectedWholesaler?.name}
                   <Ionicons name="chevron-forward-outline" size={16} color="#0C5E52" />
                 </Text>
               </TouchableOpacity>
@@ -273,7 +253,7 @@ const styles = StyleSheet.create({
   },
   wholesalerName: {
     fontWeight: "bold",
-    fontSize: 22,
+    fontSize: 16,
     color: '#0C5E52',
     marginBottom: 2,
   },
@@ -292,7 +272,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   price: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     color: "green",
   },

@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.service;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
 
@@ -19,4 +20,6 @@ public interface WholesalerService {
     RatingDTO getRatingByUEN(String UEN) throws ExecutionException, InterruptedException;
 
     void addRating(String UEN, Integer rating) throws ExecutionException, InterruptedException;
+
+    DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException;
 }
