@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-const ProductItem = ({ name, imageUrl, packageSize, isGridView, onPress }) => {
+const ProductItem = ({ key, name, imageUrl, packageSize, isGridView, onPress }) => {
   return (
     <TouchableOpacity
       style={[styles.container, isGridView ? styles.gridItem : styles.listItem]}
@@ -11,7 +11,7 @@ const ProductItem = ({ name, imageUrl, packageSize, isGridView, onPress }) => {
         source={{uri: imageUrl}}
         style={[styles.image, isGridView ? styles.gridImage : styles.listImage]}
       />
-      <View style={{ flex: 1, marginLeft: isGridView ? 0 : 15 }}>
+      <View key={key} style={{ flex: 1, marginLeft: isGridView ? 0 : 15 }}>
         <Text style={styles.name}>{name}</Text>
         <Text style={styles.packageSize}>{packageSize}</Text>
       </View>
