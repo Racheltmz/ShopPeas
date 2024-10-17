@@ -5,7 +5,7 @@ import { Searchbar } from 'react-native-paper';
 import Fuse from 'fuse.js';
 import Products from '../../components/customers/Products';
 import { useUserStore } from '../../lib/userStore';
-import { fetchProductData } from '../../service/ProductService';
+import productService from '../../service/ProductService';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
@@ -24,7 +24,7 @@ const Explore = () => {
     const loadProducts = async () => {
       try {
         setLoading(true);
-        const productsList = await fetchProductData(userUid);
+        const productsList = await productService.fetchProductData(userUid);
         setProducts(productsList);
         setFilteredProducts(productsList);
       } catch (err) {
