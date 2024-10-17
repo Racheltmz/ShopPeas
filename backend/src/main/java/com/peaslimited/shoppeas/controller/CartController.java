@@ -42,8 +42,11 @@ public class CartController {
     @GetMapping("/getCart")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public ShoppingCartDTO getCartByUID(@RequestParam String UID) throws ExecutionException, InterruptedException {
-        return cartService.getCartByUID(UID);
+    public ShoppingCartDTO getCartByUID() throws ExecutionException, InterruptedException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+        return cartService.getCartByUID(uid);
     }
 
     // returns full shopping cart entity object, including cid
