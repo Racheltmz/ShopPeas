@@ -1,7 +1,8 @@
 import apiClient from "../api/apiClient";
 import { REACT_APP_BACKEND_PRODUCT } from '@env';
 
-const fetchProductData = async (uid) => {
+// API calls for customers
+export const fetchProductData = async (uid) => {
     const endpoint = "/products/all"; 
     try {
         const response = await apiClient.get(`${REACT_APP_BACKEND_AUTH}/${endpoint}`, {
@@ -18,4 +19,18 @@ const fetchProductData = async (uid) => {
     }
 };
 
-export { fetchProductData };
+export const getWholesalerByProduct = async (pid, uid) => {
+    const endpoint = `/products/${pid}`;
+    try {
+        const response = await apiClient.post(`${REACT_APP_BACKEND_AUTH}/${endpoint}`, requestBody, {
+            headers: {
+                'Authorization': `Bearer ${uid}`
+            }
+        });
+    } catch(error) {
+
+    }
+    
+}
+
+

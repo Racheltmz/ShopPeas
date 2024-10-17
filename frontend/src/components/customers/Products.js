@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ProductItem from "./ProductItem";
-import { checkServerConnection, fetchProductData, logDeviceInfo } from "../../api/ApiCallFunctions";
 
 const Products = ({ productData, onProductPress }) => {
   const [isGridView, setIsGridView] = useState(true);

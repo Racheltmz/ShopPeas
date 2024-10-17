@@ -4,9 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import Fuse from 'fuse.js';
 import Products from '../../components/customers/Products';
-import { Searchbar } from 'react-native-paper';
-import { fetchProductData } from '../../api/ApiCallFunctions';
+import { Searchbar } from 'react-native-paper'; 
+import Fuse from 'fuse.js';
 import { useUserStore } from '../../lib/userStore';
+import { fetchProductData } from '../../service/ProductService';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
