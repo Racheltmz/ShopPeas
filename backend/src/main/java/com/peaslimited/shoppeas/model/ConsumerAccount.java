@@ -5,15 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
+import java.util.ArrayList;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class ConsumerAccount {
     @Id
     private String UID;
-    private String card_no;
-    private String expiry_date;
-    private String cvv;
-    private String name;
-
+    private ArrayList<Object> paymentMtds;
 }

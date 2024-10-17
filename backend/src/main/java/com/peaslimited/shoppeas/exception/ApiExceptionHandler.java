@@ -38,7 +38,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         // Response Body
         ApiException errorResponse = new ApiException(exception.getMessage(), badRequest, LocalDateTime.now());
         // Log error
-        log.error("{} Record does not exist: {}", badRequest, exception.getMessage());
+        log.error("{} Record does not exist: {}. {}", badRequest, exception.getMessage(), exception.getStackTrace());
         // Return response entity
         return new ResponseEntity<>(errorResponse, badRequest);
     }

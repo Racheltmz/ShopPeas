@@ -1,8 +1,4 @@
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-} from "react-native";
+import React from "react";
 import ProfileDetails from "../../components/customers/ProfileDetails";
 import { createStackNavigator } from '@react-navigation/stack';
 import { useUserStore } from "../../lib/userStore";
@@ -31,7 +27,6 @@ const Profile = ({ navigation }) => {
     // setUserData({ ...userData, ...updatedUserData });
     // Here you would handle the response from the API, update local state, etc.
   };
-
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

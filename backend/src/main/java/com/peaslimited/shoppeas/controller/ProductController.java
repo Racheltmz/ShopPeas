@@ -2,8 +2,13 @@ package com.peaslimited.shoppeas.controller;
 
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
+import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
+import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
+import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
+import com.peaslimited.shoppeas.service.OneMapService;
+import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,6 +30,12 @@ public class ProductController {
     @Autowired
     private WholesalerProductService wholesalerProductService;
 
+    @Autowired
+    private OneMapService oneMapService;
+
+    @Autowired
+    private WholesalerAddressService wholesalerAddressService;
+
 
     /**
      * Get all products for consumers
@@ -33,7 +44,7 @@ public class ProductController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<ProductDTO> getAllProducts() throws ExecutionException, InterruptedException {
+    public List<Product> getAllProducts() throws ExecutionException, InterruptedException {
         return productService.getAllProducts();
     }
 
@@ -44,7 +55,7 @@ public class ProductController {
     @GetMapping("/{pid}")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<WholesalerProductDTO> getWholesalersByPid(@PathVariable String pid) throws ExecutionException, InterruptedException {
+    public List<WholesalerProductDetailsDTO> getWholesalersByPid(@PathVariable String pid) throws ExecutionException, InterruptedException {
         return wholesalerProductService.findByPid(pid);
     }
 
@@ -55,7 +66,7 @@ public class ProductController {
     @GetMapping("/wholesaler/{uen}")
     @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<WholesalerProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
+    public List<ProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductService.getByWholesalerUEN(uen);
     }
 
@@ -90,6 +101,29 @@ public class ProductController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {
         wholesalerProductService.deleteWholesalerProduct(swpid); // Call service to delete the product by PID
+    }
+
+    /**
+     * Calculate driving distance between user and wholesaler
+     * @return driving distance in minutes
+     */
+    @GetMapping("/distance/{uen}")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    // example of how to call in postman: http://localhost:8080/products/distance/199203796C?userPostalCode=733684, where userpostalcode is their current location
+    public String getDistanceToWholesaler(@PathVariable String uen, @RequestParam String userPostalCode) throws ExecutionException, InterruptedException {
+        // Get wholesaler address by UEN
+        WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(uen);
+
+        // Get postal code from the wholesaler address
+        String wholesalerPostalCode = wholesalerAddress.getPostal_code();
+
+        // Get coordinates for user and wholesaler
+        String userCoordinates = oneMapService.getCoordinates(userPostalCode);
+        String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerPostalCode);
+
+        // Calculate driving time
+        return oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
     }
 
 }

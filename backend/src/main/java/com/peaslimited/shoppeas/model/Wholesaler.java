@@ -18,7 +18,7 @@ public class Wholesaler {
     private String email;
     private String phone_number;
     private String currency;
-    private Double rating;
+    private double rating;
     private ArrayList<Integer> num_ratings;
 
 }

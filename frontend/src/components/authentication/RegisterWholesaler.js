@@ -9,7 +9,7 @@ import WholesalerDetails from './WholesalerDetails';
 import Address from './Address';
 import WholesalerBank from './WholesalerBank';
 import Password from './Password';
-import Alert from './Alert';
+import Alert from '../utils/Alert';
 
 const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     const [step, setStep] = useState(1);

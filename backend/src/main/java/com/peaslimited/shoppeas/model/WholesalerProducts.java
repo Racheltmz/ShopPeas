@@ -14,6 +14,6 @@ public class WholesalerProducts {
     private String uen;
     private String pid;
     private double price;
-    private double stock;
+    private Integer stock;
     private Boolean active;
 }

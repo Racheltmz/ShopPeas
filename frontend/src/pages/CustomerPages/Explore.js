@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Searchbar } from 'react-native-paper';
+import Fuse from 'fuse.js';
 import Products from '../../components/customers/Products';
 import { fetchProductData } from '../../api/ApiCallFunctions';
-import Fuse from 'fuse.js';
 import { useUserStore } from '../../lib/userStore';
 import { Searchbar } from 'react-native-paper';
 
@@ -62,6 +63,7 @@ const Explore = () => {
           placeholder="Search ShopPeas"
           onChangeText={handleSearch}
           value={searchText}
+          style={styles.searchBox}
           autoCapitalize="none"
         />
       </View>
@@ -79,18 +81,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  searchBar: {
+  header: {
     marginTop: 80,
     paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FAF9F6',
-    margin: 10,
-    padding: 14,
-    borderRadius: 25,
   },
-  searchInput: {
-    marginLeft: 10,
+  searchBox: {
+    backgroundColor: '#FAF9F6',
+    borderRadius: 25,
   },
 });
 
