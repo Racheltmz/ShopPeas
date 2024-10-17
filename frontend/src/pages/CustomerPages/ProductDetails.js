@@ -36,7 +36,7 @@ const ProductDetails = ({ route }) => {
             'name': res[i].name,
             'location': res[i].location,
             'timeAway': 39, // TODO
-            'stocks': res[i].stocks,
+            'stocks': res[i].stock,
             'price': res[i].price,
             'ratings': res[i].ratings.toFixed(1),
             'uen': res[i].uen

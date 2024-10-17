@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import EditProduct from './EditProduct';
 import RemoveProduct from './RemoveProduct';
 
-const WholesalerProduct = ({ index, name, price, unit, stock, description, onRemove, onEdit}) => {
+const WholesalerProduct = ({ index, name, price, unit, stock, onRemove, onEdit}) => {
     const[removeVisible, setRemoveVisible] = useState(false);
     const[editVisible, setEditVisible] = useState(false);
 
@@ -25,7 +25,6 @@ const WholesalerProduct = ({ index, name, price, unit, stock, description, onRem
                 <Text style={styles.productName}>{name}</Text>
                 <Text style={styles.productPrice}>${price.toFixed(2)}</Text>
                 <Text style={styles.productUnit}>{unit}</Text>
-                <Text style={styles.productDescription}>{description}</Text>
             </View>
             <View style={styles.productActions}>
                 <Text style={styles.stockText}>{stock} left in stock</Text>
@@ -51,7 +50,6 @@ const WholesalerProduct = ({ index, name, price, unit, stock, description, onRem
                 onEdit={handleEdit}
                 initialName={name}
                 initialPrice={price}
-                initialDescription={description}
                 initialStock={stock}
                 initialUnit={unit}
             />
@@ -86,10 +84,6 @@ const styles = StyleSheet.create({
         color: '#0C5E52',
     },
     productUnit: {
-        fontSize: 14,
-        color: 'gray',
-    },
-    productDescription: {
         fontSize: 14,
         color: 'gray',
     },
