@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Searchbar } from 'react-native-paper';
 import Fuse from 'fuse.js';
 import Products from '../../components/customers/Products';
 import { fetchProductData } from '../../api/ApiCallFunctions';

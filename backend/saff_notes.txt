@@ -1,0 +1,12 @@
+flask:
+    1. build backend & api calls
+
+firebase (database)
+
+
+1. activate venv
+env\Scripts\activate 
+python app.py
+
+2. local host address
+http://127.0.0.1:5000/

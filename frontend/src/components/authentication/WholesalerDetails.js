@@ -2,6 +2,13 @@ import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 
 const WholesalerDetails = ({ formData, handleInputChange }) => {
+  const handlePhoneChange = (text) => {
+    const digitsOnly = text.replace(/^\+65|\D/g, '');
+    const formattedNumber = digitsOnly.slice(0, 8);
+    const fullNumber = '+65 ' + formattedNumber;
+    handleInputChange('phone_number', fullNumber);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.stepTitle}>Company Name: </Text>
@@ -26,7 +33,7 @@ const WholesalerDetails = ({ formData, handleInputChange }) => {
       <TextInput
         style={styles.input}
         value={formData.phone_number}
-        onChangeText={(text) => handleInputChange('phone_number', text)}
+        onChangeText={handlePhoneChange}
       />
     </View>
   );

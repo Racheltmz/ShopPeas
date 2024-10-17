@@ -51,7 +51,7 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     };
 
     const validatePhone = (phone_number) => {
-        const regex = /^\d{8}$/; 
+        const regex = /^(\+65 )?\d{8}$/; 
         return regex.test(phone_number);
     };
 
