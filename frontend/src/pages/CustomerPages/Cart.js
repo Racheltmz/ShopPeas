@@ -7,9 +7,9 @@ import CartItem from '../../components/customers/CartItem';
 const Cart = ({ navigation }) => {
   const { cart, clearCart, getTotal } = useCart();
 
-  const handleClearCart = () => {
-    clearCart();
-  };
+  // const handleClearCart = () => {
+  //   clearCart();
+  // };
 
   const handleCheckout = () => {
     navigation.navigate('Payment');

@@ -1,7 +1,4 @@
 import { create } from "zustand";
-import { doc, getDoc } from "firebase/firestore";
-import { FirebaseDb } from "./firebase";
-
 // const db = FirebaseDb;
 
 const DUMMY_CART_ITEMS = [  
@@ -48,14 +45,17 @@ const DUMMY_CART_ITEMS = [
 
         ]
     },
-
 ]
 
 // calls backend to retrieve cart information of user
 export const useCart = create((set) => ({
     cartId: null,
-    cart: DUMMY_CART_ITEMS, // temporary Dummy
+    cart: [], // temporary Dummy
     
+    fetchCart: (cartItem) => set((state) => {
+        return { cart: cartItem }; 
+    }),
+
     // wholesaler: { wholesaler, location, distance/timeaway}
     // item: { name, price }
     addItem: (wholesaler, item, quantity) => set((state) => {
