@@ -21,13 +21,14 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         uen: '',
         email: '',
         phone_number: '',
+        currency: 'SGD',
         street_name: '',
         unit_no: '',
         building_name: '',
         city: '',
         postal_code: '',
         bank_account_name: '',
-        account_no: '',
+        bank_account_no: '',
         bank: '',
         password: '',
         confirm_password: '',
@@ -73,7 +74,7 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
 
     const handleRegister = async () => {
         // left building name out of required fields for now
-        const requiredFields = ['name', 'uen', 'email', 'phone_number', 'street_name', 'unit_no', 'city', 'postal_code', 'bank_account_name', 'account_no', 'bank', 'password', 'confirm_password'];
+        const requiredFields = ['name', 'uen', 'email', 'phone_number', 'street_name', 'unit_no', 'city', 'postal_code', 'bank_account_name', 'bank_account_no', 'bank', 'password', 'confirm_password'];
         for (let field of requiredFields) {
             if (!validateField(field, formData[field])) {
                 showAlert("Error", `${formatFieldName(field)} cannot be empty`, () => setAlertVisible(false));

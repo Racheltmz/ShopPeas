@@ -14,8 +14,8 @@ const WholesalerBank = ({ formData, handleInputChange }) => {
       <TextInput
         style={styles.input}
         placeholder="Account No."
-        value={formData.account_no}
-        onChangeText={(text) => handleInputChange('account_no', text)}
+        value={formData.bank_account_no}
+        onChangeText={(text) => handleInputChange('bank_account_no', text)}
       />
       <TextInput
         style={styles.input}
