@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useUserStore } from "../../lib/userStore";
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
+import wholesalerService from "../../service/WholesalerService";
 
 const Home = () => {
+  const navigation = useNavigation();
+  const { userUid } = useUserStore();
+  // const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const navigation = useNavigation();
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
@@ -79,13 +83,12 @@ const Home = () => {
         <ScrollView style={styles.productList}>
         {products.map((product, index) => (
           <WholesalerProduct
-            key={index}
+            key={product.pid}
             index={index}
             name={product.name}
-            price={product.price}
-            unit={product.unit}
-            stock={product.stock}
-            description={product.description}
+            price={100} // TODO
+            unit={product.package_size}
+            stock={100} // TODO
             onRemove={removeProduct}
             onEdit={editProduct}
           />

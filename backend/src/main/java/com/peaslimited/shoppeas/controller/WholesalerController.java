@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.controller;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.WholesalerMapper;
+import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,7 +42,7 @@ public class WholesalerController {
     public WholesalerDetailsDTO viewWholesalerConsumer(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
         WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(UEN);
         WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(UEN);
-        List<ProductDTO> wholesalerProducts = wholesalerProductService.getByWholesalerUEN(UEN);
+        List<Product> wholesalerProducts = wholesalerProductService.getByWholesalerUEN(UEN);
         return WholesalerMapper.toDetailsDTO(wholesaler, wholesalerAddress, wholesalerProducts);
     }
 

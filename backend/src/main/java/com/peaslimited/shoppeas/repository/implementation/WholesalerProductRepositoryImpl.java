@@ -6,6 +6,7 @@ import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
+import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.WholesalerAddress;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
@@ -32,7 +33,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Override
     // Fetch wholesaler products by uen
-    public List<ProductDTO> findByUEN(String uen) throws ExecutionException, InterruptedException {
+    public List<Product> findByUEN(String uen) throws ExecutionException, InterruptedException {
         QuerySnapshot snapshot = firestore.collection(COLLECTION).whereEqualTo("uen", uen).whereEqualTo("active", true).get().get();
 
         List<String> products = snapshot.getDocuments().stream()
@@ -48,7 +49,12 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
         return productDocs.stream()
                 .filter(DocumentSnapshot::exists)
-                .map(doc -> doc.toObject(ProductDTO.class))
+                .map(doc -> {
+                    Product product = doc.toObject(Product.class);
+                    assert product != null;
+                    product.setPid(doc.getId());  // Assuming Product class has setId method
+                    return product;
+                })
                 .collect(Collectors.toList());
     }
 
