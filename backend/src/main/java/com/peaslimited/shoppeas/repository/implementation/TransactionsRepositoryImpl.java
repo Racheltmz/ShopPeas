@@ -111,6 +111,17 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     }
 
     @Override
+    public void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        // Update an existing document
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
+
+        // Update fields
+        for (String key : data.keySet()) {
+            docRef.update(key, data.get(key));
+        }
+    }
+
+    @Override
     public void updateTransactionProduct(Map<String, Object> data, String uid, String status) throws ExecutionException, InterruptedException {
         String swp_id = data.get("swp_id").toString();
         int quantity = Integer.parseInt(data.get("quantity").toString());
@@ -169,6 +180,39 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     public float getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProd =  wholesalerProductService.getBySwp_id(swp_id);
         return wholesalerProd.getPrice();
+    }
+
+    @Override
+    public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
+
+        // Asynchronously retrieve the document
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+        // Convert document to Consumer object
+        TransactionsDTO transactionsDTO = new TransactionsDTO();
+        if (document.exists()) {
+            //System.out.println(document);
+            transactionsDTO.setStatus(document.get("status").toString());
+            transactionsDTO.setUen(document.get("uen").toString());
+            transactionsDTO.setUid(document.get("uid").toString());
+            transactionsDTO.setTotal_price(Float.parseFloat(document.get("total_price").toString()));
+
+            Map<String, Object> productMap = (Map<String, Object>) document.get("products");
+            ArrayList<Object> products = new ArrayList<>();
+            for(int i =0; i< productMap.size(); i++)
+            {
+                String key = String.valueOf(i);
+                Map<String, Object> newProduct = (Map<String, Object>) productMap.get(key);
+                products.add(newProduct);
+            }
+            //System.out.println(products);
+            transactionsDTO.setProducts(products);
+
+            return transactionsDTO;
+        }
+        else return null;
+
     }
 
     @Override

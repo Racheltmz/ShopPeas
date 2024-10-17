@@ -51,7 +51,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         // Response Body
         ApiException errorResponse = new ApiException(exception.getMessage(), internalServer, LocalDateTime.now());
         // Log error
-        log.error("Error occurred: {}", exception.getMessage());
+        log.error("Error occurred: {}, {}", exception.getMessage(), exception.getStackTrace());
         // Return response entity
         return new ResponseEntity<>(errorResponse, internalServer);
     }

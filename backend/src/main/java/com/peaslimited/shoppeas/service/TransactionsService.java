@@ -16,9 +16,10 @@ public interface TransactionsService {
     List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException;
     DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException;
     ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException;
-
+    TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException;
     void createTransaction(TransactionsDTO transactionsDTO);
     void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException;
     void updateTransactionStatus(Map<String, Object> data);
+    void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException;
     List<QueryDocumentSnapshot> findDocListByUID(String UID) throws ExecutionException, InterruptedException;
 }

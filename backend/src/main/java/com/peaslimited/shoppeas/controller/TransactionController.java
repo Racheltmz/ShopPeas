@@ -178,37 +178,31 @@ public class TransactionController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
-        //ACTION: GET TRANSACTION DATA
-        //convert order data to array
-        String cart = data.get("cart items").toString();
-        cart = cart.replace("[","");
-        cart = cart.replace("]","");
-        ArrayList<String> cartList = new ArrayList<String>(Arrays.asList(cart.split(",")));
-
         //ACTION: get transaction IDs (tid)
         ArrayList<String> transactionList = new ArrayList<>();
-        System.out.println(cartList);
+        float checkoutPrice = 0;
+
+        //ACTION: GET TRANSACTION DATA
+        //convert order data to array
+        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+        //for each transaction
         for(int i = 0; i< cartList.size(); i++)
         {
-            String orderDataString = cartList.get(i);
-            System.out.println(orderDataString);
-            if(orderDataString.contains("wholesaler="))
-            {
-                orderDataString = orderDataString.replace("{","");
-                orderDataString = orderDataString.replace("}","");
-                String[] pairs = orderDataString.split("=");
-                String wholesalerName = pairs[1];
-                System.out.println(wholesalerName);
-                String tid = getTransactionFromUIDandWName(uid, wholesalerName);
-                transactionList.add(tid);
+            Map<String, Object> transactionMap = (Map<String, Object>) cartList.get(i);
+            String wholesalerName = transactionMap.get("wholesaler").toString();
+            ArrayList<Object> itemList = (ArrayList<Object>) transactionMap.get("items");
 
-                //ACTION: update transaction status
-                Map<String, Object> updateTStatus = new HashMap<>();
-                updateTStatus.put("tid", tid);
-                updateTStatus.put("tid", "PENDING-ACCEPTANCE");
-                transactionService.updateTransactionStatus(updateTStatus);
+            String tid = getTransactionFromUIDandWName(uid, wholesalerName);
+            transactionList.add(tid);
+            System.out.println(tid);
+            TransactionsDTO transaction = transactionService.findByTID(tid);
 
-            }
+            System.out.println(transaction.getProducts());
+            ArrayList<Object> products = transaction.getProducts();
+            String uen = transaction.getUen();
+
+            checkoutPrice += updateOneTransactionAndStock(products, tid, uen);
+
         }
 
         //ACTION: delete cart
@@ -225,18 +219,61 @@ public class TransactionController {
 
         if (preferredCurrency.equals("MYR")) {
             // NOTE: I didn't return anything for now but feel free to change accordingly
-            exchangeRate = currencyService.exchangeRate(price, preferredCurrency);
-            finalPrice = price * exchangeRate;
+            exchangeRate = currencyService.exchangeRate(checkoutPrice, preferredCurrency);
+            finalPrice = checkoutPrice * exchangeRate;
             // NOTE: temporary print statement to validate output
             System.out.println(finalPrice);
         }*/
 
     }
 
+    public float updateOneTransactionAndStock(ArrayList<Object> products, String tid, String uen) throws ExecutionException, InterruptedException {
+        Map<String, Object> updateT = new HashMap<>();
+        float totalPrice = 0;
+
+        //for each wholesaler product
+        for(int i = 0; i< products.size(); i++)
+        {
+            Map<String, Object> productsMap = (Map<String, Object>) products.get(i);
+            String swpid = productsMap.get("swp_id").toString();
+            int quantity = Integer.parseInt(productsMap.get("quantity").toString());
+            //ACTION: add price field to products list
+            float productPrice = getProductPrice(swpid, uen)*quantity;
+            productsMap.put("price", productPrice);
+            products.set(i, productsMap);
+
+            //ACTION: get cart total price
+            totalPrice += productPrice;
+
+            //ACTION: update stock quantity
+            updateWProductQuant(swpid, quantity);
+        }
+
+        //ACTION: update transaction
+        //updateT.put("tid", tid);
+        updateT.put("status", "PENDING-ACCEPTANCE");
+        updateT.put("products", products);
+        updateT.put("total_price", totalPrice);
+        transactionService.updateTransaction(tid, updateT);
+
+        return totalPrice;
+    }
+
+    public void updateWProductQuant(String swpid, int quantity) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swpid);
+        float oldQuantity = wholesalerProductDTO.getStock();
+
+        Map<String, Object> wholeSalerProductMap = new HashMap<>();
+        wholeSalerProductMap.put("stock", oldQuantity-quantity);
+
+        wholesalerProductService.updateWholesalerProduct(swpid, wholeSalerProductMap);
+
+    }
+
     public String getTransactionFromUIDandWName(String uid, String wholesalerName) throws ExecutionException, InterruptedException {
         DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
-
         String uen = doc.get("uen").toString();
+
         DocumentSnapshot transactionDoc = transactionService.getDocByUENAndWName(uen, uid);
         String tid = transactionDoc.getId();
         return tid;
