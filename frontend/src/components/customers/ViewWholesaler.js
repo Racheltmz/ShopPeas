@@ -122,9 +122,10 @@ const ViewWholesaler = ({ route }) => {
             <View style={styles.productGrid}>
               {wholesalerInfo.products.map((product, index) => (
                 <ProductItem
+                  key={index}
                   name={product.name}
-                  packageSize={product.packageSize}
-                  imageUrl={require("../../../assets/imgs/DummyImage.jpg")}
+                  packageSize={product.package_size}
+                  imageUrl={product.image_url}
                   isGridView={isGridView}
                   onPress={() => handleProductPress(product)}
                 />

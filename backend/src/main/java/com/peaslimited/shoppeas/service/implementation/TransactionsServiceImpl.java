@@ -37,6 +37,11 @@ public class TransactionsServiceImpl implements TransactionsService {
     {
         return  transactionsRepo.getDocByUENAndStatus(uen, status);
     }
+    @Override
+    public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException
+    {
+        return transactionsRepo.findByTID(tid);
+    }
 
     @Override
     public DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException
@@ -66,6 +71,12 @@ public class TransactionsServiceImpl implements TransactionsService {
     public void updateTransactionStatus(Map<String, Object> data)
     {
         transactionsRepo.updateTransactionStatus(data);
+    }
+
+    @Override
+    public void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException
+    {
+        transactionsRepo.updateTransaction(tid, data);
     }
 
     @Override

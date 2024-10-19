@@ -1,6 +1,5 @@
 package com.peaslimited.shoppeas.controller;
 
-import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
@@ -66,7 +65,7 @@ public class ProductController {
     @GetMapping("/wholesaler/{uen}")
     @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<ProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
+    public List<Product> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductService.getByWholesalerUEN(uen);
     }
 

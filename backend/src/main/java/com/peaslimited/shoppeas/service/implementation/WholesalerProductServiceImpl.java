@@ -1,8 +1,8 @@
 package com.peaslimited.shoppeas.service.implementation;
 
-import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
+import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
-    public List<ProductDTO> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
+    public List<Product> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.findByUEN(uen);
     }
 
