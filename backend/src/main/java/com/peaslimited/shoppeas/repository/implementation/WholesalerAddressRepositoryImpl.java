@@ -29,11 +29,46 @@ public class WholesalerAddressRepositoryImpl implements WholesalerAddressReposit
         DocumentSnapshot document = future.get();
 
         // Convert document to Wholesaler object
-        WholesalerAddressDTO wholesalerAddressDTO = null;
+        WholesalerAddressDTO wholesalerAddressDTO = new WholesalerAddressDTO();
         if (document.exists()) {
+
+            /*Object building_name = document.get("building_name");
+            Object city = document.get("city");
+            Object street_name = document.get("street_name");
+            Object unit_no = document.get("unit_no");
+            Object postal_code = document.get("postal_code");
+
+            if(building_name != null)
+                wholesalerAddressDTO.setBuilding_name(building_name.toString());
+            else
+                wholesalerAddressDTO.setBuilding_name("null");
+
+            if(city != null)
+                wholesalerAddressDTO.setCity(city.toString());
+            else
+                wholesalerAddressDTO.setCity("null");
+
+            if(street_name != null)
+                wholesalerAddressDTO.setStreet_name(street_name.toString());
+            else
+                wholesalerAddressDTO.setStreet_name("null");
+
+            if(unit_no != null)
+                wholesalerAddressDTO.setUnit_no(unit_no.toString());
+            else
+                wholesalerAddressDTO.setUnit_no("null");
+
+            if(postal_code != null)
+                wholesalerAddressDTO.setPostal_code(Integer.parseInt(postal_code.toString()));
+            else
+                wholesalerAddressDTO.setPostal_code(null);*/
+
+
             wholesalerAddressDTO = document.toObject(WholesalerAddressDTO.class);
+
+            return wholesalerAddressDTO;
         }
-        return wholesalerAddressDTO;
+        return null;
     }
 
     @Override

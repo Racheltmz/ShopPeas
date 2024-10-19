@@ -150,6 +150,7 @@ public class AuthServiceImpl implements AuthService {
             building_name = building_name_obj.toString();
         }
 
+        //Integer.valueOf(user.get("postal_code").toString())
         return new WholesalerAddressDTO(
             user.get("street_name").toString(),
             unit_no,

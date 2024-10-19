@@ -60,7 +60,7 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
 
     @Override
     public DocumentSnapshot findDocByWholesalerName(String name) throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", name).get();
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("name", name).get();
 
         // Asynchronously retrieve the document
         QuerySnapshot querySnapshot = query.get();
