@@ -13,6 +13,7 @@ const Home = () => {
   // const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [profile, setProfile] = useState("User");
   
   useEffect(() => {
     setProfile(currentUser.name);

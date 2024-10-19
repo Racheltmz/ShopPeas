@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.*;
-import com.peaslimited.shoppeas.dto.mapper.OrderMapper;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.*;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -57,11 +55,10 @@ public class CartController {
         ArrayList<String> orderList = cart.getOrders();
         ArrayList<Object> cartTransactions = new ArrayList<>();
 
-        for(int i = 0; i < orderList.size(); i++)
-        {
+        for (String s : orderList) {
             Map<String, Object> transactionMap = new HashMap<>();
             System.out.println("/////////////////////////////////////////////////////////");
-            String tid = orderList.get(i);
+            String tid = s;
             TransactionsDTO transaction = transactionsService.findByTID(tid);
             System.out.println(transaction);
             String uen = transaction.getUen();
@@ -74,10 +71,9 @@ public class CartController {
             System.out.println(productsList);
             ArrayList<Object> itemsList = new ArrayList<>();
 
-            for(int j = 0; j<productsList.size();j++)
-            {
+            for (Object o : productsList) {
                 Map<String, Object> itemsMap = new HashMap<>();
-                Map<String, Object> productsMap = (Map<String, Object>) productsList.get(j);
+                Map<String, Object> productsMap = (Map<String, Object>) o;
                 System.out.println(productsMap);
 
                 Long q = (Long) productsMap.get("quantity");
@@ -85,7 +81,7 @@ public class CartController {
                 String swpid = productsMap.get("swp_id").toString();
 
                 WholesalerProductDTO wholesalerProduct = wholesalerProductService.getBySwp_id(swpid);
-                float unit_price = wholesalerProduct.getPrice();
+                double unit_price = wholesalerProduct.getPrice();
                 String pid = wholesalerProduct.getPid();
                 ProductDTO product = productService.getProductById(pid);
                 String productName = product.getName();

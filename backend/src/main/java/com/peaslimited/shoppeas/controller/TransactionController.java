@@ -234,7 +234,7 @@ public class TransactionController {
             String swpid = productsMap.get("swp_id").toString();
             int quantity = Integer.parseInt(productsMap.get("quantity").toString());
             //ACTION: add price field to products list
-            float productPrice = getProductPrice(swpid, uen)*quantity;
+            double productPrice = getProductPrice(swpid, uen)*quantity;
             productsMap.put("price", productPrice);
             products.set(i, productsMap);
 
