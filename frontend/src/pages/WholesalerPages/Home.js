@@ -5,26 +5,30 @@ import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from "../../lib/userStore";
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
-import wholesalerService from "../../service/WholesalerService";
+import wholesalerService from '../../service/WholesalerService';
 
 const Home = () => {
   const navigation = useNavigation();
-  const { userUid } = useUserStore();
+  const { currentUser, userUid } = useUserStore();
   // const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
+  
+  useEffect(() => {
+    setProfile(currentUser.name);
+  }, [currentUser])
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
 
   const [products, setProducts] = useState([
-    {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
-    {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
-    {name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing'},
-    {name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats'},
-    {name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
-    {name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground'},
+    { name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22, description: 'Veggies' },
+    { name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
+    { name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing' },
+    { name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats' },
+    { name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
+    { name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground' },
   ]);
 
   const removeProduct = (index) => {
@@ -32,8 +36,8 @@ const Home = () => {
   };
 
   const editProduct = (index, updatedProduct) => {
-    setProducts(currentProducts => 
-      currentProducts.map((product, i) => 
+    setProducts(currentProducts =>
+      currentProducts.map((product, i) =>
         i === index ? { ...product, ...updatedProduct } : product
       )
     );
@@ -44,43 +48,43 @@ const Home = () => {
   };
 
   return (
-    <SafeAreaView style = {styles.container}>
-        <View style={styles.searchBar}>
-            <Ionicons name="search" size={24} color="#0C5E52" />
-            <TextInput 
-            style={styles.searchInput}
-            placeholder="Search Products"
-            placeholderTextColor="#0C5E52"
-            value={searchText}
-            autoCapitalize="none"
-            onChangeText={(text) => setSearchText(text)}
-            />
-            <TouchableOpacity onPress={navigateToProfile}>
-            <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
-            </TouchableOpacity>
-        </View>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={24} color="#0C5E52" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search Products"
+          placeholderTextColor="#0C5E52"
+          value={searchText}
+          autoCapitalize="none"
+          onChangeText={(text) => setSearchText(text)}
+        />
+        <TouchableOpacity onPress={navigateToProfile}>
+          <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
+        </TouchableOpacity>
+      </View>
 
-        <View style={styles.header}>
-          <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Happy Wholesaler</Text>
-              <Text style={styles.subHeaderTitle}>My Products</Text>
-          </View>
-          <Image
-              source={require('../../../assets/imgs/pea.png')}
-              style={styles.headerImage}
-          />
+      <View style={styles.header}>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>{profile}</Text> 
+          <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
-        
-        <View style={styles.addProductContainer}>
-            <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
-                <Ionicons name="add-circle-outline" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.addButtonText}>Add New Product</Text>
-            <TouchableOpacity style={styles.filterButton}>
-                <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
-            </TouchableOpacity>
-        </View>
-        <ScrollView style={styles.productList}>
+        <Image
+          source={require('../../../assets/imgs/pea.png')}
+          style={styles.headerImage}
+        />
+      </View>
+
+      <View style={styles.addProductContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
+          <Ionicons name="add-circle-outline" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.addButtonText}>Add New Product</Text>
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
+        </TouchableOpacity>
+      </View>
+      <ScrollView style={styles.productList}>
         {products.map((product, index) => (
           <WholesalerProduct
             key={product.pid}
@@ -144,7 +148,7 @@ const styles = StyleSheet.create({
     margin: '2%',
   },
   headerImage: {
-    width: '18%', 
+    width: '18%',
     height: '65%',
     marginRight: "29.2%",
   },

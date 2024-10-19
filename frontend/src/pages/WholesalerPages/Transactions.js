@@ -1,12 +1,14 @@
 import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image, FlatList} from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { useState, useMemo } from 'react';
+import { useUserStore } from '../../lib/userStore';
 import OrderDropdown from '../../components/wholesalers/OrderDropdown';
 import PendingOrders from '../../components/wholesalers/PendingOrders';
 import CompletedOrders from '../../components/wholesalers/CompletedOrders';
 
 const Transactions = ({ defaultValue }) => {
   const [selectedOption, setSelectedOption] = useState('pending');
+  const { currentUser } = useUserStore();
   // const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
 
   const [orders, setOrders] = useState([
@@ -85,7 +87,7 @@ const Transactions = ({ defaultValue }) => {
         </View>
         <View style={styles.header}>
           <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Happy Wholesaler</Text>
+              <Text style={styles.headerTitle}>{currentUser.name}</Text>
               <Text style={styles.subHeaderTitle}>Transactions</Text>
           </View>
           <Image

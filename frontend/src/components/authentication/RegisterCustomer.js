@@ -97,28 +97,14 @@ const RegisterCustomer = ({ onBackPress }) => {
 
     setIsLoading(true)
 
-    try {
-      const res = await createUserWithEmailAndPassword(auth, email, password);
+      try {
+          const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-      // // TODO: Update these fields with the respective records
-      const requestBody = {
-        "first_name": firstName,
-        "last_name": lastName,
-        "email": email,
-        "phone_number": `+65 ${phoneNumber}`,
-        "name": `${firstName} ${lastName}`,
-        "street_name": "10 Ang Mo Kio Road",
-        "unit_no": "#10-19",
-        "building_name": null,
-        "city": "Singapore",
-        "postal_code": "387458"
-      }
-
-      // API call to add user details into database collections
-      authService.register(res.user.uid, "consumer", requestBody)
-        .catch((err) => {
-          console.log(err); // TODO: replace with show error alert
-        })
+          // API call to add user details into database collections
+          authService.register(res.user.uid, "consumer", formData)
+              .catch((err) => {
+                  console.log(err); // TODO: replace with show error alert
+              })
 
       // TODO: Navigate to login page
     } catch (err) {
