@@ -117,8 +117,14 @@ public class OneMapServiceImpl implements OneMapService {
                 // Convert time from seconds to minutes
                 int totalTimeInMinutes = totalTimeInSeconds / 60;
 
+                // Extract the total distance in Meters
+                float totalDistanceInMeters = routeSummary.path("total_distance").asInt();
+
+                // Convert from M to Km
+                float totalDistanceInKm = totalDistanceInMeters/1000;
+
                 // Return the driving time in minutes
-                return totalTimeInMinutes + " minutes";
+                return "Time: " + totalTimeInMinutes + " Minutes, Distance: " + totalDistanceInKm + "Km";
             } else {
                 return null;  // No route found
             }
