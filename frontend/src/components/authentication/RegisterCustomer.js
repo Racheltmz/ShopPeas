@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
+import { Ionicons } from '@expo/vector-icons';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
 import Address from './Address';
