@@ -1,5 +1,7 @@
 package com.peaslimited.shoppeas.service;
+
 import com.peaslimited.shoppeas.dto.ProductDTO;
+import com.peaslimited.shoppeas.model.Product;
 
 import java.util.Map;
 import java.util.List;
@@ -11,9 +13,9 @@ public interface ProductService {
     ProductDTO getProductById(String id) throws ExecutionException, InterruptedException;
 
     // method to get all products
-    List<ProductDTO> getAllProducts() throws ExecutionException, InterruptedException;
+    List<Product> getAllProducts() throws ExecutionException, InterruptedException;
+
     void addProduct(String PID, ProductDTO product);
+
     void updateProduct(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
-
-
 }

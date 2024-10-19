@@ -40,7 +40,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
-    public void updateCartByOrder(String cid, int quantity, String tid, float newPrice) throws ExecutionException, InterruptedException
+    public void updateCartByOrder(String cid, int quantity, String tid, double newPrice) throws ExecutionException, InterruptedException
     {
         cartRepo.updateCartWithOrder(cid, quantity, tid, newPrice);
     }

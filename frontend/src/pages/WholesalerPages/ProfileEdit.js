@@ -13,10 +13,17 @@ const ProfileEdit = ({ navigation }) => {
   const [building, setBuilding] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
+  const handleSave = () => {
+    // Implement save logic here
+    // After saving, navigate back to the Profile screen
+    navigation.goBack();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
+          {/* Use the Ionicons arrow icon as the back button */}
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#0C5E52" />
           </TouchableOpacity>
@@ -25,7 +32,7 @@ const ProfileEdit = ({ navigation }) => {
 
         <View style={styles.profileSummary}>
           <Image
-            source={require('../../../assets/imgs/ProfileWholesaler.png')}
+            source={require('../../../assets/imgs/profile.png')}
             style={styles.profilePic}
           />
           <Text style={styles.name}>Happy Wholesaler</Text>
@@ -101,7 +108,7 @@ const ProfileEdit = ({ navigation }) => {
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.saveButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
             <Text style={styles.saveButtonText}>Save</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>

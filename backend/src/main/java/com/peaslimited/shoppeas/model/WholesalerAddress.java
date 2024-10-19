@@ -19,6 +19,6 @@ public class WholesalerAddress {
     @Nullable
     private String building_name;
     private String city;
-    private Integer postal_code;
+    private String postal_code;
 
 }

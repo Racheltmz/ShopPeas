@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class WholesalerProductDTO {
     private String uen;
     private String pid;
-    private float price;
-    private float stock;
+    private double price;
+    private Integer stock;
+    private Boolean active;
 }

@@ -39,11 +39,9 @@ public class AuthServiceImpl implements AuthService {
     public void registerConsumer(String UID, Map<String, Object> user) throws FirebaseAuthException {
         // Create and add consumer
         ConsumerDTO consumer = createConsumerFromMap(user);
+        // Set custom claims
+        authRepository.setUserClaims(UID, Map.of("consumer", true));
         consumerService.addConsumer(UID, consumer);
-
-        // Create and add wholesaler account
-        ConsumerAccountDTO consumerAccount = createConsumerAccountFromMap(user);
-        consumerAccountService.addConsumerAccount(UID, consumerAccount);
 
         // Create and add wholesaler address
         ConsumerAddressDTO consumerAddress = createConsumerAddressFromMap(user);
@@ -61,6 +59,8 @@ public class AuthServiceImpl implements AuthService {
         String UEN = user.get("uen").toString();
         // Create and add wholesaler
         WholesalerDTO wholesaler = createWholesalerFromMap(user);
+        // Set custom claims
+        authRepository.setUserClaims(UID, Map.of("wholesaler", true));
         wholesalerService.addWholesaler(UID, wholesaler);
 
         // Create and add wholesaler account
@@ -87,15 +87,6 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
-    private ConsumerAccountDTO createConsumerAccountFromMap(Map<String, Object> user) {
-        ArrayList<Object> paymentM = (ArrayList) user.get("paymentMtds");
-        /*String listStr = user.get("paymentMethodList").toString();
-        listStr = listStr.replace("[","");
-        listStr = listStr.replace("]","");
-        ArrayList<String> paymentM = new ArrayList<String>(Arrays.asList(listStr.split(",")));*/
-        return new ConsumerAccountDTO(paymentM);
-    }
-
     private ConsumerAddressDTO createConsumerAddressFromMap(Map<String, Object> user) {
         // Check for null fields
         Object unit_no_obj = user.get("unit_no");
@@ -116,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
             unit_no,
             building_name,
             user.get("city").toString(),
-            Integer.valueOf(user.get("postal_code").toString())
+            user.get("postal_code").toString()
         );
     }
 
@@ -140,7 +131,7 @@ public class AuthServiceImpl implements AuthService {
         return new WholesalerAccountDTO(
             user.get("bank").toString(),
             user.get("bank_account_name").toString(),
-            Long.valueOf(user.get("bank_account_no").toString())
+            user.get("bank_account_no").toString()
         );
     }
 
@@ -166,7 +157,6 @@ public class AuthServiceImpl implements AuthService {
             building_name,
             user.get("city").toString(),
             user.get("postal_code").toString()
-
         );
     }
 

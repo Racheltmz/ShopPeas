@@ -2,13 +2,10 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.dto.WholesalerTransactionsDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.*;
-import com.peaslimited.shoppeas.dto.mapper.WholesalerTransactionMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
@@ -110,7 +106,7 @@ public class TransactionController {
         productsList.add(productMap);
 
         //find unit price
-        float price = getProductPrice(swp_id,uen);
+        double price = getProductPrice(swp_id,uen);
         if(price != 0)
         {
             TransactionsDTO transaction = new TransactionsDTO(
@@ -126,7 +122,7 @@ public class TransactionController {
 
     }
 
-    public float getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
+    public double getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProd =  wholesalerProductService.getBySwp_id(swp_id);
         return wholesalerProd.getPrice();
     }
@@ -151,7 +147,7 @@ public class TransactionController {
 
                 String uid = document.get("uid").toString();
                 double total_price = (double) document.get("total_price");
-                float price = (float) total_price;
+                double price = (double) total_price;
                 dataMap.put("uid", uid);
                 dataMap.put("total_price", price);
                 dataMap.put("items", transactionService.getProductListfromTransaction(document, false));

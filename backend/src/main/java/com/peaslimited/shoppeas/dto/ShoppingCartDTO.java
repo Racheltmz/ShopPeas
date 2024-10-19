@@ -9,7 +9,6 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ShoppingCartDTO {
-
     ArrayList<String> orders;
     String uid;
     double total_price;

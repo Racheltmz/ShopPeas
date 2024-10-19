@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-const RatingModal = ({ visible, onClose, order }) => {
+const RatingModal = ({ visible, onClose, wholesaler }) => {
   const [rating, setRating] = useState(0);
 
   const handleRating = (selectedRating) => {
     setRating(selectedRating);
+  };
+
+  const handleSubmit = () => {
     // Here you would typically send the rating to your backend
-    console.log(`Rating of ${selectedRating} stars given for order on ${order?.orderDate}`);
-    onClose();
+    console.log(`Rating of ${rating} stars given for wholesaler: ${wholesaler?.wholesalerName}`);
+    // You might want to add a small delay before closing the modal
+    setTimeout(() => {
+      onClose();
+      setRating(0); // Reset rating after closing
+    }, 500);
   };
 
   return (
@@ -20,23 +28,32 @@ const RatingModal = ({ visible, onClose, order }) => {
     >
       <View style={styles.centeredView}>
         <View style={styles.modalView}>
-          <Text style={styles.modalText}>Rate your order from {order?.orderDate}</Text>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+            <Text style={styles.closeButtonText}>✕</Text>
+          </TouchableOpacity>
+          <Text style={styles.modalTitle}>Leave a Rating for :</Text>
+          <Text style={styles.wholesalerName}>{wholesaler?.wholesalerName}</Text>
+          <Text style={styles.modalSubtitle}>Share your experience with the wholesaler to help other buyers.</Text>
           <View style={styles.ratingContainer}>
             {[1, 2, 3, 4, 5].map((star) => (
               <TouchableOpacity
                 key={star}
                 onPress={() => handleRating(star)}
-                style={styles.starButton}
               >
-                <Text style={styles.starText}>{star <= rating ? '★' : '☆'}</Text>
+                <Ionicons 
+                  name={star <= (rating) ? "star" : "star-outline"} 
+                  size={40} 
+                  color={star <= (rating) ? "#FFD700" : "#808080"} 
+                  style={styles.starIcon}
+                />
               </TouchableOpacity>
             ))}
           </View>
           <TouchableOpacity
-            style={styles.closeButton}
-            onPress={onClose}
+            style={styles.submitButton}
+            onPress={handleSubmit}
           >
-            <Text style={styles.textStyle}>Close</Text>
+            <Text style={styles.submitButtonText}>Submit</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -65,34 +82,53 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: '80%',
   },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+  closeButton: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#0C5E52',
+  },
+  modalTitle: {
     fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    marginBottom: 5,
+  },
+  wholesalerName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    marginBottom: 10,
+  },
+  modalSubtitle: {
+    fontSize: 14,
+    color: '#777',
+    textAlign: 'center',
+    marginBottom: 20,
   },
   ratingContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginBottom: 20,
   },
-  starButton: {
-    padding: 5,
+  starIcon: {
+    marginHorizontal: 5,
   },
-  starText: {
-    fontSize: 30,
-    color: '#FFD700',
-  },
-  closeButton: {
-    backgroundColor: '#2196F3',
+  submitButton: {
+    backgroundColor: '#B5D75F',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
     borderRadius: 20,
-    padding: 10,
-    elevation: 2,
   },
-  textStyle: {
-    color: 'white',
+  submitButtonText: {
+    color: '#0C5E52',
     fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 16,
   },
 });
 

@@ -12,8 +12,5 @@ public class ConsumerAddressDTO {
     private String unit_no;
     private String building_name;
     private String city;
-    private Integer postal_code;
-
-    public static class CardDTO {
-    }
+    private String postal_code;
 }

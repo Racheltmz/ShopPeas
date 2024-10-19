@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,15 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useNavigation } from "@react-navigation/native";
+import { Divider } from 'react-native-paper';
+import { useUserStore } from "../../lib/userStore";
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
+import productService from "../../service/ProductService";
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
+  const { userUid } = useUserStore();
+  const [wholesalerInfo, setWholesalerInfo] = useState([]);
   const [sortBy, setSortBy] = useState("price");
   const [showModal, setShowModal] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
@@ -21,55 +26,38 @@ const ProductDetails = ({ route }) => {
   const { addItem } = useCart();
   const navigation = useNavigation();
 
-  const DUMMY_WHOLESALERS = [
-    {
-      name: "Happy Wholesaler",
-      location: "Bishan",
-      timeAway: 39,
-      stocks: 39,
-      price: 1.29,
-      ratings: 4.9,
-      uen: 123456,
-    },
-    {
-      name: "Cheap Wholesaler",
-      location: "Serangoon",
-      timeAway: 47,
-      stocks: 45,
-      price: 1.27,
-      ratings: 4.3,
-      uen: 12342323,
-    },
-    {
-      name: "Quality buy",
-      location: "Bishan",
-      timeAway: 39,
-      stocks: 80,
-      price: 1.51,
-      ratings: 4.7,
-      uen: 123452316,
-    },
-    {
-      name: "Value Dollar",
-      location: "Punggol",
-      timeAway: 71,
-      stocks: 15,
-      price: 1.19,
-      ratings: 4.5,
-      uen: 123456213231,
-    },
-    {
-      name: "Big Box",
-      location: "Jurong East",
-      timeAway: 41,
-      stocks: 28,
-      price: 1.49,
-      ratings: 4.9,
-      uen: 123451232316,
-    },
-  ];
+  useEffect(() => {
+    productService.getDetailsByPID(userUid, product.pid)
+      .then((res) => {
+        console.log(res);
+        let data = []
+        for (let i=0; i<res.length; i++) {
+          let record = {
+            'name': res[i].name,
+            'location': res[i].location,
+            'timeAway': 39, // TODO
+            'stocks': res[i].stock,
+            'price': res[i].price,
+            'ratings': res[i].ratings.toFixed(1),
+            'uen': res[i].uen
+          }
+          data.push(record);
+        }
+        setWholesalerInfo(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [product.pid, userUid]);
 
-  const sortedWholesalers = [...DUMMY_WHOLESALERS].sort((a, b) => {
+  const handleWholesalerPress = () => {
+    setShowModal(false);
+    navigation.navigate("ViewWholesaler", {
+      wholesalerUEN: selectedWholesaler.uen,
+    });
+  };
+
+  const sortedWholesalers = [...wholesalerInfo].sort((a, b) => {
     if (sortBy === "price") return a.price - b.price;
     if (sortBy === "duration") return a.timeAway - b.timeAway;
     if (sortBy === "stocks") return b.stocks - a.stocks;
@@ -84,16 +72,27 @@ const ProductDetails = ({ route }) => {
         setShowModal(true);
       }}
     >
-      <View>
-        <Text style={styles.wholesalerName}>{item.name}</Text>
-        <Text style={styles.wholesalerLocation}>
-          {item.location}, {item.timeAway} Minutes away
-        </Text>
-        <Text>Stocks: {item.stocks}</Text>
-      </View>
-      <View style={styles.priceRating}>
-        <Text style={styles.price}>${item.price.toFixed(2)}</Text>
-        <Text>{item.ratings} ⭐</Text>
+      <View style={styles.detailsContainer}>
+        <View style={styles.row}>
+          <View>
+            <Text style={styles.wholesalerName}>{item.name}</Text>
+            <Text style={styles.wholesalerLocation}>
+              {item.location}, {item.timeAway} Minutes away
+            </Text>
+          </View>
+          <View style={styles.priceRating}>
+            <Text>{item.ratings} ⭐</Text>
+          </View>
+        </View>
+        <Divider style={styles.divider} />
+        <View style={styles.row}>
+          <View>
+            <Text style={styles.wholesalerStocks}>Stocks: {item.stocks}</Text>
+          </View>
+          <View style={styles.priceRating}>
+            <Text style={styles.price}>${item.price.toFixed(2)}</Text>
+          </View>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -112,7 +111,7 @@ const ProductDetails = ({ route }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ProductDetailsHeader name={product.name} navigation={navigation}/>
+      <ProductDetailsHeader name={product.name} desc={`${product.quantity} Packets`} navigation={navigation} />
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
@@ -166,24 +165,31 @@ const ProductDetails = ({ route }) => {
                 <Ionicons name="close" size={24} color="black" />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>{product.name}</Text>
-              <Text>{product.quantity} Packet</Text>
-              <Text>{selectedWholesaler?.name}</Text>
-              <Text>
+              <Text style={styles.modalText}>{product.quantity} Packet</Text>
+              <TouchableOpacity onPress={handleWholesalerPress}>
+                <Text style={styles.wholesalerName}>
+                  {selectedWholesaler?.name}
+                  <Ionicons name="chevron-forward-outline" size={16} color="#0C5E52" />
+                </Text>
+              </TouchableOpacity>
+              <Text style={styles.wholesalerLocation}>
                 {selectedWholesaler?.location}, {selectedWholesaler?.timeAway}{" "}
                 Minutes away
               </Text>
-              <Text>Stocks: {selectedWholesaler?.stocks}</Text>
-              {/* <Image> </Image> */}
+              <Text style={styles.wholesalerStocks}>Stocks: {selectedWholesaler?.stocks}</Text>
               <View style={styles.quantityContainer}>
-                <TouchableOpacity
-                  onPress={() => setQuantity(Math.max(1, quantity - 1))}
-                >
-                  <Text style={styles.quantityButton}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantity}>{quantity}</Text>
-                <TouchableOpacity onPress={() => setQuantity(quantity + 1)}>
-                  <Text style={styles.quantityButton}>+</Text>
-                </TouchableOpacity>
+                <Text style={styles.wholesalerQty}>Quantity</Text>
+                <View style={styles.row}>
+                  <TouchableOpacity
+                    onPress={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    <Text style={styles.quantityButton}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.quantity}>{quantity}</Text>
+                  <TouchableOpacity onPress={() => setQuantity(quantity + 1)}>
+                    <Text style={styles.quantityButton}>+</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
               <TouchableOpacity
                 style={styles.addToCartButton}
@@ -206,6 +212,11 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 10,
   },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   sortContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -223,10 +234,18 @@ const styles = StyleSheet.create({
   list: {
     flex: 1,
   },
+  detailsContainer: {
+    width: "100%",
+  },
+  divider: {
+    marginVertical: 5,
+    height: 1,
+    backgroundColor: '#0C5E5250',
+  },
   wholesalerItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#D6E8A4",
+    backgroundColor: "#D6E8A490",
     padding: 15,
     marginVertical: 5,
     marginHorizontal: 10,
@@ -235,12 +254,25 @@ const styles = StyleSheet.create({
   wholesalerName: {
     fontWeight: "bold",
     fontSize: 16,
+    color: '#0C5E52',
+    marginBottom: 2,
   },
   wholesalerLocation: {
-    color: "gray",
+    color: "#0C5E52",
+    marginBottom: 2,
+  },
+  wholesalerStocks: {
+    color: "#0C5E52",
+    marginBottom: 2,
+  },
+  wholesalerQty: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: "#0C5E52",
+    marginBottom: 2,
   },
   price: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
     color: "green",
   },
@@ -262,14 +294,19 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
+    marginBottom: 5,
+    color: '#0C5E52',
+  },
+  modalText: {
+    color: '#0C5E52',
+    marginBottom: 20,
   },
   quantityContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between",
     marginTop: 20,
   },
   quantityButton: {
@@ -281,14 +318,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   addToCartButton: {
-    backgroundColor: "green",
+    backgroundColor: "#D6E8A4",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginTop: 20,
+    marginVertical: 20,
   },
   addToCartButtonText: {
-    color: "white",
+    color: "#0C5E52",
+    fontSize: 20,
     fontWeight: "bold",
   },
 });

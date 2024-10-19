@@ -4,20 +4,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../lib/userStore';
 
 const ProfileDetails = ({ userData, navigation }) => {
-  const { resetUser } = useUserStore()
+  const { resetUser, paymentDetails } = useUserStore()
+
   return (
     <View style={styles.container}>
       <View style={styles.topPortion}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
-          {/* <Image source={require('../../../assets/imgs/DummyImage.jpg')} style={styles.peaIcon} /> */}
           <TouchableOpacity onPress={() => resetUser()}>
             <Image source={require('../../../assets/imgs/logout.png')} style={styles.logoutButton} />
           </TouchableOpacity>
         </View>
         <View style={styles.profileCard}>
           <View style={styles.profileCardLeft}>
-            <Image source={require('../../../assets/imgs/DummyImage.jpg')} style={styles.profilePicture} />
+            <Image source={require('../../../assets/imgs/profile.png')} style={styles.profilePicture} />
             <Text style={styles.name}>{userData.name}</Text>
           </View>
           <View style={styles.profileCardRight}>
@@ -41,13 +41,20 @@ const ProfileDetails = ({ userData, navigation }) => {
             <Ionicons name="create-outline" size={40} color="#0C5E52" />
           </TouchableOpacity>
         </View>
-        <Text style={styles.detailText}>Contact: {userData.contact}</Text>
-        <Text style={styles.detailText}>Address: {`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
-        <View style={styles.cardInfo}>
-          <Ionicons name="card" size={24} color="#0C5E52" />
-          <Text style={styles.cardText}>Card *1234</Text>
+        <View style={styles.row}>
+          <Text style={styles.detailText}>Email: </Text>
+          <Text style={styles.detailTextVal}>{userData.email}</Text>
         </View>
-        <Text style={styles.detailText}>Email: {userData.email}</Text>
+        <View style={styles.row}>
+          <Text style={styles.detailText}>Contact: </Text>
+          <Text style={styles.detailTextVal}>{userData.contact}</Text>
+        </View>
+        <Text style={styles.detailText}>Address: </Text>
+        <Text style={styles.detailTextVal}>{`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
+        {/* <View style={styles.cardInfo}>
+          <Ionicons name="card" size={24} color="#0C5E52" />
+          <Text style={styles.cardText}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text>
+        </View> */}
       </View>
     </View>
   );
@@ -57,11 +64,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f0f0f0',
-    paddingTop: "15%",
   },
   topPortion: {
     backgroundColor: '#D6E8A4',
-    paddingVertical: '5%',
+    paddingTop: "15%",
+    paddingBottom: '5%',
     paddingHorizontal: '8%',
   },
   header: {
@@ -77,6 +84,11 @@ const styles = StyleSheet.create({
   peaIcon: {
     width: 24,
     height: 24,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   logoutButton: {
     width: 24,
@@ -111,18 +123,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   infoTitle: {
-    fontSize: 16,
-    color: '#666',
-  },
-  infoValue: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#0C5E52',
+    marginBottom: 5,
+  },
+  infoValue: {
+    fontSize: 16,
     color: '#0C5E52',
   },
   accountDetails: {
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: '3%',
+    padding: '4%',
     margin: '5%',
   },
   accountHeader: {
@@ -139,12 +152,17 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 16,
-    marginBottom: 10,
+    fontWeight: 'bold',
+    marginBottom: "5%",
+  },
+  detailTextVal: {
+    fontSize: 16,
+    marginBottom: "5%",
   },
   cardInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 5,
+    marginBottom: "5%",
   },
   cardText: {
     fontSize: 16,

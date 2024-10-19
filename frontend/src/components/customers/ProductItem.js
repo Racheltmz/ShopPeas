@@ -1,19 +1,19 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
-const ProductItem = ({ name, quantity, imageUrl, isGridView, onPress }) => {
+const ProductItem = ({ key, name, imageUrl, packageSize, isGridView, onPress }) => {
   return (
     <TouchableOpacity
       style={[styles.container, isGridView ? styles.gridItem : styles.listItem]}
       onPress={onPress}
     >
       <Image
-        source={imageUrl}
+        source={{uri: imageUrl}}
         style={[styles.image, isGridView ? styles.gridImage : styles.listImage]}
       />
-      <View style={{ flex: 1, marginLeft: isGridView ? 0 : 10 }}>
+      <View key={key} style={{ flex: 1, marginLeft: isGridView ? 0 : 15 }}>
         <Text style={styles.name}>{name}</Text>
-        <Text style={styles.quantity}>{quantity} Packet</Text>
+        <Text style={styles.packageSize}>{packageSize}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -21,13 +21,13 @@ const ProductItem = ({ name, quantity, imageUrl, isGridView, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#D6E8A4",
     borderRadius: 10,
     padding: 10,
-    margin: 5,
+    margin: 10,
   },
   gridItem: {
-    width: "47%",
+    width: "44%",
   },
   listItem: {
     flexDirection: "row",
@@ -46,10 +46,12 @@ const styles = StyleSheet.create({
     height: 80,
   },
   name: {
-    fontSize: 16,
+    marginBottom: 5,
+    fontSize: 14,
     fontWeight: "bold",
+    color: '#0C5E52',
   },
-  quantity: {
+  packageSize: {
     fontSize: 14,
     color: "#666",
   },

@@ -2,11 +2,9 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.dto.*;
-import com.peaslimited.shoppeas.dto.mapper.WholesalerProfileMapper;
-import com.peaslimited.shoppeas.service.AuthService;
-import com.peaslimited.shoppeas.service.WholesalerAccountService;
-import com.peaslimited.shoppeas.service.WholesalerAddressService;
-import com.peaslimited.shoppeas.service.WholesalerService;
+import com.peaslimited.shoppeas.dto.mapper.WholesalerMapper;
+import com.peaslimited.shoppeas.model.Product;
+import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -34,13 +33,17 @@ public class WholesalerController {
     @Autowired
     private WholesalerAccountService wholesalerAccountService;
 
+    @Autowired
+    private WholesalerProductService wholesalerProductService;
+
     @GetMapping("/view/{uen}")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public WholesalerProfileDTO viewWholesalerConsumer(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
+    public WholesalerDetailsDTO viewWholesalerConsumer(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
         WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(UEN);
         WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(UEN);
-        return WholesalerProfileMapper.toProfileDTO(wholesaler, wholesalerAddress, null);
+        List<Product> wholesalerProducts = wholesalerProductService.getByWholesalerUEN(UEN);
+        return WholesalerMapper.toDetailsDTO(wholesaler, wholesalerAddress, wholesalerProducts);
     }
 
     /**
@@ -61,7 +64,7 @@ public class WholesalerController {
         WholesalerAccountDTO wholesalerAccount = wholesalerAccountService.getWholesalerAccount(UEN);
 
         // Invoke mapper to combine information and return the profile DTO
-        return WholesalerProfileMapper.toProfileDTO(wholesaler, wholesalerAddress, wholesalerAccount);
+        return WholesalerMapper.toProfileDTO(wholesaler, wholesalerAddress, wholesalerAccount);
     }
 
     @PatchMapping("/profile/update")

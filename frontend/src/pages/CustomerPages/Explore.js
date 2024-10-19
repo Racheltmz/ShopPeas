@@ -1,75 +1,93 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, Text } from 'react-native';
-import Products from '../../components/customers/Products';
+import React, { useState, useEffect, useMemo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Searchbar } from 'react-native-paper';
+import Fuse from 'fuse.js';
+import Products from '../../components/customers/Products';
+import { fetchProductData } from '../../api/ApiCallFunctions';
+import { useUserStore } from '../../lib/userStore';
 
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
   const navigation = useNavigation();
-
-  const DUMMY_ITEMS = [
-    {
-      name: "Bok Choy",
-      quantity: 1,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 1,
-    },
-      {
-      name: "Tomato",
-      quantity: 5,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 2,
-    },
-      {
-      name: "Lemonade",
-      quantity: 1,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 3,
-    },
-      {
-      name: "Potato",
-      quantity: 3,
-      img: require("../../../assets/imgs/DummyImage.jpg"),
-      id: 4,
-    },
-  ]
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [error, setError] = useState("");
+  const { userUid } = useUserStore();
 
   const handleProductPress = (item) => {
-    navigation.navigate('ProductDetails', {product: item});
+    navigation.navigate('ProductDetails', { product: item });
   }
+
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        const productsList = await fetchProductData(userUid);
+        setProducts(productsList);
+        setFilteredProducts(productsList);
+      } catch (err) {
+        console.error('Error loading products:', err);
+        setError('Failed to load products. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProducts();
+  }, []);
+
+  const fuse = useMemo(() => new Fuse(products, {
+    // fields to search
+    keys: ['name'], 
+    threshold: 0.3, // Adjust this value to make the search more or less strict
+    includeScore: true
+  }), [products]);
+
+  const handleSearch = (query) => {
+    setSearchText(query);
+    if (query.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      const results = fuse.search(query);
+      setFilteredProducts(results.map(result => result.item));
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TextInput 
-          style={styles.searchBox}
-          placeholder='Search ShopPeas'
+        <Searchbar
+          placeholder="Search ShopPeas"
+          onChangeText={handleSearch}
           value={searchText}
+          style={styles.searchBox}
           autoCapitalize="none"
-          onChangeText={(text) => setSearchText(text)}
         />
       </View>
-      <View style={{ flex: 2 , justifyContent: 'center'}}>
-        <Products productsData={DUMMY_ITEMS} onProductPress={handleProductPress} />
+      {loading && <Text>Loading...</Text>}
+      {error ? <Text>{error}</Text> : null}
+      <View style={{ flex: 2, justifyContent: 'center' }}>
+        <Products onProductPress={handleProductPress} productData={filteredProducts}/>
       </View>
     </View>
   );
 };
 
-export default Explore;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'transparent', 
+    backgroundColor: 'transparent',
   },
   header: {
     marginTop: 80,
     paddingHorizontal: 20,
   },
   searchBox: {
-    backgroundColor: 'rgba(255, 255, 255, 1)', // Semi-transparent white
-    borderRadius: 20,
-    padding: 10,
+    backgroundColor: '#FAF9F6',
+    borderRadius: 25,
   },
 });
+
+export default Explore;

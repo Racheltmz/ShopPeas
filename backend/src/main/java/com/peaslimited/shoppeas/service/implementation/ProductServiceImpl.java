@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.peaslimited.shoppeas.dto.ProductDTO;
-import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.repository.ProductRepository;
 import com.peaslimited.shoppeas.service.ProductService;
@@ -12,6 +11,7 @@ import com.peaslimited.shoppeas.dto.mapper.ProductMapper;
 import java.util.Map;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,14 +27,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDTO> getAllProducts() throws ExecutionException, InterruptedException{
-        List<Product> products = productRepository.findAll();
-        System.out.println("Fetched Products: " + products.size());
-        return products.stream()
-                .map(ProductMapper::toDTO)
-                .collect(Collectors.toList());
+    public List<Product> getAllProducts() throws ExecutionException, InterruptedException{
+        return productRepository.findAll();
     }
-
 
     @Override
     public void addProduct(String PID, ProductDTO product){

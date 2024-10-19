@@ -65,12 +65,14 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#0C5E52',
   },
   itemQuantity: {
     color: 'gray',
   },
   itemPrice: {
     fontWeight: 'bold',
+    color: '#0C5E52',
   },
   quantityControl: {
     flexDirection: 'row',

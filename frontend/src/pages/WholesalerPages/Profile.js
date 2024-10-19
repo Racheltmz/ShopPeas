@@ -1,37 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createStackNavigator } from '@react-navigation/stack';
-
-
+import { useUserStore } from '../../lib/userStore';
+import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
+  const { resetUser, paymentDetails } = useUserStore()
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <TouchableOpacity style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#0C5E52" />
-            </TouchableOpacity>
             <Text style={styles.headerTitle}>Profile</Text>
             <Image source={require('../../../assets/imgs/pea.png')} style={styles.peaIcon} />
           </View>
-          <TouchableOpacity style={styles.settingsButton}>
-            <Ionicons name="settings-outline" size={24} color="#0C5E52" />
+          <TouchableOpacity onPress={() => resetUser()}>
+            <Ionicons name="log-out-outline" size={24} color="#0C5E52" />
           </TouchableOpacity>
         </View>
 
         <View style={styles.profileCard}>
           <View style={styles.profileLeft}>
             <Image
-              source={require('../../../assets/imgs/ProfileWholesaler.png')}
+              source={require('../../../assets/imgs/profile.png')}
               style={styles.profilePic}
             />
             <View style={styles.nameContainer}>
-              <Text style={styles.name}>Happy</Text>
-              <Text style={styles.name}>Wholesaler</Text>
+              <Text style={styles.wholesalerName}>Happy</Text>
+              <Text style={styles.wholesalerName}>Wholesaler</Text>
             </View>
           </View>
           <View style={styles.profileRight}>
@@ -45,13 +44,34 @@ const Profile = () => {
           </View>
         </View>
 
+        {/* Updated Ratings Section */}
+        <View style={styles.ratingsSection}>
+          <View style={styles.ratingsHeader}>
+            <Text style={styles.ratingsTitle}>Ratings</Text>
+            <Image source={require('../../../assets/imgs/pea.png')} style={styles.peaIcon} />
+          </View>
+          <View style={styles.ratingsDetails}>
+            <Text style={styles.ratingsAverage}>4.9 Average Rating</Text>
+            <Text style={styles.reviewsCount}>13 Ratings</Text>
+          </View>
+          <View style={styles.ratingBreakdown}>
+            <RatingBar label="5" value="70%" />
+            <RatingBar label="4" value="20%" />
+            <RatingBar label="3" value="5%" />
+            <RatingBar label="2" value="3%" />
+            <RatingBar label="1" value="2%" />
+          </View>
+        </View>
+
+        {/* Account Details */}
         <View style={styles.accountDetails}>
           <View style={styles.accountHeader}>
             <Text style={styles.accountTitle}>Account Details</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('ProfileEdit')}>
               <Ionicons name="create-outline" size={24} color="#0C5E52" />
             </TouchableOpacity>
           </View>
+          <InfoRow label="Email:" value="contact@happywholesaler.com" />
           <View style={styles.accountInfo}>
             <View style={styles.accountColumn}>
               <InfoRow label="Contact:" value="+65 9863 3472" />
@@ -68,22 +88,40 @@ const Profile = () => {
               />
             </View>
           </View>
-          <InfoRow label="Email:" value="contact@happywholesaler.com" />
         </View>
 
-        <TouchableOpacity style={styles.shopReviewsButton}>
-          <Text style={styles.shopReviewsText}>Shop Reviews</Text>
-          <Ionicons name="chevron-forward" size={24} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.myProductsButton}>
+        {/* My Products Button */}
+        <TouchableOpacity 
+          style={styles.myProductsButton}
+          onPress={() => navigation.navigate('Home')}
+        >
           <Text style={styles.myProductsText}>My Products</Text>
           <Ionicons name="chevron-forward" size={24} color="#0C5E52" />
         </TouchableOpacity>
+
+        {/* Log Out Panel 
+        <TouchableOpacity
+          style={styles.logOutButton}
+          onPress={() => {
+            navigation.navigate('Login');
+          }}
+        >
+          <Text style={styles.logOutButtonText}>Log Out</Text>
+        </TouchableOpacity> */}
+
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const RatingBar = ({ label, value }) => (
+  <View style={styles.ratingRow}>
+    <Text style={styles.ratingLabel}>{label}</Text>
+    <View style={styles.ratingBarContainer}>
+      <View style={[styles.ratingBar, { width: value }]} />
+    </View>
+  </View>
+);
 
 const InfoRow = ({ label, value, multiline }) => (
   <View style={styles.infoRow}>
@@ -95,7 +133,7 @@ const InfoRow = ({ label, value, multiline }) => (
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
     flexDirection: 'row',
@@ -108,9 +146,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  backButton: {
-    marginRight: 16,
-  },
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -121,7 +156,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
-  settingsButton: {
+  logoutButton: {
     padding: 8,
   },
   profileCard: {
@@ -142,7 +177,7 @@ const styles = StyleSheet.create({
   nameContainer: {
     alignItems: 'center',
   },
-  name: {
+  wholesalerName: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#0C5E52',
@@ -175,6 +210,62 @@ const styles = StyleSheet.create({
   verifiedText: {
     color: '#0C5E52',
     fontWeight: 'bold',
+  },
+  ratingsSection: {
+    backgroundColor: '#0C5E5220',
+    padding: 16,
+    margin: 16,
+    borderRadius: 8,
+  },
+  ratingsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ratingsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#0C5E52',
+    marginRight: 8,
+  },
+  ratingsDetails: {
+    alignItems: 'center',
+  },
+  ratingsAverage: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#0C5E52',
+  },
+  reviewsCount: {
+    fontSize: 14,
+    color: '#333',
+  },
+  ratingBreakdown: {
+    marginTop: 8,
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  ratingLabel: {
+    width: 24,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#0C5E52',
+  },
+  ratingBarContainer: {
+    height: 10,
+    backgroundColor: '#94BEB8',
+    flex: 1,
+    borderRadius: 5,
+    marginLeft: 8,
+    marginRight: 8,
+  },
+  ratingBar: {
+    height: 10,
+    backgroundColor: '#0C5E52',
+    borderRadius: 5,
   },
   accountDetails: {
     backgroundColor: 'white',
@@ -214,21 +305,6 @@ const styles = StyleSheet.create({
     color: '#0C5E52',
     fontWeight: 'bold',
   },
-  shopReviewsButton: {
-    backgroundColor: '#0C5E52',
-    margin: 16,
-    marginBottom: 8,
-    borderRadius: 8,
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  shopReviewsText: {
-    fontWeight: 'bold',
-    fontSize: 18,
-    color: 'white',
-  },
   myProductsButton: {
     backgroundColor: '#EBF3D1',
     margin: 16,
@@ -244,128 +320,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#0C5E52',
   },
+  logOutButton: {
+    backgroundColor: '#EBF3D1',
+    margin: 16,
+    marginTop: 8,
+    borderRadius: 8,
+    padding: 16,
+    alignItems: 'center',
+  },
+  logOutButtonText: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#0C5E52',
+  },
 });
 
-
-
-
-const Stack = createStackNavigator();
-
-
-const EditAccount = ({ navigation }) => {
-  const [country, setCountry] = useState('');
-  const [currency, setCurrency] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [street, setStreet] = useState('');
-  const [unit, setUnit] = useState('');
-  const [building, setBuilding] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#0C5E52" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Edit Account Details</Text>
-        </View>
-
-        <View style={styles.profileSummary}>
-          <Image
-            source={require('../../../assets/imgs/ProfileWholesaler.png')}
-            style={styles.profilePic}
-          />
-          <Text style={styles.name}>Happy Wholesaler</Text>
-        </View>
-
-        <View style={styles.infoSection}>
-          <InfoRow label="Date Joined:" value="25-07-2024" />
-          <InfoRow label="UEN:" value="123456789" />
-        </View>
-
-        <View style={styles.editSection}>
-          <Text style={styles.sectionTitle}>Location:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Select Country"
-            value={country}
-            onChangeText={setCountry}
-          />
-
-          <Text style={styles.sectionTitle}>Currency:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Select Currency"
-            value={currency}
-            onChangeText={setCurrency}
-          />
-
-          <Text style={styles.sectionTitle}>Contact Details:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Phone No."
-            value={phone}
-            onChangeText={setPhone}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <Text style={styles.sectionTitle}>Address:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Street Name"
-            value={street}
-            onChangeText={setStreet}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Unit No."
-            value={unit}
-            onChangeText={setUnit}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Building Name"
-            value={building}
-            onChangeText={setBuilding}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Postal Code"
-            value={postalCode}
-            onChangeText={setPostalCode}
-          />
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.saveButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.saveButtonText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-
-
-const ProfileStack = () => {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="ProfileMain" component={Profile} />
-      <Stack.Screen name="EditAccount" component={EditAccount} />
-    </Stack.Navigator>
-  );
-};
-
-export default ProfileStack; 
-
+export default Profile;
