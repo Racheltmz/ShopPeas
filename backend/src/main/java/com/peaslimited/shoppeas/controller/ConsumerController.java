@@ -51,10 +51,9 @@ public class ConsumerController {
 
         ConsumerDTO consumer = consumerService.getConsumer(uid);
         ConsumerAddressDTO consumerAddress = consumerAddressService.getConsumerAddress(uid);
-        ConsumerAccountDTO consumerAccount = consumerAccountService.getConsumerAccount(uid);
 
         // Invoke mapper to combine information and return the profile DTO
-        return ConsumerProfileMapper.toProfileDTO(consumer, consumerAddress, consumerAccount);
+        return ConsumerProfileMapper.toProfileDTO(consumer, consumerAddress);
     }
 
     @PatchMapping("/profile/update")

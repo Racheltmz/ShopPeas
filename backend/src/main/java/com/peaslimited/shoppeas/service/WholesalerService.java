@@ -19,7 +19,7 @@ public interface WholesalerService {
 
     RatingDTO getRatingByUEN(String UEN) throws ExecutionException, InterruptedException;
 
-    void addRating(String UEN, Integer rating) throws ExecutionException, InterruptedException;
+    void addRating(String UEN, String tid, Integer rating) throws ExecutionException, InterruptedException;
 
     DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException;
 }

@@ -18,11 +18,16 @@ public interface WholesalerProductRepository {
 
     WholesalerProductDTO findBySwp_id(String swp_id) throws ExecutionException, InterruptedException;
 
+    String getWholesalerProductName(String swp_id) throws ExecutionException, InterruptedException;
+
+    String getWholesalerProductDesc(String swp_id) throws ExecutionException, InterruptedException;
+
+    String getWholesalerProductImg(String swpId)throws ExecutionException, InterruptedException;
+
     void addWholesalerProduct(WholesalerProductDTO product);
 
     void updateWholesalerProduct(String id, Map<String, Object> updates) throws ExecutionException, InterruptedException;
 
     void deleteWholesalerProduct(String id);
 
-    String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException;
 }

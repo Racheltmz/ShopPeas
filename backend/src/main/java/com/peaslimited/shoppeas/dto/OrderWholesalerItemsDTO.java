@@ -10,6 +10,11 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderWholesalerItemsDTO {
+    private String tid;
+    private String uen;
     private String wholesalerName;
     private ArrayList<OrderItemDTO> items;
+    private String status;
+    private double total_price;
+    private boolean rated;
 }

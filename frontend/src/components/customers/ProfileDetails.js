@@ -51,10 +51,6 @@ const ProfileDetails = ({ userData, navigation }) => {
         </View>
         <Text style={styles.detailText}>Address: </Text>
         <Text style={styles.detailTextVal}>{`${userData.streetName} ${userData.unitNo}, ${userData.buildingName}, ${userData.postalCode}`}</Text>
-        {/* <View style={styles.cardInfo}>
-          <Ionicons name="card" size={24} color="#0C5E52" />
-          <Text style={styles.cardText}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text>
-        </View> */}
       </View>
     </View>
   );

@@ -33,10 +33,16 @@ const ViewWholesaler = ({ route }) => {
   useEffect(() => {
     wholesalerService.viewWholesaler(userUid, wholesalerUEN)
       .then((res) => {
+        if (res.wholesalerAddress.unit_no === null) {
+          res.wholesalerAddress.unit_no = '';
+        }
+        if (res.wholesalerAddress.building_name === null) {
+          res.wholesalerAddress.building_name = '';
+        }
         const data = {
           name: res.wholesaler.name,
           location: "Bishan, 39 Minutes away",
-          address: `${res.wholesalerAddress.street_name}, ${res.wholesalerAddress.unit_no}\n${res.wholesalerAddress.city}, ${res.wholesalerAddress.postal_code}`,
+          address: `${res.wholesalerAddress.street_name}, ${res.wholesalerAddress.unit_no} ${res.wholesalerAddress.building_name}\n${res.wholesalerAddress.city}, ${res.wholesalerAddress.postal_code}`,
           averageRating: res.wholesaler.rating.toFixed(1),
           ratingCounts: Array.from(res.wholesaler.num_ratings),
           products: Array.from(res.wholesalerProducts),
@@ -98,7 +104,7 @@ const ViewWholesaler = ({ route }) => {
               <Text style={styles.averageRatingText}>Average Rating</Text>
             </View>
             <View style={styles.ratingBars}>
-              {wholesalerInfo.ratingCounts.map((count, index) => (
+              {wholesalerInfo.ratingCounts.reverse().map((count, index) => (
                 <View key={index} style={styles.ratingBar}>
                   <Text style={styles.ratingNumber}>{5 - index}</Text>
                   <View style={styles.barContainer}>

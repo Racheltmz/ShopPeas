@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Modal} from 'react-native';
+import { Image, StyleSheet, View, Text, TouchableOpacity, Modal} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditProduct from './EditProduct';
 import RemoveProduct from './RemoveProduct';
 
-const WholesalerProduct = ({ index, name, price, unit, stock, onRemove, onEdit}) => {
+const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemove, onEdit}) => {
     const[removeVisible, setRemoveVisible] = useState(false);
     const[editVisible, setEditVisible] = useState(false);
 
@@ -20,7 +20,7 @@ const WholesalerProduct = ({ index, name, price, unit, stock, onRemove, onEdit})
 
     return (
         <View style={styles.productItem}>
-            <View style={styles.productImage} />
+            <Image source={{ uri: image_url }} style={styles.productImage} />
             <View style={styles.productInfo}>
                 <Text style={styles.productName}>{name}</Text>
                 <Text style={styles.productPrice}>${price.toFixed(2)}</Text>
@@ -66,9 +66,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     productImage: {
-        width: 60,
-        height: 60,
-        backgroundColor: '#E0E0E0',
+        width: 75,
+        height: 75,
         borderRadius: 5,
     },
     productInfo: {

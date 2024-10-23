@@ -5,6 +5,7 @@ import Fuse from 'fuse.js';
 import Products from '../../components/customers/Products';
 import { useUserStore } from '../../lib/userStore';
 import { Searchbar } from 'react-native-paper';
+import Loader from '../../components/utils/Loader';
 import productService from '../../service/ProductService';
 
 const Explore = () => {
@@ -66,7 +67,7 @@ const Explore = () => {
           autoCapitalize="none"
         />
       </View>
-      {loading && <Text>Loading...</Text>}
+      {loading && <Loader loading={loading}></Loader>}
       {error ? <Text>{error}</Text> : null}
       <View style={{ flex: 2, justifyContent: 'center' }}>
         <Products onProductPress={handleProductPress} productData={filteredProducts}/>

@@ -14,18 +14,17 @@ import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/shoppingcart/checkout")
-public class ConsumerAccountController {
+@RequestMapping("/payment")
+public class PaymentController {
 
     @Autowired
     private ConsumerAccountService consumerAccService;
 
     //get payment methods
-    @GetMapping("/getpayment")
+    @GetMapping("/get")
     @PreAuthorize("hasRole('CONSUMER')")
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public Map<String, Object> getPayment() throws ExecutionException, InterruptedException
-    {
+    @ResponseStatus(code = HttpStatus.OK)
+    public Map<String, Object> getPayment() throws ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
@@ -37,10 +36,9 @@ public class ConsumerAccountController {
         ArrayList<String> cardNumList = new ArrayList<>();
 
         // ACTION: CONVERT TO MAP
-        for(int i = 0; i < paymentMethodsList.size(); i++)
-        {
+        for (Object o : paymentMethodsList) {
             Map<String, Object> card = new HashMap<>();
-            card = (Map<String, Object>) paymentMethodsList.get(i);
+            card = (Map<String, Object>) o;
             String cardNum = card.get("card_no").toString();
             // get first four digits from card number
             cardNum = cardNum.substring(0, Math.min(cardNum.length(), 4));
@@ -53,7 +51,7 @@ public class ConsumerAccountController {
     }
 
     //add payment
-    @PostMapping("/addpayment")
+    @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addPayment(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
@@ -96,11 +94,10 @@ public class ConsumerAccountController {
     }
 
     //delete payment
-    @PatchMapping("/deletepayment")
+    @PatchMapping("/delete")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void deletePayment(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException
-    {
+    public void deletePayment(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
@@ -110,8 +107,7 @@ public class ConsumerAccountController {
         ConsumerAccountDTO conAcc = consumerAccService.getConsumerAccount(uid);
         ArrayList<Object> paymentMethodsList = conAcc.getPaymentMtds();
 
-        for(int i = 0; i < paymentMethodsList.size(); i++)
-        {
+        for(int i = 0; i < paymentMethodsList.size(); i++) {
             Map<String, Object> card = new HashMap<>();
             card = (Map<String, Object>) paymentMethodsList.get(i);
             String cardNum = card.get("card_no").toString();

@@ -9,7 +9,10 @@ import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.WholesalerAddress;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
+import com.peaslimited.shoppeas.repository.ProductRepository;
+import com.peaslimited.shoppeas.repository.WholesalerAddressRepository;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
+import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @Repository
 public class WholesalerProductRepositoryImpl implements WholesalerProductRepository {
@@ -31,6 +33,15 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private WholesalerRepository wholesalerRepository;
+
+    @Autowired
+    private WholesalerAddressRepository wholesalerAddressRepository;
+
     @Override
     // Fetch wholesaler products by uen
     public List<Product> findByUEN(String uen) throws ExecutionException, InterruptedException {
@@ -41,21 +52,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                 .map(WholesalerProducts::getPid)
                 .toList();
 
-        List<DocumentReference> docRefs = products.stream()
-                .map(pid -> firestore.collection("products").document(pid))
-                .toList();
-
-        List<DocumentSnapshot> productDocs = firestore.getAll(docRefs.toArray(new DocumentReference[0])).get();
-
-        return productDocs.stream()
-                .filter(DocumentSnapshot::exists)
-                .map(doc -> {
-                    Product product = doc.toObject(Product.class);
-                    assert product != null;
-                    product.setPid(doc.getId());  // Assuming Product class has setId method
-                    return product;
-                })
-                .collect(Collectors.toList());
+        return productRepository.findProductDetails(products);
     }
 
     // Fetch products by their PID
@@ -71,29 +68,16 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                 .map(doc -> doc.toObject(WholesalerProducts.class))
                 .toList();
 
-        List<String> uens = snapshot.getDocuments().stream()
+        List<String> uen_list = snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
                 .map(WholesalerProducts::getUen)
                 .toList();
 
         // Get wholesaler info
-        CollectionReference wholesalerCollection = firestore.collection("wholesaler");
-        Query wholesalerQuery = wholesalerCollection.whereIn("uen", uens);
-        QuerySnapshot productSnapshot = wholesalerQuery.get().get();
-        List<WholesalerDTO> wholesalers = productSnapshot.getDocuments().stream()
-                .map(doc -> doc.toObject(WholesalerDTO.class))  // Replace Product.class with your actual Product class
-                .toList();
+        List<WholesalerDTO> wholesalers = wholesalerRepository.findWholesalers(uen_list);
 
         // Get wholesaler address info
-        List<DocumentReference> wholesalerAddressRefs = wholesalerProducts.stream()
-                .map(doc -> firestore.collection("wholesaler_address").document(doc.getUen()))
-                .toList();
-        List<DocumentSnapshot> wholesalerAddressDocs = firestore.getAll(wholesalerAddressRefs.toArray(new DocumentReference[0])).get();
-
-        List<WholesalerAddress> wholesalerAddresses = wholesalerAddressDocs.stream()
-                .filter(DocumentSnapshot::exists)
-                .map(doc -> doc.toObject(WholesalerAddress.class))
-                .toList();
+        List<WholesalerAddress> wholesalerAddresses = wholesalerAddressRepository.findAllWholesalerAddress(wholesalerProducts);
 
         // Combine product and wholesaler data into DTOs
         List<WholesalerProductDetailsDTO> wholesalerList = new ArrayList<>();
@@ -128,6 +112,35 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return wholesalerProductDTO;
     }
 
+    @Override
+    public String getWholesalerProductName(String swp_id) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getName();
+    }
+
+    @Override
+    public String getWholesalerProductDesc(String swp_id) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getPackage_size();
+    }
+
+    @Override
+    public String getWholesalerProductImg(String swp_id) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getImage_url();
+    }
 
     // Add a new wholesaler product
     @Override
@@ -136,9 +149,9 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     }
 
     @Override
-    public void updateWholesalerProduct(String swpid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+    public void updateWholesalerProduct(String swp_id, Map<String, Object> data) throws ExecutionException, InterruptedException {
         // Update an existing document
-        DocumentReference docRef = firestore.collection(COLLECTION).document(swpid);
+        DocumentReference docRef = firestore.collection(COLLECTION).document(swp_id);
 
         // Update fields
         for (String key : data.keySet()) {
@@ -147,22 +160,10 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     }
 
     @Override
-    public void deleteWholesalerProduct(String swpid) {
+    public void deleteWholesalerProduct(String swp_id) {
         // Update an existing document
-        DocumentReference docRef = firestore.collection(COLLECTION).document(swpid);
+        DocumentReference docRef = firestore.collection(COLLECTION).document(swp_id);
         docRef.update("active", false);
-    }
-
-    @Override
-    public String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException {
-        System.out.println(swpid);
-        System.out.println("--");
-        WholesalerProductDTO wholesalerProduct = findBySwp_id(swpid);
-        String pid = wholesalerProduct.getPid();
-
-        ProductDTO product = productService.getProductById(pid);
-
-        return product.getName();
     }
 
 }

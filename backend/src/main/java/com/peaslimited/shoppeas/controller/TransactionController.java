@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.peaslimited.shoppeas.dto.OrderHistoryDTO;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
@@ -42,21 +41,9 @@ public class TransactionController {
     private TransactionsService transactionService;
 
     @Autowired
-    private OrderHistoryService orderService;
-
-    @Autowired
     private WholesalerProductService wholesalerProductService;
 
     // CONSUMER METHODS
-    @GetMapping("/history")
-    @PreAuthorize("hasRole('CONSUMER')")
-    @ResponseStatus(code = HttpStatus.OK)
-    public ArrayList<OrderHistoryDTO> viewOrderHistory() throws ExecutionException, InterruptedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String uid = (String) authentication.getPrincipal();
-        return orderService.getOrderHistory(uid);
-    }
-
     /**
      * Adds or updates a transaction record based on ADD TO CART
      * Called in CartController in the add to cart function.

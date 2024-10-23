@@ -29,11 +29,11 @@ const ProductDetails = ({ route }) => {
   useEffect(() => {
     productService.getDetailsByPID(userUid, product.pid)
       .then((res) => {
-        console.log(res);
         let data = []
-        for (let i=0; i<res.length; i++) {
+        for (let i = 0; i < res.length; i++) {
           let record = {
             'name': res[i].name,
+            'package_size': res[i].package_size,
             'location': res[i].location,
             'timeAway': 39, // TODO
             'stocks': res[i].stock,
@@ -75,14 +75,17 @@ const ProductDetails = ({ route }) => {
       <View style={styles.detailsContainer}>
         <View style={styles.row}>
           <View>
-            <Text style={styles.wholesalerName}>{item.name}</Text>
+            <View style={styles.wholesalerTopSection}>
+              <Text style={styles.wholesalerNameHeader}>{item.name}</Text>
+              <View style={styles.priceRating}>
+                <Text>{item.ratings} ⭐</Text>
+              </View>
+            </View>
             <Text style={styles.wholesalerLocation}>
               {item.location}, {item.timeAway} Minutes away
             </Text>
           </View>
-          <View style={styles.priceRating}>
-            <Text>{item.ratings} ⭐</Text>
-          </View>
+
         </View>
         <Divider style={styles.divider} />
         <View style={styles.row}>
@@ -111,7 +114,7 @@ const ProductDetails = ({ route }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <ProductDetailsHeader name={product.name} desc={`${product.quantity} Packets`} navigation={navigation} />
+      <ProductDetailsHeader name={product.name} desc={`${product.package_size}`} navigation={navigation} />
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
@@ -165,7 +168,7 @@ const ProductDetails = ({ route }) => {
                 <Ionicons name="close" size={24} color="black" />
               </TouchableOpacity>
               <Text style={styles.modalTitle}>{product.name}</Text>
-              <Text style={styles.modalText}>{product.quantity} Packet</Text>
+              <Text style={styles.modalText}>{product.package_size}</Text>
               <TouchableOpacity onPress={handleWholesalerPress}>
                 <Text style={styles.wholesalerName}>
                   {selectedWholesaler?.name}
@@ -242,6 +245,11 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#0C5E5250',
   },
+  wholesalerTopSection: {
+    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
   wholesalerItem: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -250,6 +258,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     marginHorizontal: 10,
     borderRadius: 10,
+  },
+  wholesalerNameHeader: {
+    fontWeight: "bold",
+    fontSize: 16,
+    color: '#0C5E52',
+    marginBottom: 2,
+    width: "80%",
   },
   wholesalerName: {
     fontWeight: "bold",

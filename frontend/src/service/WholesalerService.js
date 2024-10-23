@@ -17,6 +17,19 @@ const wholesalerService = {
             }
         });
         return response.data;
+    },
+    rateWholesaler: async (token, uen, tid, rating) => {
+        const requestBody = {
+            "uen": uen,
+            "tid": tid,
+            "rating": rating
+        }
+        const response = await apiClient.patch(`${REACT_APP_BACKEND_WHOLESALER}/rate`, requestBody, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
     }
 };
 

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class OrderItemDTO {
     private String name;
     private String description;
+    private String image_url;
     private int quantity;
     private double price;
 }

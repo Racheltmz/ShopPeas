@@ -2,8 +2,8 @@ package com.peaslimited.shoppeas.repository.implementation;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import com.google.cloud.firestore.Firestore;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
+import com.peaslimited.shoppeas.dto.TransactionsOrderedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
@@ -32,11 +32,10 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         DocumentSnapshot document = findDocByUIDandStatus(uid, status);
 
         if (document != null) {
-            System.out.println(document);
             String uen = Objects.requireNonNull(document.get("uen")).toString();
-            double total_price = (double) document.get("total_price");
+            double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
             ArrayList<Object> products = (ArrayList<Object>) document.get("products");
-            return new TransactionsDTO(products, status, (double) total_price, uen, uid);
+            return new TransactionsDTO(products, status, total_price, uen, uid);
         }
         return null;
     }
@@ -52,9 +51,9 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
         DocumentSnapshot document = null;
         // Check if any documents match
-        for (int i = 0; i < documents.size(); i++) {
-            document = documents.get(i);
-            if (document.get("status").equals(status)) {
+        for (QueryDocumentSnapshot queryDocumentSnapshot : documents) {
+            document = queryDocumentSnapshot;
+            if (Objects.equals(document.get("status"), status)) {
                 return document;
             } else
                 document = null;
@@ -97,6 +96,33 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             document = documents.getFirst();
         }
         return document;
+    }
+
+    @Override
+    public TransactionsOrderedDTO getHistoryDetails(String orderId)
+            throws ExecutionException, InterruptedException {
+        DocumentReference transactionRef = firestore.collection(COLLECTION).document(orderId);
+        ApiFuture<DocumentSnapshot> future = transactionRef.get();
+        DocumentSnapshot document = future.get();
+
+        TransactionsOrderedDTO transaction = new TransactionsOrderedDTO();
+        if (document.exists()) {
+            transaction.setStatus(Objects.requireNonNull(document.get("status")).toString());
+            transaction.setUen(Objects.requireNonNull(document.get("uen")).toString());
+            transaction.setUid(Objects.requireNonNull(document.get("uid")).toString());
+            transaction.setTotal_price(Float.parseFloat(Objects.requireNonNull(document.get("total_price")).toString()));
+            transaction.setRated(Boolean.parseBoolean(Objects.requireNonNull(document.get("rated")).toString()));
+
+            Map<String, Object> productMap = (Map<String, Object>) document.get("products");
+            ArrayList<Object> products = new ArrayList<>();
+            for (int i = 0; i < Objects.requireNonNull(productMap).size(); i++) {
+                String key = String.valueOf(i);
+                Map<String, Object> newProduct = (Map<String, Object>) productMap.get(key);
+                products.add(newProduct);
+            }
+            transaction.setProducts(products);
+        }
+        return transaction;
     }
 
     @Override
@@ -159,15 +185,19 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     }
 
     @Override
+    public void updateTransactionRated(String tid) {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
+        docRef.update("rated", true);
+    }
+
+    @Override
     public List<QueryDocumentSnapshot> findDocListByUID(String UID) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uid", UID).get();
 
         // Asynchronously retrieve the document
         QuerySnapshot querySnapshot = query.get();
 
-        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
-
-        return documents;
+        return querySnapshot.getDocuments();
     }
 
     public double getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
@@ -185,11 +215,10 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         // Convert document to Consumer object
         TransactionsDTO transactionsDTO = new TransactionsDTO();
         if (document.exists()) {
-            // System.out.println(document);
-            transactionsDTO.setStatus(document.get("status").toString());
-            transactionsDTO.setUen(document.get("uen").toString());
-            transactionsDTO.setUid(document.get("uid").toString());
-            transactionsDTO.setTotal_price(Float.parseFloat(document.get("total_price").toString()));
+            transactionsDTO.setStatus(Objects.requireNonNull(document.get("status")).toString());
+            transactionsDTO.setUen(Objects.requireNonNull(document.get("uen")).toString());
+            transactionsDTO.setUid(Objects.requireNonNull(document.get("uid")).toString());
+            transactionsDTO.setTotal_price(Float.parseFloat(Objects.requireNonNull(document.get("total_price")).toString()));
 
             Map<String, Object> productMap = (Map<String, Object>) document.get("products");
             ArrayList<Object> products = new ArrayList<>();
@@ -198,7 +227,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
                 Map<String, Object> newProduct = (Map<String, Object>) productMap.get(key);
                 products.add(newProduct);
             }
-            // System.out.println(products);
             transactionsDTO.setProducts(products);
 
             return transactionsDTO;
