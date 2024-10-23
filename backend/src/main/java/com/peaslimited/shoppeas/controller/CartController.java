@@ -21,7 +21,7 @@ import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/shoppingCart")
+@RequestMapping("/cart")
 public class CartController {
 
     @Autowired
@@ -57,24 +57,19 @@ public class CartController {
 
         for (String s : orderList) {
             Map<String, Object> transactionMap = new HashMap<>();
-            System.out.println("/////////////////////////////////////////////////////////");
             String tid = s;
             TransactionsDTO transaction = transactionsService.findByTID(tid);
-            System.out.println(transaction);
             String uen = transaction.getUen();
             WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(uen);
-            System.out.println(wholesaler);
             String wholesalerName = wholesaler.getName();
             WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(uen);
 
             ArrayList<Object> productsList = transaction.getProducts();
-            System.out.println(productsList);
             ArrayList<Object> itemsList = new ArrayList<>();
 
             for (Object o : productsList) {
                 Map<String, Object> itemsMap = new HashMap<>();
                 Map<String, Object> productsMap = (Map<String, Object>) o;
-                System.out.println(productsMap);
 
                 Long q = (Long) productsMap.get("quantity");
                 int quantity = q.intValue();

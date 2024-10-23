@@ -12,4 +12,6 @@ import java.util.ArrayList;
 public class OrderWholesalerItemsDTO {
     private String wholesalerName;
     private ArrayList<OrderItemDTO> items;
+    private String status;
+    private double total_price;
 }

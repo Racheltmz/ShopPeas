@@ -23,6 +23,8 @@ public interface TransactionsRepository {
 
     ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException;
 
+    TransactionsDTO getHistoryDetails(String orderId) throws ExecutionException, InterruptedException;
+
     void createTransaction(TransactionsDTO transactionsDTO);
 
     void updateTransactionProduct(Map<String, Object> data, String uid, String status) throws ExecutionException, InterruptedException;

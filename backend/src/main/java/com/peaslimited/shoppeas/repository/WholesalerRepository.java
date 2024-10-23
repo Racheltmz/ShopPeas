@@ -15,6 +15,8 @@ public interface WholesalerRepository {
 
     WholesalerDTO findByUEN(String UEN) throws ExecutionException, InterruptedException;
 
+    String findWholesalerName(String uen) throws ExecutionException, InterruptedException;
+
     void addByUID(String UID, WholesalerDTO wholesaler);
 
     String updateByUID(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException;

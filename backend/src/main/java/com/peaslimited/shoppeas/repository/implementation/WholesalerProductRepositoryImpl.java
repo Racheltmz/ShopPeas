@@ -128,6 +128,35 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return wholesalerProductDTO;
     }
 
+    @Override
+    public String getWholesalerProductName(String swp_id) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getName();
+    }
+
+    @Override
+    public String getWholesalerProductDesc(String swp_id) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getPackage_size();
+    }
+
+    @Override
+    public String getWholesalerProductImg(String swp_id) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
+        String pid = wholesalerProduct.getPid();
+
+        ProductDTO product = productService.getProductById(pid);
+
+        return product.getImage_url();
+    }
 
     // Add a new wholesaler product
     @Override
@@ -151,18 +180,6 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         // Update an existing document
         DocumentReference docRef = firestore.collection(COLLECTION).document(swpid);
         docRef.update("active", false);
-    }
-
-    @Override
-    public String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException {
-        System.out.println(swpid);
-        System.out.println("--");
-        WholesalerProductDTO wholesalerProduct = findBySwp_id(swpid);
-        String pid = wholesalerProduct.getPid();
-
-        ProductDTO product = productService.getProductById(pid);
-
-        return product.getName();
     }
 
 }

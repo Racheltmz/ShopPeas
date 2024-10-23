@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   wholesalerName: {
+    textAlign: 'center',
     fontSize: 22,
     fontWeight: 'bold',
     color: '#0C5E52',

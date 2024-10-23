@@ -1,5 +1,5 @@
 import apiClient from "../api/apiClient";
-import {  REACT_APP_BACKEND_PRODUCT } from '@env';
+import { REACT_APP_BACKEND_PRODUCT } from '@env';
 
 const productService = {
     fetchProductData: async (uid) => {
