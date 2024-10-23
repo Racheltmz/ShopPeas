@@ -18,7 +18,9 @@ public interface TransactionsRepository {
     List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException;
 
     DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException;
+
     TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException;
+
     ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException;
 
     void createTransaction(TransactionsDTO transactionsDTO);

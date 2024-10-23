@@ -61,7 +61,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     // Fetch products by their PID
     @Override
     public List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException {
-        // Query Firestore to get all wholesaler products with the given PID
+        // Query database to get all wholesaler products with the given PID
         QuerySnapshot snapshot = firestore.collection(COLLECTION)
                 .whereEqualTo("pid", pid)
                 .whereEqualTo("active", true)

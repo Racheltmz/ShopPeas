@@ -11,8 +11,9 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderHistoryDTO {
-    private ArrayList<String> orders; //list of tid
+    private String oid;
     private LocalDateTime date;
+    private ArrayList<OrderWholesalerItemsDTO> orders;
+    private String status;
     private double total_price;
-    private String uid;
 }

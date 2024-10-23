@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final String COLLECTION = "products";
+
     @Autowired
     private Firestore firestore;
 

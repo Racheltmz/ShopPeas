@@ -25,7 +25,7 @@ import java.util.concurrent.ExecutionException;
 public class CartController {
 
     @Autowired
-    private OrderService orderService;
+    private OrderHistoryService orderService;
     @Autowired
     private ShoppingCartService cartService;
     @Autowired

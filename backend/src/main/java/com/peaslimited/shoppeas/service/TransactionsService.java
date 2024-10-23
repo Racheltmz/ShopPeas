@@ -20,7 +20,9 @@ public interface TransactionsService {
     DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException;
 
     ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException;
+
     TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException;
+
     void createTransaction(TransactionsDTO transactionsDTO);
 
     void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException;
