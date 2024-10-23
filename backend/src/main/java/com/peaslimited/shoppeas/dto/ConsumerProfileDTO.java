@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ConsumerProfileDTO {
     private ConsumerDTO consumer;
-    private ConsumerAccountDTO consumerAccount;
     private ConsumerAddressDTO consumerAddress;
 }

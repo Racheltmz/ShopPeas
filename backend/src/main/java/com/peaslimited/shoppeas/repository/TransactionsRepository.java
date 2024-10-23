@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.repository;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
+import com.peaslimited.shoppeas.dto.TransactionsOrderedDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,13 +24,15 @@ public interface TransactionsRepository {
 
     ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException;
 
-    TransactionsDTO getHistoryDetails(String orderId) throws ExecutionException, InterruptedException;
+    TransactionsOrderedDTO getHistoryDetails(String orderId) throws ExecutionException, InterruptedException;
 
     void createTransaction(TransactionsDTO transactionsDTO);
 
     void updateTransactionProduct(Map<String, Object> data, String uid, String status) throws ExecutionException, InterruptedException;
 
     void updateTransactionStatus(Map<String, Object> data);
+
+    void updateTransactionRated(String tid);
 
     void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException;
   

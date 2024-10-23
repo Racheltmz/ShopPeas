@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Modal, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useUserStore } from '../../lib/userStore';
+import wholesalerService from "../../service/WholesalerService";
 
-const RatingModal = ({ visible, onClose, wholesaler }) => {
+const RatingModal = ({ visible, onClose, wholesaler, tid, onRated }) => {
+  const { userUid } = useUserStore();
   const [rating, setRating] = useState(0);
 
   const handleRating = (selectedRating) => {
@@ -10,13 +13,12 @@ const RatingModal = ({ visible, onClose, wholesaler }) => {
   };
 
   const handleSubmit = () => {
-    // Here you would typically send the rating to your backend
-    console.log(`Rating of ${rating} stars given for wholesaler: ${wholesaler?.wholesalerName}`);
-    // You might want to add a small delay before closing the modal
+    wholesalerService.rateWholesaler(userUid, wholesaler, tid, rating);
     setTimeout(() => {
       onClose();
       setRating(0); // Reset rating after closing
     }, 500);
+    onRated(true);
   };
 
   return (

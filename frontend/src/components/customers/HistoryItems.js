@@ -9,21 +9,21 @@ import {
 } from "react-native";
 import { Divider } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import Empty from "../utils/Empty";
 import RatingModal from "./RatingModal";
 
-const HistoryItems = ({ navigation, historyList }) => {
+const HistoryItems = ({ navigation, historyList, onRatedItem }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
+  const [tid, setTid] = useState(null);
 
-  const handleWholesalerPress = (wholesalerName) => {
-    navigation.navigate('ViewWholesaler', { wholesalerName });
+  const handleWholesalerPress = (uen) => {
+    navigation.navigate('ViewWholesaler', { wholesalerUEN: uen, });
   };
 
   const userFriendlyDate = (inputDate) => {
     const date = new Date(inputDate);
-
     const options = { day: '2-digit', month: 'short', year: 'numeric' };
-
     return date.toLocaleDateString('en-GB', options);
   }
 
@@ -41,7 +41,7 @@ const HistoryItems = ({ navigation, historyList }) => {
       {item.orders.map((wholesaler, index) => (
         <View key={index} style={styles.wholesalerSection}>
           <View style={styles.ratingWholesaler}>
-            <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.wholesalerName)}>
+            <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.uen)}>
               <Text style={styles.wholesalerName}>📍{wholesaler.wholesalerName} <Ionicons name="chevron-forward" size={14} color="#0C5E52" /></Text>
             </TouchableOpacity>
           </View>
@@ -73,13 +73,15 @@ const HistoryItems = ({ navigation, historyList }) => {
                 </Text>
               </View>
               <TouchableOpacity
-                style={styles.ratingButton}
+                disabled={wholesaler.rated}
+                style={wholesaler.rated ? styles.ratingDisabled : styles.ratingButton }
                 onPress={() => {
-                  setSelectedWholesaler(wholesaler);
+                  setSelectedWholesaler(wholesaler.uen);
                   setModalVisible(true);
+                  setTid(wholesaler.tid);
                 }}
               >
-                <Text style={styles.ratingButtonText}>Give Rating</Text>
+                <Text style={wholesaler.rated ? styles.ratingDisabledText : styles.ratingButtonText }>{wholesaler.rated === false ? "Give Rating" : "Rated"}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -101,11 +103,11 @@ const HistoryItems = ({ navigation, historyList }) => {
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
           wholesaler={selectedWholesaler}
+          tid={tid}
+          onRated={onRatedItem}
         />
       </> :
-      <View style={styles.noOrderContainer}>
-        <Text style={styles.noOrderText}>No Orders Yet. Head to the Explore page!</Text>
-      </View>
+      <Empty subject="Orders"></Empty>
   );
 };
 
@@ -152,6 +154,21 @@ const styles = StyleSheet.create({
   ratingButtonText: {
     fontSize: 14,
     color: "#0C5E52",
+    fontWeight: "600",
+  },
+
+  ratingDisabled: {
+    backgroundColor: "#0C5E52",
+    paddingHorizontal: "5%",
+    paddingVertical: "1%",
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: "center",
+  },
+
+  ratingDisabledText: {
+    fontSize: 14,
+    color: "#FFF",
     fontWeight: "600",
   },
 
@@ -205,15 +222,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     color: "#66821F",
   },
-  noOrderContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  noOrderText: {
-    fontSize: 20,
-    fontWeight: "bold",
-  }
 });
 
 export default HistoryItems;

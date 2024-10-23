@@ -7,9 +7,7 @@ import com.peaslimited.shoppeas.dto.ConsumerProfileDTO;
 
 public class ConsumerProfileMapper {
 
-    public static ConsumerProfileDTO toProfileDTO(ConsumerDTO consumer,
-                                                    ConsumerAddressDTO consumerAddress,
-                                                    ConsumerAccountDTO consumerAccount) {
-        return new ConsumerProfileDTO(consumer, consumerAccount, consumerAddress);
+    public static ConsumerProfileDTO toProfileDTO(ConsumerDTO consumer, ConsumerAddressDTO consumerAddress) {
+        return new ConsumerProfileDTO(consumer, consumerAddress);
     }
 }

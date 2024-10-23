@@ -13,6 +13,8 @@ public interface ProductRepository {
 
     List<Product> findAll() throws ExecutionException, InterruptedException;
 
+    List<Product> findProductDetails(List<String> products) throws ExecutionException, InterruptedException;
+
     void addByPID(String PID, ProductDTO product);
 
     void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;

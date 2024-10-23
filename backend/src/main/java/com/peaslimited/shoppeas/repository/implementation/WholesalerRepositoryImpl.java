@@ -95,6 +95,17 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
 
         return Objects.requireNonNull(querySnapshot.getDocuments().getFirst().get("name")).toString();
     }
+
+    @Override
+    public List<WholesalerDTO> findWholesalers(List<String> uen_list) throws ExecutionException, InterruptedException {
+        CollectionReference wholesalerCollection = firestore.collection(COLLECTION);
+        Query wholesalerQuery = wholesalerCollection.whereIn("uen", uen_list);
+        QuerySnapshot productSnapshot = wholesalerQuery.get().get();
+        return productSnapshot.getDocuments().stream()
+                .map(doc -> doc.toObject(WholesalerDTO.class))  // Replace Product.class with your actual Product class
+                .toList();
+    }
+
     @Override
     public void addByUID(String UID, WholesalerDTO wholesaler) {
         firestore.collection(COLLECTION).document(UID).set(wholesaler);

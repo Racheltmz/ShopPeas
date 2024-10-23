@@ -4,6 +4,7 @@ import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
+import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,9 @@ import java.util.concurrent.ExecutionException;
 public class WholesalerProductServiceImpl implements WholesalerProductService {
 
     @Autowired
+    WholesalerRepository wholesalerRepository;
+
+    @Autowired
     WholesalerProductRepository wholesalerProductRepository;
 
     @Override
@@ -24,7 +28,8 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
-    public List<Product> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
+    public List<Product> getByWholesalerUEN(String uid) throws ExecutionException, InterruptedException {
+        String uen = wholesalerRepository.findByUID(uid).getUEN();
         return wholesalerProductRepository.findByUEN(uen);
     }
 

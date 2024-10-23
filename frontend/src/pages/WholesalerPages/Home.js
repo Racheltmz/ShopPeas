@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from "../../lib/userStore";
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
-import wholesalerService from '../../service/WholesalerService';
+import productService from '../../service/ProductService';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -13,24 +13,22 @@ const Home = () => {
   // const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const [profile, setProfile] = useState("User");
-  
+  const [products, setProducts] = useState([]);
+
+  const fetchProducts = async (userUid) => {
+    await productService.getProductsByUEN(userUid)
+      .then((res) => {
+        setProducts(res);
+      })
+  }
+
   useEffect(() => {
-    setProfile(currentUser.name);
-  }, [currentUser])
+    fetchProducts(userUid);
+  }, [userUid])
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
-
-  const [products, setProducts] = useState([
-    { name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22, description: 'Veggies' },
-    { name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
-    { name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing' },
-    { name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats' },
-    { name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
-    { name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground' },
-  ]);
 
   const removeProduct = (index) => {
     setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
@@ -67,7 +65,7 @@ const Home = () => {
 
       <View style={styles.header}>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>{profile}</Text> 
+          <Text style={styles.headerTitle}>{currentUser.name}</Text> 
           <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
         <Image
@@ -94,6 +92,7 @@ const Home = () => {
             price={100} // TODO
             unit={product.package_size}
             stock={100} // TODO
+            image_url={product.image_url}
             onRemove={removeProduct}
             onEdit={editProduct}
           />

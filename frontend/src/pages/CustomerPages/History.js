@@ -11,6 +11,7 @@ const History = () => {
   const { userUid } = useUserStore();
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
+  const [rated, setRated] = useState(false);
 
   const fetchData = async (userUid) => {
     await transactionService.viewOrderHistory(userUid)
@@ -24,10 +25,14 @@ const History = () => {
         }
       });
   }
+  
+  const updateRated = () => {
+    setRated(true);
+  }
 
   useEffect(() => {
     fetchData(userUid);
-  }, [userUid]);
+  }, [userUid, rated]);
 
   if (loading) {
     return (
@@ -40,7 +45,7 @@ const History = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Order History</Text>
       </View>
-      <HistoryItems navigation={navigation} historyList={history} />
+      <HistoryItems navigation={navigation} historyList={history} onRatedItem={updateRated} />
     </View>
   );
 };

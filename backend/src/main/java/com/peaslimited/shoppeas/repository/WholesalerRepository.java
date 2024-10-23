@@ -4,6 +4,7 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -16,6 +17,8 @@ public interface WholesalerRepository {
     WholesalerDTO findByUEN(String UEN) throws ExecutionException, InterruptedException;
 
     String findWholesalerName(String uen) throws ExecutionException, InterruptedException;
+
+    List<WholesalerDTO> findWholesalers(List<String> uen_list) throws ExecutionException, InterruptedException;
 
     void addByUID(String UID, WholesalerDTO wholesaler);
 

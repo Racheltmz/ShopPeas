@@ -5,10 +5,13 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
+import com.peaslimited.shoppeas.model.WholesalerAddress;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.WholesalerAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -31,44 +34,23 @@ public class WholesalerAddressRepositoryImpl implements WholesalerAddressReposit
         // Convert document to Wholesaler object
         WholesalerAddressDTO wholesalerAddressDTO = new WholesalerAddressDTO();
         if (document.exists()) {
-
-            /*Object building_name = document.get("building_name");
-            Object city = document.get("city");
-            Object street_name = document.get("street_name");
-            Object unit_no = document.get("unit_no");
-            Object postal_code = document.get("postal_code");
-
-            if(building_name != null)
-                wholesalerAddressDTO.setBuilding_name(building_name.toString());
-            else
-                wholesalerAddressDTO.setBuilding_name("null");
-
-            if(city != null)
-                wholesalerAddressDTO.setCity(city.toString());
-            else
-                wholesalerAddressDTO.setCity("null");
-
-            if(street_name != null)
-                wholesalerAddressDTO.setStreet_name(street_name.toString());
-            else
-                wholesalerAddressDTO.setStreet_name("null");
-
-            if(unit_no != null)
-                wholesalerAddressDTO.setUnit_no(unit_no.toString());
-            else
-                wholesalerAddressDTO.setUnit_no("null");
-
-            if(postal_code != null)
-                wholesalerAddressDTO.setPostal_code(Integer.parseInt(postal_code.toString()));
-            else
-                wholesalerAddressDTO.setPostal_code(null);*/
-
-
             wholesalerAddressDTO = document.toObject(WholesalerAddressDTO.class);
-
             return wholesalerAddressDTO;
         }
         return null;
+    }
+
+    @Override
+    public List<WholesalerAddress> findAllWholesalerAddress(List<WholesalerProducts> wholesalerProducts) throws ExecutionException, InterruptedException {
+        List<DocumentReference> wholesalerAddressRefs = wholesalerProducts.stream()
+                .map(doc -> firestore.collection(COLLECTION).document(doc.getUen()))
+                .toList();
+        List<DocumentSnapshot> wholesalerAddressDocs = firestore.getAll(wholesalerAddressRefs.toArray(new DocumentReference[0])).get();
+
+        return wholesalerAddressDocs.stream()
+                .filter(DocumentSnapshot::exists)
+                .map(doc -> doc.toObject(WholesalerAddress.class))
+                .toList();
     }
 
     @Override

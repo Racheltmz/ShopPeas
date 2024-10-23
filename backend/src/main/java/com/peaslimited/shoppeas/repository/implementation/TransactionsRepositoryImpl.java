@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.repository.implementation;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
+import com.peaslimited.shoppeas.dto.TransactionsOrderedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
@@ -98,18 +99,19 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     }
 
     @Override
-    public TransactionsDTO getHistoryDetails(String orderId)
+    public TransactionsOrderedDTO getHistoryDetails(String orderId)
             throws ExecutionException, InterruptedException {
         DocumentReference transactionRef = firestore.collection(COLLECTION).document(orderId);
         ApiFuture<DocumentSnapshot> future = transactionRef.get();
         DocumentSnapshot document = future.get();
 
-        TransactionsDTO transaction = new TransactionsDTO();
+        TransactionsOrderedDTO transaction = new TransactionsOrderedDTO();
         if (document.exists()) {
             transaction.setStatus(Objects.requireNonNull(document.get("status")).toString());
             transaction.setUen(Objects.requireNonNull(document.get("uen")).toString());
             transaction.setUid(Objects.requireNonNull(document.get("uid")).toString());
             transaction.setTotal_price(Float.parseFloat(Objects.requireNonNull(document.get("total_price")).toString()));
+            transaction.setRated(Boolean.parseBoolean(Objects.requireNonNull(document.get("rated")).toString()));
 
             Map<String, Object> productMap = (Map<String, Object>) document.get("products");
             ArrayList<Object> products = new ArrayList<>();
@@ -180,6 +182,12 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Only accepts transaction statuses: IN-CART, PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED");
         }
+    }
+
+    @Override
+    public void updateTransactionRated(String tid) {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
+        docRef.update("rated", true);
     }
 
     @Override

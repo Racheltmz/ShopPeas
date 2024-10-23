@@ -10,11 +10,9 @@ import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -57,7 +55,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
                 assert orderIDs != null;
                 for (String orderId : orderIDs) {
                     try {
-                        TransactionsDTO transactionInfo = transactionsRepository.getHistoryDetails(orderId);
+                        TransactionsOrderedDTO transactionInfo = transactionsRepository.getHistoryDetails(orderId);
 
                         String uen = transactionInfo.getUen();
 
@@ -65,6 +63,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
 
                         String status = transactionInfo.getStatus();
                         double total_price = transactionInfo.getTotal_price();
+                        boolean rated = transactionInfo.isRated();
 
                         ArrayList<OrderItemDTO> orderItemDTOs = new ArrayList<>();
                         // Get wholesaler name
@@ -83,7 +82,7 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
                             String image = wholesalerProductRepository.getWholesalerProductImg(swp_id);
                             orderItemDTOs.add(new OrderItemDTO(name, desc, image, quantity, price));
                         }
-                        OrderWholesalerItemsDTO item = new OrderWholesalerItemsDTO(wholesalerName, orderItemDTOs, status, total_price);
+                        OrderWholesalerItemsDTO item = new OrderWholesalerItemsDTO(orderId, uen, wholesalerName, orderItemDTOs, status, total_price, rated);
                         orderWholesalerItems.add(item);
                     } catch (ExecutionException | InterruptedException e) {
                         throw new RuntimeException(e);

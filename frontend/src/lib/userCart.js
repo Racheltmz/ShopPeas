@@ -1,8 +1,4 @@
 import { create } from "zustand";
-import { doc, getDoc } from "firebase/firestore";
-import { FirebaseDb } from "./firebase";
-
-// const db = FirebaseDb;
 
 const DUMMY_CART_ITEMS = [  
     {
