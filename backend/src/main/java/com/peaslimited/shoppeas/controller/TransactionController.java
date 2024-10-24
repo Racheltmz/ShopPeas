@@ -48,7 +48,7 @@ public class TransactionController {
 
     // CONSUMER METHODS
 
-    //TODO: @saffron get order history, make payment
+
 
 
 
