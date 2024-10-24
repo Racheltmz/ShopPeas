@@ -20,9 +20,9 @@ public interface WholesalerProductService {
     // other crud methods
     void addWholesalerProduct(WholesalerProductDTO product);
 
-    void updateWholesalerProduct(String swpid, Map<String, Object> data) throws ExecutionException, InterruptedException;
+    void updateWholesalerProduct(String swp_id, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
-    void deleteWholesalerProduct(String swpid);
+    void deleteWholesalerProduct(String swp_id);
 
-    String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException;
+    String getWholesalerProductName(String swp_id) throws ExecutionException, InterruptedException;
 }
