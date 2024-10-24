@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from "../../lib/userStore";
+import Fuse from 'fuse.js';
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
 import productService from '../../service/ProductService';
@@ -10,15 +11,16 @@ import productService from '../../service/ProductService';
 const Home = () => {
   const navigation = useNavigation();
   const { currentUser, userUid } = useUserStore();
-  // const [products, setProducts] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const fetchProducts = async (userUid) => {
     await productService.getProductsByUEN(userUid)
       .then((res) => {
         setProducts(res);
+        setFilteredProducts(res);
       })
   }
 
@@ -46,6 +48,23 @@ const Home = () => {
     setProducts(currentProducts => [...currentProducts, newProduct]);
   };
 
+  const fuse = useMemo(() => new Fuse(products, {
+    // fields to search
+    keys: ['name'], 
+    threshold: 0.3, // Adjust this value to make the search more or less strict
+    includeScore: true
+  }), [products]);
+
+  const handleSearch = (query) => {
+    setSearchText(query);
+    if (query.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      const results = fuse.search(query);
+      setFilteredProducts(results.map(result => result.item));
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchBar}>
@@ -56,7 +75,7 @@ const Home = () => {
           placeholderTextColor="#0C5E52"
           value={searchText}
           autoCapitalize="none"
-          onChangeText={(text) => setSearchText(text)}
+          onChangeText={(text) => handleSearch(text)}
         />
         <TouchableOpacity onPress={navigateToProfile}>
           <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
@@ -84,14 +103,14 @@ const Home = () => {
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.productList}>
-        {products.map((product, index) => (
+        {filteredProducts.map((product, index) => (
           <WholesalerProduct
             key={product.pid}
             index={index}
             name={product.name}
-            price={100} // TODO
+            price={product.price}
             unit={product.package_size}
-            stock={100} // TODO
+            stock={[product.stock]}
             image_url={product.image_url}
             onRemove={removeProduct}
             onEdit={editProduct}

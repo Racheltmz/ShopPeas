@@ -1,8 +1,8 @@
 package com.peaslimited.shoppeas.service.implementation;
 
+import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
-import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
@@ -28,7 +28,13 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
-    public List<Product> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
+    public List<ProductDetailedDTO> getByWholesalerUID(String uid) throws ExecutionException, InterruptedException {
+        String uen = wholesalerRepository.findByUID(uid).getUEN();
+        return wholesalerProductRepository.findByUEN(uen);
+    }
+
+    @Override
+    public List<ProductDetailedDTO> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.findByUEN(uen);
     }
 

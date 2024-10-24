@@ -6,11 +6,15 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.peaslimited.shoppeas.dto.ProductDTO;
+import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
+import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -58,22 +62,28 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<Product> findProductDetails(List<String> products) throws ExecutionException, InterruptedException {
-        List<DocumentReference> docRefs = products.stream()
+    public List<ProductDetailedDTO> findProductDetails(List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException {
+        List<DocumentReference> docRefs = productid_list.stream()
                 .map(pid -> firestore.collection(COLLECTION).document(pid))
                 .toList();
 
         List<DocumentSnapshot> productDocs = firestore.getAll(docRefs.toArray(new DocumentReference[0])).get();
 
-        return productDocs.stream()
-                .filter(DocumentSnapshot::exists)
-                .map(doc -> {
-                    Product product = doc.toObject(Product.class);
-                    assert product != null;
-                    product.setPid(doc.getId());  // Assuming Product class has setId method
-                    return product;
-                })
-                .collect(Collectors.toList());
+        List<ProductDetailedDTO> productDetailedList = new ArrayList<>();
+        for (int i = 0; i < productDocs.size(); i++) {
+            Product product = productDocs.get(i).toObject(Product.class);
+            assert product != null;
+            productDetailedList.add(new ProductDetailedDTO(
+                    productid_list.get(i),
+                    product.getName(),
+                    product.getPackage_size(),
+                    product.getImage_url(),
+                    wholesaler_products.get(i).getPrice(),
+                    wholesaler_products.get(i).getStock()
+
+            ));
+        }
+        return productDetailedList;
     }
 
     @Override
