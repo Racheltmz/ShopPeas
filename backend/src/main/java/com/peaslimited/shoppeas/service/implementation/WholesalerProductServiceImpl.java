@@ -28,8 +28,7 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
-    public List<Product> getByWholesalerUEN(String uid) throws ExecutionException, InterruptedException {
-        String uen = wholesalerRepository.findByUID(uid).getUEN();
+    public List<Product> getByWholesalerUEN(String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.findByUEN(uen);
     }
 
