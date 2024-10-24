@@ -42,7 +42,7 @@ public class WholesalerController {
     public WholesalerDetailsDTO viewWholesalerConsumer(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
         WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(UEN);
         WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(UEN);
-        List<Product> wholesalerProducts = wholesalerProductService.getByWholesalerUEN(UEN);
+        List<ProductDetailedDTO> wholesalerProducts = wholesalerProductService.getByWholesalerUEN(UEN);
         return WholesalerMapper.toDetailsDTO(wholesaler, wholesalerAddress, wholesalerProducts);
     }
 
