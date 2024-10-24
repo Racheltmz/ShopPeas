@@ -37,9 +37,6 @@ public class TransactionController {
     @Autowired
     private WholesalerService wholesalerService;
 
-    /*@Autowired
-    private CartController cartController;*/
-
     @Autowired
     private TransactionsService transactionService;
 
@@ -47,12 +44,6 @@ public class TransactionController {
     private WholesalerProductService wholesalerProductService;
 
     // CONSUMER METHODS
-
-
-
-
-
-
     /**
      * Adds or updates a transaction record based on ADD TO CART
      * Called in CartController in the add to cart function.

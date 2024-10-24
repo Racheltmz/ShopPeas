@@ -108,7 +108,6 @@ const RegisterCustomer = ({ onBackPress }) => {
 
       // TODO: Navigate to login page
     } catch (err) {
-      console.log(err);
       alert("registration failed: " + err.message);
     } finally {
       setIsLoading(false);

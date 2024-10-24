@@ -7,7 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumerProfileDTO {
-    private ConsumerDTO consumer;
-    private ConsumerAddressDTO consumerAddress;
+public class OrderItemDTO {
+    private String name;
+    private String description;
+    private String image_url;
+    private int quantity;
+    private double price;
 }

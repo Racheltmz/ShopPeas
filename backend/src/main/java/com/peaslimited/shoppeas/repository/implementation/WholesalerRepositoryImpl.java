@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 @Repository
@@ -84,6 +85,26 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         return document.toObject(WholesalerDTO.class);
     }
 
+    @Override
+    public String findWholesalerName(String uen) throws ExecutionException, InterruptedException {
+        QuerySnapshot querySnapshot = firestore.collection(COLLECTION)
+                .whereEqualTo("uen", uen)
+                .limit(1)
+                .get()
+                .get();
+
+        return Objects.requireNonNull(querySnapshot.getDocuments().getFirst().get("name")).toString();
+    }
+
+    @Override
+    public List<WholesalerDTO> findWholesalers(List<String> uen_list) throws ExecutionException, InterruptedException {
+        CollectionReference wholesalerCollection = firestore.collection(COLLECTION);
+        Query wholesalerQuery = wholesalerCollection.whereIn("uen", uen_list);
+        QuerySnapshot productSnapshot = wholesalerQuery.get().get();
+        return productSnapshot.getDocuments().stream()
+                .map(doc -> doc.toObject(WholesalerDTO.class))  // Replace Product.class with your actual Product class
+                .toList();
+    }
 
     @Override
     public void addByUID(String UID, WholesalerDTO wholesaler) {

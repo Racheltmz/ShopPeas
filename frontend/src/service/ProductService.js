@@ -1,5 +1,5 @@
 import apiClient from "../api/apiClient";
-import {  REACT_APP_BACKEND_PRODUCT } from '@env';
+import { REACT_APP_BACKEND_PRODUCT } from '@env';
 
 const productService = {
     fetchProductData: async (uid) => {
@@ -18,8 +18,16 @@ const productService = {
         }
     },
     getDetailsByPID: async (token, pid) => {
-        console.log(token, pid)
         const response = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/${pid}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+
+    getProductsByUEN: async (token) => {
+        const response = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/wholesaler`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

@@ -20,13 +20,14 @@ import java.util.stream.Collectors;
 public class ProductRepositoryImpl implements ProductRepository {
 
     private final String COLLECTION = "products";
+
     @Autowired
     private Firestore firestore;
 
     // get product details
     @Override
     public ProductDTO findByPID(String PID) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection("products").document(PID);
+        DocumentReference docRef = firestore.collection(COLLECTION).document(PID);
 
         // Asynchronously retrieve the document
         ApiFuture<DocumentSnapshot> future = docRef.get();
@@ -44,7 +45,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public List<Product> findAll() throws ExecutionException, InterruptedException {
         // Fetch all products from firebase
-        QuerySnapshot snapshot = firestore.collection("products").get().get();
+        QuerySnapshot snapshot = firestore.collection(COLLECTION).get().get();
 
         // Map each firebase document to a product object
         return snapshot.getDocuments().stream()
@@ -57,14 +58,33 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public List<Product> findProductDetails(List<String> products) throws ExecutionException, InterruptedException {
+        List<DocumentReference> docRefs = products.stream()
+                .map(pid -> firestore.collection(COLLECTION).document(pid))
+                .toList();
+
+        List<DocumentSnapshot> productDocs = firestore.getAll(docRefs.toArray(new DocumentReference[0])).get();
+
+        return productDocs.stream()
+                .filter(DocumentSnapshot::exists)
+                .map(doc -> {
+                    Product product = doc.toObject(Product.class);
+                    assert product != null;
+                    product.setPid(doc.getId());  // Assuming Product class has setId method
+                    return product;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void addByPID(String PID, ProductDTO product) {
-        firestore.collection("products").document(PID).set(product);
+        firestore.collection(COLLECTION).document(PID).set(product);
     }
 
     @Override
     public void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         // Update an existing document
-        DocumentReference docRef = firestore.collection("products").document(PID);
+        DocumentReference docRef = firestore.collection(COLLECTION).document(PID);
 
         // Update fields
         for (String key : data.keySet()) {

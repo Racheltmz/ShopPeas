@@ -106,7 +106,8 @@ public class WholesalerController {
         assert uid != null;
 
         String uen = data.get("uen").toString();
+        String tid = data.get("tid").toString();
         Integer new_rating = Integer.valueOf(data.get("rating").toString());
-        wholesalerService.addRating(uen, new_rating);
+        wholesalerService.addRating(uen, tid, new_rating);
     }
 }

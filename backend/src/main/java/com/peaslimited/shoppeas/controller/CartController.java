@@ -21,11 +21,11 @@ import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/shoppingCart")
+@RequestMapping("/cart")
 public class CartController {
 
     @Autowired
-    private OrderService orderService;
+    private OrderHistoryService orderService;
     @Autowired
     private ShoppingCartService cartService;
     @Autowired
@@ -41,10 +41,8 @@ public class CartController {
     @Autowired
     private ProductService productService;
 
-    // TODO: @saffron delete cart
-
     //get cart (DTO object)
-    @GetMapping("/getCart")
+    @GetMapping("/view")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
     public Map<String,Object> getCartByUID() throws ExecutionException, InterruptedException {
@@ -57,38 +55,35 @@ public class CartController {
 
         for (String s : orderList) {
             Map<String, Object> transactionMap = new HashMap<>();
-            System.out.println("/////////////////////////////////////////////////////////");
             String tid = s;
             TransactionsDTO transaction = transactionsService.findByTID(tid);
-            System.out.println(transaction);
             String uen = transaction.getUen();
             WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(uen);
-            System.out.println(wholesaler);
             String wholesalerName = wholesaler.getName();
             WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(uen);
 
             ArrayList<Object> productsList = transaction.getProducts();
-            System.out.println(productsList);
             ArrayList<Object> itemsList = new ArrayList<>();
 
             for (Object o : productsList) {
                 Map<String, Object> itemsMap = new HashMap<>();
                 Map<String, Object> productsMap = (Map<String, Object>) o;
-                System.out.println(productsMap);
 
                 Long q = (Long) productsMap.get("quantity");
                 int quantity = q.intValue();
-                String swpid = productsMap.get("swp_id").toString();
+                String swp_id = productsMap.get("swp_id").toString();
 
-                WholesalerProductDTO wholesalerProduct = wholesalerProductService.getBySwp_id(swpid);
+                WholesalerProductDTO wholesalerProduct = wholesalerProductService.getBySwp_id(swp_id);
                 double unit_price = wholesalerProduct.getPrice();
                 String pid = wholesalerProduct.getPid();
                 ProductDTO product = productService.getProductById(pid);
                 String productName = product.getName();
+                String imageURL = product.getImage_url();
 
                 itemsMap.put("name", productName);
                 itemsMap.put("quantity", quantity);
                 itemsMap.put("price", unit_price);
+                itemsMap.put("image_url", imageURL);
 
                 itemsList.add(itemsMap);
             }
@@ -126,7 +121,7 @@ public class CartController {
 
 
     //add order
-    @PostMapping("/addtocart")
+    @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addToCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
@@ -180,7 +175,7 @@ public class CartController {
     //update cart
     //new order is added to existing cart (i.e., cart already has other items)
     //or quantity is updated
-    @PatchMapping("/addToCart/update")
+    @PatchMapping("/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
@@ -221,7 +216,7 @@ public class CartController {
 
 
     //delete cart item
-    @PatchMapping("/deleteSingleItem")
+    @PatchMapping("/delete")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteCartItem(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
@@ -239,7 +234,7 @@ public class CartController {
     }
 
     //delete whole cart from firebase (i.e., empty cart)
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteAll")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholeCart() throws ExecutionException, InterruptedException {

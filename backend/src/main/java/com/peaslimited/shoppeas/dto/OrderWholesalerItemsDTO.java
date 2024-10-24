@@ -5,16 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionsDTO {
-    private ArrayList<Object> products;
-    // IN-CART, PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED
+public class OrderWholesalerItemsDTO {
+    private String tid;
+    private String uen;
+    private String wholesalerName;
+    private ArrayList<OrderItemDTO> items;
     private String status;
     private double total_price;
-    private String uen;
-    private String uid;
+    private boolean rated;
 }
