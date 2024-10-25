@@ -20,3 +20,4 @@
 2024-Oct-17 04:29:02 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: com.google.api.gax.rpc.InvalidArgumentException: io.grpc.StatusRuntimeException: INVALID_ARGUMENT: 'IN' requires an non-empty ArrayValue. 
 2024-Oct-17 05:02:25 [http-nio-8080-exec-9] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: com.google.api.gax.rpc.InvalidArgumentException: io.grpc.StatusRuntimeException: INVALID_ARGUMENT: 'IN' requires an non-empty ArrayValue. 
 2024-Oct-17 05:15:04 [http-nio-8080-exec-6] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: com.google.api.gax.rpc.InvalidArgumentException: io.grpc.StatusRuntimeException: INVALID_ARGUMENT: 'IN' requires an non-empty ArrayValue. 
+2024-Oct-17 14:40:20 [http-nio-8080-exec-1] ERROR com.peaslimited.shoppeas.exception.ApiExceptionHandler - Error occurred: Access Denied 
