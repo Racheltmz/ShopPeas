@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Searchbar } from 'react-native-paper';
 import Fuse from 'fuse.js';
 import Products from '../../components/customers/Products';
 import { useUserStore } from '../../lib/userStore';
+import { Searchbar } from 'react-native-paper';
+import Loader from '../../components/utils/Loader';
 import productService from '../../service/ProductService';
 
 const Explore = () => {
@@ -20,23 +21,23 @@ const Explore = () => {
     navigation.navigate('ProductDetails', { product: item });
   }
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        const productsList = await productService.fetchProductData(userUid);
-        setProducts(productsList);
-        setFilteredProducts(productsList);
-      } catch (err) {
-        console.error('Error loading products:', err);
-        setError('Failed to load products. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    loadProducts();
-  }, []);
+  const loadProducts = async (userUid) => {
+    try {
+      const productsList = await productService.fetchProductData(userUid);
+      setProducts(productsList);
+      setFilteredProducts(productsList);
+    } catch (err) {
+      setError('Failed to load products. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    loadProducts(userUid);
+  }, [userUid]);
 
   const fuse = useMemo(() => new Fuse(products, {
     // fields to search
@@ -66,7 +67,7 @@ const Explore = () => {
           autoCapitalize="none"
         />
       </View>
-      {loading && <Text>Loading...</Text>}
+      {loading && <Loader loading={loading}></Loader>}
       {error ? <Text>{error}</Text> : null}
       <View style={{ flex: 2, justifyContent: 'center' }}>
         <Products onProductPress={handleProductPress} productData={filteredProducts}/>

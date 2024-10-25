@@ -6,7 +6,7 @@ import { useUserStore } from '../../lib/userStore';
 import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
-  const { resetUser, paymentDetails } = useUserStore()
+  const { resetUser, paymentDetails } = useUserStore();
   const navigation = useNavigation();
 
   return (

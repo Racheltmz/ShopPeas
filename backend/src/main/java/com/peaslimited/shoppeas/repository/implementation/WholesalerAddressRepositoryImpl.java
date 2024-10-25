@@ -5,10 +5,13 @@ import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
+import com.peaslimited.shoppeas.model.WholesalerAddress;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.WholesalerAddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -29,11 +32,25 @@ public class WholesalerAddressRepositoryImpl implements WholesalerAddressReposit
         DocumentSnapshot document = future.get();
 
         // Convert document to Wholesaler object
-        WholesalerAddressDTO wholesalerAddressDTO = null;
+        WholesalerAddressDTO wholesalerAddressDTO = new WholesalerAddressDTO();
         if (document.exists()) {
             wholesalerAddressDTO = document.toObject(WholesalerAddressDTO.class);
+            return wholesalerAddressDTO;
         }
-        return wholesalerAddressDTO;
+        return null;
+    }
+
+    @Override
+    public List<WholesalerAddress> findAllWholesalerAddress(List<WholesalerProducts> wholesalerProducts) throws ExecutionException, InterruptedException {
+        List<DocumentReference> wholesalerAddressRefs = wholesalerProducts.stream()
+                .map(doc -> firestore.collection(COLLECTION).document(doc.getUen()))
+                .toList();
+        List<DocumentSnapshot> wholesalerAddressDocs = firestore.getAll(wholesalerAddressRefs.toArray(new DocumentReference[0])).get();
+
+        return wholesalerAddressDocs.stream()
+                .filter(DocumentSnapshot::exists)
+                .map(doc -> doc.toObject(WholesalerAddress.class))
+                .toList();
     }
 
     @Override

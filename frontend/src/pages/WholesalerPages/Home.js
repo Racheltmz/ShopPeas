@@ -1,35 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useUserStore } from "../../lib/userStore";
+import Fuse from 'fuse.js';
 import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
 import AddProduct from '../../components/wholesalers/AddProduct';
+import productService from '../../service/ProductService';
 
 const Home = () => {
+  const navigation = useNavigation();
+  const { currentUser, userUid } = useUserStore();
   const [searchText, setSearchText] = useState("");
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+
+  const fetchProducts = async (userUid) => {
+    await productService.getProductsByUEN(userUid)
+      .then((res) => {
+        setProducts(res);
+        setFilteredProducts(res);
+      })
+  }
+
+  useEffect(() => {
+    fetchProducts(userUid);
+  }, [userUid])
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
-
-  const [products, setProducts] = useState([
-    {name: 'Bok Choy', price: 1.29, unit: '1 Packet', stock: 22 , description: 'Veggies'},
-    {name: 'Tomatoes', price: 1.82, unit: '1 Packet', stock: 10, description: 'Red Fruit' },
-    {name: 'Soy Sauce', price: 2.27, unit: '500 ml', stock: 30, description: 'Salty Dressing'},
-    {name: 'Rolled Oats', price: 4.80, unit: '1kg', stock: 52, description: 'Special type of oats'},
-    {name: 'Carrots', price: 2.27, unit: '500 ml', stock: 30, description: 'Orange fruit that is a root' },
-    {name: 'Potatoes', price: 4.80, unit: '1kg', stock: 52, description: 'Edible rocks found underground'},
-  ]);
 
   const removeProduct = (index) => {
     setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
   };
 
   const editProduct = (index, updatedProduct) => {
-    setProducts(currentProducts => 
-      currentProducts.map((product, i) => 
+    setProducts(currentProducts =>
+      currentProducts.map((product, i) =>
         i === index ? { ...product, ...updatedProduct } : product
       )
     );
@@ -39,53 +48,70 @@ const Home = () => {
     setProducts(currentProducts => [...currentProducts, newProduct]);
   };
 
-  return (
-    <SafeAreaView style = {styles.container}>
-        <View style={styles.searchBar}>
-            <Ionicons name="search" size={24} color="#0C5E52" />
-            <TextInput 
-            style={styles.searchInput}
-            placeholder="Search Products"
-            placeholderTextColor="#0C5E52"
-            value={searchText}
-            autoCapitalize="none"
-            onChangeText={(text) => setSearchText(text)}
-            />
-            <TouchableOpacity onPress={navigateToProfile}>
-            <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
-            </TouchableOpacity>
-        </View>
+  const fuse = useMemo(() => new Fuse(products, {
+    // fields to search
+    keys: ['name'], 
+    threshold: 0.3, // Adjust this value to make the search more or less strict
+    includeScore: true
+  }), [products]);
 
-        <View style={styles.header}>
-          <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Happy Wholesaler</Text>
-              <Text style={styles.subHeaderTitle}>My Products</Text>
-          </View>
-          <Image
-              source={require('../../../assets/imgs/pea.png')}
-              style={styles.headerImage}
-          />
+  const handleSearch = (query) => {
+    setSearchText(query);
+    if (query.trim() === '') {
+      setFilteredProducts(products);
+    } else {
+      const results = fuse.search(query);
+      setFilteredProducts(results.map(result => result.item));
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.searchBar}>
+        <Ionicons name="search" size={24} color="#0C5E52" />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search Products"
+          placeholderTextColor="#0C5E52"
+          value={searchText}
+          autoCapitalize="none"
+          onChangeText={(text) => handleSearch(text)}
+        />
+        <TouchableOpacity onPress={navigateToProfile}>
+          <Ionicons name="person-circle-outline" size={28} color="#0C5E52" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.header}>
+        <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>{currentUser.name}</Text> 
+          <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
-        
-        <View style={styles.addProductContainer}>
-            <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
-                <Ionicons name="add-circle-outline" size={24} color="white" />
-            </TouchableOpacity>
-            <Text style={styles.addButtonText}>Add New Product</Text>
-            <TouchableOpacity style={styles.filterButton}>
-                <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
-            </TouchableOpacity>
-        </View>
-        <ScrollView style={styles.productList}>
-        {products.map((product, index) => (
+        <Image
+          source={require('../../../assets/imgs/pea.png')}
+          style={styles.headerImage}
+        />
+      </View>
+
+      <View style={styles.addProductContainer}>
+        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
+          <Ionicons name="add-circle-outline" size={24} color="white" />
+        </TouchableOpacity>
+        <Text style={styles.addButtonText}>Add New Product</Text>
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
+        </TouchableOpacity>
+      </View>
+      <ScrollView style={styles.productList}>
+        {filteredProducts.map((product, index) => (
           <WholesalerProduct
-            key={index}
+            key={product.pid}
             index={index}
             name={product.name}
             price={product.price}
-            unit={product.unit}
-            stock={product.stock}
-            description={product.description}
+            unit={product.package_size}
+            stock={[product.stock]}
+            image_url={product.image_url}
             onRemove={removeProduct}
             onEdit={editProduct}
           />
@@ -141,7 +167,7 @@ const styles = StyleSheet.create({
     margin: '2%',
   },
   headerImage: {
-    width: '18%', 
+    width: '18%',
     height: '65%',
     marginRight: "29.2%",
   },

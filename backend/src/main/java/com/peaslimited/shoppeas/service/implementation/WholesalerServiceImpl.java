@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.service.implementation;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
+import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,9 @@ public class WholesalerServiceImpl implements WholesalerService {
 
     @Autowired
     private WholesalerRepository wholesalerRepository;
+
+    @Autowired
+    private TransactionsRepository transactionsRepository;
 
     // Get wholesaler details
     @Override
@@ -44,13 +48,13 @@ public class WholesalerServiceImpl implements WholesalerService {
     }
 
     @Override
-    public void addRating(String UEN, Integer rating) throws ExecutionException, InterruptedException {
+    public void addRating(String UEN, String tid, Integer rating) throws ExecutionException, InterruptedException {
         wholesalerRepository.updateRatingByUEN(UEN, rating);
+        transactionsRepository.updateTransactionRated(tid);
     }
 
     @Override
-    public DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException
-    {
+    public DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException {
         return wholesalerRepository.findDocByWholesalerName(name);
     }
 

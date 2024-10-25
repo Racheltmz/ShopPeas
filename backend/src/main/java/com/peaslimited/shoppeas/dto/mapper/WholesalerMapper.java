@@ -8,7 +8,7 @@ public class WholesalerMapper {
 
     public static WholesalerDetailsDTO toDetailsDTO(WholesalerDTO wholesaler,
                                                     WholesalerAddressDTO wholesalerAddress,
-                                                    List<ProductDTO> wholesalerProducts) {
+                                                    List<ProductDetailedDTO> wholesalerProducts) {
         return new WholesalerDetailsDTO(wholesaler, wholesalerAddress, wholesalerProducts);
     }
 

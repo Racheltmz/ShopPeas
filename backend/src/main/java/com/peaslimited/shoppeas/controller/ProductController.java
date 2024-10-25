@@ -1,6 +1,6 @@
 package com.peaslimited.shoppeas.controller;
 
-import com.peaslimited.shoppeas.dto.ProductDTO;
+import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
@@ -12,6 +12,8 @@ import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -63,11 +65,14 @@ public class ProductController {
      * get all the relevant products of a wholesaler
      * @return list of products for each wholesaler
      */
-    @GetMapping("/wholesaler/{uen}")
-    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
+    @GetMapping("/wholesaler")
+    @PreAuthorize("hasAnyRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<ProductDTO> getProductsByUEN(@PathVariable String uen) throws ExecutionException, InterruptedException {
-        return wholesalerProductService.getByWholesalerUEN(uen);
+    public List<ProductDetailedDTO> getProductsByUEN() throws ExecutionException, InterruptedException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+        return wholesalerProductService.getByWholesalerUID(uid);
     }
 
     /**

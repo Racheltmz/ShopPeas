@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Data
@@ -16,7 +16,7 @@ public class OrderHistory {
     @Id
     private String oid;
     private ArrayList<String> orders; //list of tid
-    private LocalDateTime date;
+    private LocalDate date;
     private double total_price;
     private String uid;
 }

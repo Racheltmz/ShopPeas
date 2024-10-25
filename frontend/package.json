@@ -28,6 +28,7 @@
     "lucide-react-native": "^0.445.0",
     "react": "18.2.0",
     "react-native": "0.74.5",
+    "react-native-animated-loader": "^1.0.0",
     "react-native-axios": "^0.17.1",
     "react-native-device-info": "^13.1.0",
     "react-native-dotenv": "^3.4.11",

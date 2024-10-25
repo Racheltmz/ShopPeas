@@ -1,88 +1,51 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
-import RatingModal from '../../components/customers/RatingModal';
+import { useUserStore } from '../../lib/userStore';
+import Loader from '../../components/utils/Loader';
 import HistoryItems from '../../components/customers/HistoryItems';
-
-// api call for items here
-const DUMMY_ITEMS = [
-  {
-    orderDate: "19/8/24",
-    purchasedItemsViaWholesaler: [
-      {
-        wholesalerName: "Happy Wholesaler",
-        items: [
-          {
-            name: "Bok Choy",
-            Quantity: 5,
-            Measurement: " Packet",
-            price: 1.29,
-          },
-          {
-            name: "Rolled Oats",
-            Quantity: 2,
-            Measurement: "kg",
-            price: 7.29,
-          },
-        ],
-      },
-      {
-        wholesalerName: "Cheap Wholesaler",
-        items: [
-          {
-            name: "Tomatoes",
-            Quantity: 7,
-            Measurement: " Packet",
-            price: 1.17,
-          },
-          {
-            name: "Apples",
-            Quantity: 5,
-            Measurement: "Packet",
-            price: 1.89,
-          },
-        ],
-      },
-    ],
-    Status: "Collected",
-    TotalPrice: 38.69,
-  },
-  {
-    orderDate: "16/8/24",
-    purchasedItemsViaWholesaler: [
-      {
-        wholesalerName: "Quality Buy",
-        items: [
-          {
-            name: "Bok Choy",
-            Quantity: 5,
-            Measurement: " Packet",
-            price: 1.19,
-          },
-          {
-            name: "Rolled Oats",
-            Quantity: 2,
-            Measurement: "kg",
-            price: 6.5,
-          },
-        ],
-      },
-    ],
-    Status: "Collected",
-    TotalPrice: 38.69,
-  },
-];
-
+import transactionService from '../../service/TransactionService';
 
 const History = () => {
   const navigation = useNavigation();
+  const { userUid } = useUserStore();
+  const [loading, setLoading] = useState(true);
+  const [history, setHistory] = useState([]);
+  const [rated, setRated] = useState(false);
+
+  const fetchData = async (userUid) => {
+    await transactionService.viewOrderHistory(userUid)
+      .then((res) => {
+        setHistory(res);
+        setLoading(false);
+      })
+      .catch((err) => {
+        if (err.status === 404) {
+          setHistory([]);
+        }
+      });
+  }
   
+  const updateRated = () => {
+    setRated(true);
+  }
+
+  useEffect(() => {
+    fetchData(userUid);
+  }, [userUid, rated]);
+
+  if (loading) {
+    return (
+      <Loader loading={loading}></Loader>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Order History</Text>
       </View>
-      <HistoryItems navigation={navigation} historyList={DUMMY_ITEMS}/>
+      <HistoryItems navigation={navigation} historyList={history} onRatedItem={updateRated} />
     </View>
   );
 };
@@ -107,7 +70,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0C5E52',
   },
-
 });
 
 export default History;

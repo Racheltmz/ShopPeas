@@ -29,10 +29,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
 
             updateUserType(userType);
             await fetchUserInfo(user.uid);
-
-            console.log("Login successful. User type:", userType);
         } catch(err) {
-            console.log(err);
             alert("Login failed: " + err.message);
         } finally {
             setIsLoading(false);

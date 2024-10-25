@@ -2,6 +2,7 @@ package com.peaslimited.shoppeas.service.implementation;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.peaslimited.shoppeas.dto.OrderHistoryDTO;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.TransactionsService;
@@ -21,44 +22,42 @@ public class TransactionsServiceImpl implements TransactionsService {
     private TransactionsRepository transactionsRepo;
 
     @Override
-    public TransactionsDTO getTransactionByUID(String uid, String status) throws ExecutionException, InterruptedException
-    {
+    public TransactionsDTO getTransactionByUID(String uid, String status) throws ExecutionException, InterruptedException {
         return transactionsRepo.getTransactionByUID(uid, status);
     }
 
     @Override
-    public DocumentSnapshot findDocByUIDandStatus(String UID, String status) throws ExecutionException, InterruptedException
-    {
+    public DocumentSnapshot findDocByUIDandStatus(String UID, String status) throws ExecutionException, InterruptedException {
         return transactionsRepo.findDocByUIDandStatus(UID, status);
     }
 
     @Override
-    public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException
-    {
+    public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException {
         return  transactionsRepo.getDocByUENAndStatus(uen, status);
     }
 
     @Override
-    public DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException
-    {
+    public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
+        return transactionsRepo.findByTID(tid);
+    }
+
+    @Override
+    public DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException {
         return transactionsRepo.getDocByUENAndWName(uen, uid);
     }
 
     @Override
-    public ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException
-    {
+    public ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException {
         return transactionsRepo.getProductListfromTransaction(document, cart);
     }
 
     @Override
-    public void createTransaction(TransactionsDTO transactionsDTO)
-    {
+    public void createTransaction(TransactionsDTO transactionsDTO) {
         transactionsRepo.createTransaction(transactionsDTO);
     }
 
     @Override
-    public void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException
-    {
+    public void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException {
         transactionsRepo.updateTransactionProduct(data, uid, status);
     }
 
@@ -69,8 +68,12 @@ public class TransactionsServiceImpl implements TransactionsService {
     }
 
     @Override
-    public List<QueryDocumentSnapshot> findDocListByUID(String UID) throws ExecutionException, InterruptedException
-    {
+    public void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        transactionsRepo.updateTransaction(tid, data);
+    }
+
+    @Override
+    public List<QueryDocumentSnapshot> findDocListByUID(String UID) throws ExecutionException, InterruptedException {
         return transactionsRepo.findDocListByUID(UID);
     }
 

@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ImageBackground } from "react-native";
 import AuthPage from "./src/pages/AuthPage";

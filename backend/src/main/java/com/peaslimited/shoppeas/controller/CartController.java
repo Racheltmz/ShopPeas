@@ -1,14 +1,10 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
-import com.peaslimited.shoppeas.dto.OrderDTO;
-import com.peaslimited.shoppeas.dto.ShoppingCartDTO;
-import com.peaslimited.shoppeas.dto.mapper.OrderMapper;
+import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
 import com.peaslimited.shoppeas.model.ShoppingCart;
-import com.peaslimited.shoppeas.service.OrderService;
-import com.peaslimited.shoppeas.service.ShoppingCartService;
-import com.peaslimited.shoppeas.service.TransactionsService;
+import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,34 +15,93 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/shoppingCart")
+@RequestMapping("/cart")
 public class CartController {
 
     @Autowired
-    private OrderService orderService;
+    private OrderHistoryService orderService;
     @Autowired
     private ShoppingCartService cartService;
     @Autowired
     private TransactionController transactionController;
     @Autowired
     private TransactionsService transactionsService;
-
-    // TODO: @saffron delete cart
+    @Autowired
+    private WholesalerService wholesalerService;
+    @Autowired
+    private WholesalerAddressService wholesalerAddressService;
+    @Autowired
+    private WholesalerProductService wholesalerProductService;
+    @Autowired
+    private ProductService productService;
 
     //get cart (DTO object)
-    @GetMapping("/getCart")
+    @GetMapping("/view")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public ShoppingCartDTO getCartByUID() throws ExecutionException, InterruptedException {
-        // Get UID
+    public Map<String,Object> getCartByUID() throws ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
-        return cartService.getCartByUID(uid);
+        ShoppingCartDTO cart =  cartService.getCartByUID(uid);
+
+        ArrayList<String> orderList = cart.getOrders();
+        ArrayList<Object> cartTransactions = new ArrayList<>();
+
+        for (String s : orderList) {
+            Map<String, Object> transactionMap = new HashMap<>();
+            String tid = s;
+            TransactionsDTO transaction = transactionsService.findByTID(tid);
+            String uen = transaction.getUen();
+            WholesalerDTO wholesaler = wholesalerService.getWholesalerUID(uen);
+            String wholesalerName = wholesaler.getName();
+            WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(uen);
+
+            ArrayList<Object> productsList = transaction.getProducts();
+            ArrayList<Object> itemsList = new ArrayList<>();
+
+            for (Object o : productsList) {
+                Map<String, Object> itemsMap = new HashMap<>();
+                Map<String, Object> productsMap = (Map<String, Object>) o;
+
+                Long q = (Long) productsMap.get("quantity");
+                int quantity = q.intValue();
+                String swp_id = productsMap.get("swp_id").toString();
+
+                WholesalerProductDTO wholesalerProduct = wholesalerProductService.getBySwp_id(swp_id);
+                double unit_price = wholesalerProduct.getPrice();
+                String pid = wholesalerProduct.getPid();
+                ProductDTO product = productService.getProductById(pid);
+                String productName = product.getName();
+                String imageURL = product.getImage_url();
+
+                itemsMap.put("name", productName);
+                itemsMap.put("quantity", quantity);
+                itemsMap.put("price", unit_price);
+                itemsMap.put("image_url", imageURL);
+
+                itemsList.add(itemsMap);
+            }
+
+            transactionMap.put("wholesaler", wholesalerName);
+            transactionMap.put("location", wholesalerAddress);
+            transactionMap.put("items", itemsList);
+
+            cartTransactions.add((transactionMap));
+
+        }
+
+
+        Map<String, Object> returnCart = new HashMap<>();
+        returnCart.put("cart", cartTransactions);
+
+        return returnCart;
+
     }
 
     // returns full shopping cart entity object, including cid
@@ -66,7 +121,7 @@ public class CartController {
 
 
     //add order
-    @PostMapping("/addtocart")
+    @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void addToCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
@@ -120,23 +175,36 @@ public class CartController {
     //update cart
     //new order is added to existing cart (i.e., cart already has other items)
     //or quantity is updated
-    @PatchMapping("/addToCart/update")
+    @PatchMapping("/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void updateCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
-        //ACTION: GET ORDER DATA
-        String oid = data.get("oid").toString();
-        double price = Double.parseDouble(data.get("price").toString());
-        int quantity = Integer.parseInt(data.get("quantity").toString());
-        String swp_id = data.get("swp_id").toString();
-        String type = "CART";
+        //ACTION: GET TRANSACTION DATA
+        //convert order data to array
+        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+        //for each transaction
+        for(int i = 0; i< cartList.size(); i++)
+        {
+            Map<String, Object> transactionMap = (Map<String, Object>) cartList.get(i);
+            String wholesalerName = transactionMap.get("wholesaler").toString();
+            ArrayList<Object> itemList = (ArrayList<Object>) transactionMap.get("items");
 
-        //ACTION: ADDS ORDER RECORD
-        OrderDTO order = OrderMapper.toOrderDTO(price, quantity, swp_id, type);
-        orderService.addOrder(oid, order);
+            String tid = transactionController.getTransactionFromUIDandWName(uid, wholesalerName);
+
+            for(int j = 0; j<itemList.size(); j++)
+            {
+                Map<String, Object> itemMap = (Map<String, Object>) itemList.get(i);
+                String name = itemMap.get("name").toString();
+                int quantity = Integer.parseInt(itemMap.get("quantity").toString());
+                float price = (float) itemMap.get("unit_price");
+
+
+            }
+
+        }
 
         // cart record exists for uid
         //String cid = data.get("cid").toString();
@@ -148,7 +216,7 @@ public class CartController {
 
 
     //delete cart item
-    @PatchMapping("/deleteSingleItem")
+    @PatchMapping("/delete")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteCartItem(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
@@ -166,7 +234,7 @@ public class CartController {
     }
 
     //delete whole cart from firebase (i.e., empty cart)
-    @DeleteMapping("/delete")
+    @DeleteMapping("/deleteAll")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholeCart() throws ExecutionException, InterruptedException {

@@ -3,9 +3,8 @@ import { REACT_APP_BACKEND_CART} from '@env';
 
 const cartService = {
     getCart : async (uid) => {
-        console.log(uid);
         try {
-            const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/getCart`, {
+            const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/view`, {
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
@@ -19,9 +18,8 @@ const cartService = {
         }
     },
     addToCart : async (bodyData) => {
-        const endpoint = "/shoppingCart/addtocart"; 
         try {
-            const response = await apiClient.post(`${REACT_APP_BACKEND_AUTH}/${endpoint}`,bodyData, {
+            const response = await apiClient.post(`${REACT_APP_BACKEND_CART}/add`,bodyData, {
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
@@ -35,9 +33,8 @@ const cartService = {
         }
     },
     updateCart : async (bodyData) => {
-        const endpoint = "/shoppingCart/addToCart/update"; 
         try {
-            const response = await apiClient.patch(`${REACT_APP_BACKEND_AUTH}/${endpoint}`,bodyData, {
+            const response = await apiClient.patch(`${REACT_APP_BACKEND_CART}/update`,bodyData, {
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
@@ -69,4 +66,3 @@ const cartService = {
 }
 
 export default cartService;
-
