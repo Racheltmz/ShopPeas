@@ -10,8 +10,9 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useNavigation } from "@react-navigation/native";
-import { Divider } from 'react-native-paper';
 import { useUserStore } from "../../lib/userStore";
+import { Divider } from 'react-native-paper';
+import MapView, { Marker } from 'react-native-maps';
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
 import productService from "../../service/ProductService";
 
@@ -180,6 +181,11 @@ const ProductDetails = ({ route }) => {
                 Minutes away
               </Text>
               <Text style={styles.wholesalerStocks}>Stocks: {selectedWholesaler?.stocks}</Text>
+              <View style={styles.wholesalerMap}>
+                <MapView style={styles.map}>
+                  <Marker coordinate={{latitude: 1.32044079120154, longitude: 103.843825618748}} />
+                </MapView>
+              </View>
               <View style={styles.quantityContainer}>
                 <Text style={styles.wholesalerQty}>Quantity</Text>
                 <View style={styles.row}>
@@ -343,6 +349,17 @@ const styles = StyleSheet.create({
     color: "#0C5E52",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  wholesalerMap: {
+    width: "100%",
+    marginTop: 10,
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  map: {
+    width: '100%',
+    height: '80%',
+    paddingBottom: 0,
   },
 });
 
