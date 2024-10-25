@@ -1,8 +1,5 @@
 import { create } from "zustand";
-<<<<<<< HEAD
 // const db = FirebaseDb;
-=======
->>>>>>> a29e10027f3c6a4b46ac87d144d4c6c08613f7d1
 
 const DUMMY_CART_ITEMS = [  
     {
