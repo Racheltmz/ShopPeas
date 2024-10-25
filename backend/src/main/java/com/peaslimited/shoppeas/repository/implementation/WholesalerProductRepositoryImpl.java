@@ -9,10 +9,12 @@ import com.peaslimited.shoppeas.repository.ProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerAddressRepository;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
+import com.peaslimited.shoppeas.service.OneMapService;
 import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,9 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private OneMapService oneMapService;
 
     @Autowired
     private ProductRepository productRepository;
@@ -57,7 +62,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     // Fetch products by their PID
     @Override
-    public List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException {
+    public List<WholesalerProductDetailsDTO> findByPid(String pid, String userPostalCode) throws ExecutionException, InterruptedException, IOException {
         // Query database to get all wholesaler products with the given PID
         QuerySnapshot snapshot = firestore.collection(COLLECTION)
                 .whereEqualTo("pid", pid)
@@ -83,10 +88,19 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         List<WholesalerProductDetailsDTO> wholesalerList = new ArrayList<>();
 
         for (int i = 0; i < wholesalerProducts.size(); i++) {
+            // Get coordinates for user and wholesaler
+            String userCoordinates = oneMapService.getCoordinates(userPostalCode);
+            String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerAddresses.get(i).getPostal_code());
+
+            // Calculate driving time
+            String duration = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
+
             wholesalerList.add(new WholesalerProductDetailsDTO(
                     wholesalers.get(i).getName(),
                     wholesalers.get(i).getUEN(),
                     wholesalerAddresses.get(i).getStreet_name(),
+                    wholesalerAddresses.get(i).getPostal_code(),
+                    duration,
                     wholesalerProducts.get(i).getStock(),
                     wholesalerProducts.get(i).getPrice(),
                     wholesalers.get(i).getRating()

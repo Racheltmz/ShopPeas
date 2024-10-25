@@ -6,29 +6,35 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
+  SafeAreaView
 } from "react-native";
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useNavigation } from "@react-navigation/native";
 import { useUserStore } from "../../lib/userStore";
 import { Divider } from 'react-native-paper';
+import Loader from '../../components/utils/Loader';
 import MapView, { Marker } from 'react-native-maps';
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
 import productService from "../../service/ProductService";
+import locationService from "../../service/LocationService";
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
   const { userUid } = useUserStore();
+  const [loading, setLoading] = useState(true);
   const [wholesalerInfo, setWholesalerInfo] = useState([]);
   const [sortBy, setSortBy] = useState("price");
   const [showModal, setShowModal] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [location, setLocation] = useState([1.290270, 103.851959]); // by default, set to Singapore's coordinates
   const { addItem } = useCart();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    productService.getDetailsByPID(userUid, product.pid)
+  const fetchProductData = (userUid, pid) => {
+    productService.getDetailsByPID(userUid, pid)
       .then((res) => {
         let data = []
         for (let i = 0; i < res.length; i++) {
@@ -36,7 +42,8 @@ const ProductDetails = ({ route }) => {
             'name': res[i].name,
             'package_size': res[i].package_size,
             'location': res[i].location,
-            'timeAway': 39, // TODO
+            'postal_code': res[i].postal_code,
+            'timeAway': res[i].duration,
             'stocks': res[i].stock,
             'price': res[i].price,
             'ratings': res[i].ratings.toFixed(1),
@@ -45,11 +52,33 @@ const ProductDetails = ({ route }) => {
           data.push(record);
         }
         setWholesalerInfo(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: err.status.code,
+          textBody: err.message,
+          button: 'close',
+        })
+      });
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProductData(userUid, product.pid);
+  }, [product.pid, userUid]);
+
+  const getLatLong = async (postalCode) => {
+    await locationService.getCoordinates(postalCode)
+      .then((res) => {
+        setLocation([parseFloat(res.results[0]['LATITUDE']), parseFloat(res.results[0]['LONGITUDE'])]);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [product.pid, userUid]);
+  }
 
   const handleWholesalerPress = () => {
     setShowModal(false);
@@ -70,6 +99,7 @@ const ProductDetails = ({ route }) => {
       style={styles.wholesalerItem}
       onPress={() => {
         setSelectedWholesaler(item);
+        setLocation(getLatLong(item.postal_code));
         setShowModal(true);
       }}
     >
@@ -83,7 +113,7 @@ const ProductDetails = ({ route }) => {
               </View>
             </View>
             <Text style={styles.wholesalerLocation}>
-              {item.location}, {item.timeAway} Minutes away
+              {item.location}, {item.timeAway}
             </Text>
           </View>
 
@@ -116,6 +146,7 @@ const ProductDetails = ({ route }) => {
   return (
     <View style={{ flex: 1 }}>
       <ProductDetailsHeader name={product.name} desc={`${product.package_size}`} navigation={navigation} />
+      {loading && <Loader loading={loading}></Loader>}
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
@@ -151,7 +182,7 @@ const ProductDetails = ({ route }) => {
             </Text>
           </TouchableOpacity>
         </View>
-
+              
         <FlatList
           data={sortedWholesalers}
           renderItem={renderWholesalerItem}
@@ -177,15 +208,16 @@ const ProductDetails = ({ route }) => {
                 </Text>
               </TouchableOpacity>
               <Text style={styles.wholesalerLocation}>
-                {selectedWholesaler?.location}, {selectedWholesaler?.timeAway}{" "}
-                Minutes away
+                {selectedWholesaler?.location}, {selectedWholesaler?.timeAway}
               </Text>
               <Text style={styles.wholesalerStocks}>Stocks: {selectedWholesaler?.stocks}</Text>
-              <View style={styles.wholesalerMap}>
+              <SafeAreaView style={styles.wholesalerMapContainer}>
                 <MapView style={styles.map}>
-                  <Marker coordinate={{latitude: 1.32044079120154, longitude: 103.843825618748}} />
+                  <Marker coordinate={{latitude: location[0], longitude: location[1]}} >
+                    <Ionicons name="location" size={24} color="red" />
+                  </Marker>
                 </MapView>
-              </View>
+              </SafeAreaView>
               <View style={styles.quantityContainer}>
                 <Text style={styles.wholesalerQty}>Quantity</Text>
                 <View style={styles.row}>
@@ -328,7 +360,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 20,
   },
   quantityButton: {
     fontSize: 24,
@@ -350,16 +381,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  wholesalerMap: {
-    width: "100%",
-    marginTop: 10,
-    marginBottom: 10,
-    borderRadius: 10,
+  wholesalerMapContainer: {
+    height: 300,
+    marginVertical: 10,
   },
   map: {
     width: '100%',
-    height: '80%',
-    paddingBottom: 0,
+    height: '100%',
+    borderWidth: 2,
+    borderColor: '#D1D1D1',
+    borderRadius: 10,
   },
 });
 

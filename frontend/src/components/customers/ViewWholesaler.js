@@ -9,18 +9,16 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { useUserStore } from "../../lib/userStore";
 import ProductItem from "./ProductItem";
-import Alert from '../utils/Alert';
 import wholesalerService from "../../service/WholesalerService";
 
 const ViewWholesaler = ({ route }) => {
   const navigation = useNavigation();
   const { userUid } = useUserStore();
   const { wholesalerUEN } = route.params;
-  const [alertVisible, setAlertVisible] = useState(false);
   const [isGridView, setIsGridView] = useState(true);
-  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => {} });
   const [wholesalerInfo, setWholesalerInfo] = useState({
     name: '',
     address: '',
@@ -48,17 +46,12 @@ const ViewWholesaler = ({ route }) => {
         setWholesalerInfo(data);
       })
       .catch((err) => {
-        setAlertVisible(true);
-        <Alert
-            visible={alertVisible}
-            title={err.response.status}
-            message={err.message}
-            onConfirm={() => {
-              setAlertVisible(false);
-              customAlert.onConfirm();
-            }}
-            onCancel={() => setAlertVisible(false)}
-        />
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: err.status.code,
+          textBody: err.message,
+          button: 'close',
+        })
       });
   }, [userUid, wholesalerUEN]);
 

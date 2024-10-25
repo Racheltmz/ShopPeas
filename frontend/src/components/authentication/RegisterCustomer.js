@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import { Ionicons } from '@expo/vector-icons';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
 import Address from './Address';
@@ -102,13 +103,23 @@ const RegisterCustomer = ({ onBackPress }) => {
 
           // API call to add user details into database collections
           authService.register(res.user.uid, "consumer", formData)
-              .catch((err) => {
-                  console.log(err); // TODO: replace with show error alert
+            .catch((err) => {
+              Dialog.show({
+                type: ALERT_TYPE.DANGER,
+                title: err.status.code,
+                textBody: err.message,
+                button: 'close',
               })
+            })
 
       // TODO: Navigate to login page
     } catch (err) {
-      alert("registration failed: " + err.message);
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: err.status.code,
+        textBody: err.message,
+        button: 'close',
+      })
     } finally {
       setIsLoading(false);
     }

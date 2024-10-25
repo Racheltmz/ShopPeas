@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useCart } from '../../lib/userCart';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from '@expo/vector-icons'; 
+import { useCart } from '../../lib/userCart';
 import { useUserStore } from "../../lib/userStore";
 import CartItem from '../../components/customers/CartItem';
 import cartService from '../../service/CartService';
@@ -17,7 +18,15 @@ const Cart = ({ navigation }) => {
       })
       .catch((err) => {
         if (err.status.code === 404) {
+          // TODO: Display empty page instead
           Alert.alert("no records");
+        } else {
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: err.status.code,
+            textBody: err.message,
+            button: 'close',
+          })
         }
       })
   }

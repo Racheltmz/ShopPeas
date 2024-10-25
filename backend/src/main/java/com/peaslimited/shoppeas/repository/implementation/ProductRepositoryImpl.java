@@ -7,7 +7,6 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
-import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.ProductRepository;
@@ -30,8 +29,8 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     // get product details
     @Override
-    public ProductDTO findByPID(String PID) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION).document(PID);
+    public ProductDTO findByPID(String pid) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(pid);
 
         // Asynchronously retrieve the document
         ApiFuture<DocumentSnapshot> future = docRef.get();
