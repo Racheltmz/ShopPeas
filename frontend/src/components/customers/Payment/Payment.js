@@ -4,6 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../../lib/userStore';
 import { useCart } from '../../../lib/userCart';
+import paymentService from '../../../service/PaymentService';
 
 const Payment = () => {
   const navigation = useNavigation();

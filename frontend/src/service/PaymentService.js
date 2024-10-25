@@ -1,10 +1,10 @@
 import {REACT_APP_BACKEND_CART} from "@env";
 
 const paymentService = {
-    addCard : async (uid) => {
-        const endpoint = "checkout/addpayment"; 
+    addCard : async (uid, requestBody) => {
+        const endpoint = "checkout/add"; 
         try {
-            const response = await apiClient.post(`${REACT_APP_BACKEND_CART}/${endpoint}`, {
+            const response = await apiClient.post(`${REACT_APP_BACKEND_CART}/${endpoint}`, requestBody,{
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
@@ -18,7 +18,7 @@ const paymentService = {
         }
     },
     getPayment : async (uid) => {
-        const endpoint = "checkout/getpayment"; 
+        const endpoint = "checkout/get"; 
         try {
             const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/${endpoint}`, {
                 headers: {

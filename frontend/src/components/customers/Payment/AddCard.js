@@ -8,10 +8,18 @@ import { Divider } from 'react-native-paper';
 const AddCard = () => {
   const navigation = useNavigation();
   const { currentUser, paymentDetails, fetchUserInfo } = useUserStore();
+  {/*
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [cvv, setCvv] = useState('');
-  const [nameOnCard, setNameOnCard] = useState('');
+  const [nameOnCard, setNameOnCard] = useState(''); */}
+
+  const [formData, setFormData] = useState({
+    card_no: '',
+    cvv: '',
+    expiry_date: '',
+    name: ''
+  });
 
   const validateCardNumber = (number) => {
     return number.replace(/\s/g, '').match(/^[0-9]{16}$/);
@@ -41,6 +49,26 @@ const AddCard = () => {
     if (nameOnCard.trim().length === 0) {
       Alert.alert('Invalid Name', 'Please enter the name on the card.');
       return;
+    }
+
+    try{
+      setIsLoading(true);
+        
+        // Prepare data in format backend expects
+        const paymentDetails = {
+            card_no: formData.card_no.replace(/\s/g, ''),
+            cvv: formData.cvv,
+            expiry_date: formData.expiry_date,
+            name: formData.name.trim()
+        };
+
+        // Call the service
+        paymentService.addCard(currentUser.uid, paymentDetails)
+        .catch((err) => {
+          console.log(err); // TODO: replace with show error alert
+        })
+    } catch(err){
+      alert("Addition of card failed: " + err.message);
     }
 
     // Here you would typically send the new card details to your backend
