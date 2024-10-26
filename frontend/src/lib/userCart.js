@@ -1,127 +1,215 @@
 import { create } from "zustand";
-// const db = FirebaseDb;
+import cartService from "../service/CartService";
 
-const DUMMY_CART_ITEMS = [  
-    {
-        wholesaler: "Happy Wholesaler",
-        // get location and distance using api and apply in the item itself in actual implementation
-        location: "Bishan",
-        distance: 39,
-        items: [
-            {
-                name: "Bok Choy",
-                quantity: 1,
-                price: 1.29,
-            },
-            {
-                name: "Rolled Oats",
-                quantity: 1,
-                price: 1.29,
-            },
-        ]
-    },
-    {
-        wholesaler: "Cheap Wholesaler",
-        location: "Serangoon",
-        distance: 45,
-        items: [
-            {
-                name: "Spinach",
-                quantity: 3,
-                price: 1.31,
-            },
-        ]
-    },
-    {
-        wholesaler: "Quality Buy",
-        location: "Woodlands",
-        distance: 39,
-        items: [
-            {
-                name: "Spinach",
-                quantity: 10,
-                price: 1.21,
-            },
+export const useCart = create((set, get) => ({
+  cartId: null,
+  cart: [],
+  isLoading: false,
+  error: null,
 
-        ]
-    },
-]
+  // Helper function to format cart data for backend
+  formatCartForBackend: (cartData) => ({
+    "cart items": cartData.map((group) => ({
+      wholesaler: group.wholesaler,
+      items: group.items.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        unit_price: item.price,
+      })),
+    })),
+  }),
 
-// calls backend to retrieve cart information of user
-export const useCart = create((set) => ({
-    cartId: null,
-    cart: [], // temporary Dummy
-    
-    fetchCart: (cartItem) => set((state) => {
-        return { cart: cartItem }; 
-    }),
+  fetchCart: async (userUid) => {
+    set({ isLoading: true, error: null });
 
-    // wholesaler: { wholesaler, location, distance/timeaway}
-    // item: { name, price }
-    addItem: (wholesaler, item, quantity) => set((state) => {
-      const updatedCart = [...state.cart];
-      const wholesalerIndex = updatedCart.findIndex(w => w.wholesaler === wholesaler.wholesaler);
-  
+    try {
+      const response = await cartService.getCart(userUid);
+
+      const transformedCart = response.cart.map((group) => ({
+        items: Array.isArray(group.items) ? group.items : [],
+        location: group.location || {},
+        wholesaler: group.wholesaler || "",
+      }));
+
+      set({
+        cart: transformedCart,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+      set({
+        cart: [],
+        isLoading: false,
+        error: error.message || "Failed to fetch cart",
+      });
+    }
+  },
+
+  updateItemQuantity: async (wholesalerName, itemName, newQuantity, uid) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      // Get current state using get()
+      const currentState = get();
+
+      // Update cart state locally first
+      const updatedCart = currentState.cart
+        .map((wholesaler) => {
+          if (wholesaler.wholesaler === wholesalerName) {
+            return {
+              ...wholesaler,
+              items: wholesaler.items
+                .map((item) => {
+                  if (item.name === itemName) {
+                    return { ...item, quantity: Math.max(0, newQuantity) };
+                  }
+                  return item;
+                })
+                .filter((item) => item.quantity > 0),
+            };
+          }
+          return wholesaler;
+        })
+        .filter((wholesaler) => wholesaler.items.length > 0);
+
+      // Format cart data for backend using the method from the store
+      const backendData = currentState.formatCartForBackend(updatedCart);
+
+      // Send update to backend
+      await cartService.updateCart(backendData);
+
+      // Update local state if backend update successful
+      set({
+        cart: updatedCart,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+      set({
+        isLoading: false,
+        error: error.message || "Failed to update quantity",
+      });
+    }
+  },
+
+  removeItem: async (wholesalerName, itemName, uid) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const currentState = get();
+
+      // Update cart state locally first
+      const updatedCart = currentState.cart
+        .map((wholesaler) => {
+          if (wholesaler.wholesaler === wholesalerName) {
+            return {
+              ...wholesaler,
+              items: wholesaler.items.filter((item) => item.name !== itemName),
+            };
+          }
+          return wholesaler;
+        })
+        .filter((wholesaler) => wholesaler.items.length > 0);
+
+      // Format cart data for backend
+      const backendData = currentState.formatCartForBackend(updatedCart);
+
+      // Send update to backend
+      await cartService.updateCart(backendData);
+
+      // Update local state if backend update successful
+      set({
+        cart: updatedCart,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error removing item:", error);
+      set({
+        isLoading: false,
+        error: error.message || "Failed to remove item",
+      });
+    }
+  },
+
+  addItem: async (wholesaler, item, quantity, uid) => {
+    set({ isLoading: true, error: null });
+
+    try { 
+      const currentState = get();
+
+      // Update cart state locally first
+      let updatedCart = [...currentState.cart];
+      const wholesalerIndex = updatedCart.findIndex(
+        (w) => w.wholesaler === wholesaler.wholesaler
+      );
+
       if (wholesalerIndex !== -1) {
-        const itemIndex = updatedCart[wholesalerIndex].items.findIndex(i => i.name === item.name);
+        const itemIndex = updatedCart[wholesalerIndex].items.findIndex(
+          (i) => i.name === item.name
+        );
         if (itemIndex !== -1) {
-          // Item exists, increase quantity
           updatedCart[wholesalerIndex].items[itemIndex].quantity += quantity;
         } else {
-          // Item doesn't exist, add new item
-          updatedCart[wholesalerIndex].items.push({ ...item, quantity: quantity });
+          updatedCart[wholesalerIndex].items.push({ ...item, quantity });
         }
       } else {
-        // Wholesaler doesn't exist, add new wholesaler with item
         updatedCart.push({
           ...wholesaler,
-          items: [{ ...item, quantity: quantity }]
+          items: [{ ...item, quantity }],
         });
       }
-  
-      return { cart: updatedCart };
-    }),
-  
-    removeItem: (wholesalerName, itemName) => set((state) => {
-      const updatedCart = state.cart.map(wholesaler => {
-        if (wholesaler.wholesaler === wholesalerName) {
-          return {
-            ...wholesaler,
-            items: wholesaler.items.filter(item => item.name !== itemName)
-          };
-        }
-        return wholesaler;
-      }).filter(wholesaler => wholesaler.items.length > 0);
-      
-      return { cart: updatedCart }; 
-    }),
-    
-    updateItemQuantity: (wholesalerName, itemName, newQuantity) => set((state) => {
-      const updatedCart = state.cart.map(wholesaler => {
-        if (wholesaler.wholesaler === wholesalerName) {
-          return {
-            ...wholesaler,
-            items: wholesaler.items.map(item => {
-              if (item.name === itemName) {
-                return { ...item, quantity: Math.max(0, newQuantity) };
-              }
-              return item;
-            }).filter(item => item.quantity > 0)
-          };
-        }
-        return wholesaler;
-      }).filter(wholesaler => wholesaler.items.length > 0);
-      return { cart: updatedCart };
-    }),
-  
-    clearCart: () => set({ cart: [] }),
-  
-    getTotal: () => {
-      const state = useCart.getState();
-      return state.cart.reduce((total, wholesaler) => {
-        return total + wholesaler.items.reduce((subTotal, item) => {
+
+      // Format cart data for backend
+      const backendData = currentState.formatCartForBackend(updatedCart);
+
+      // Send update to backend
+      await cartService.updateCart(backendData);
+
+      // Update local state if backend update successful
+      set({
+        cart: updatedCart,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error adding item:", error);
+      set({
+        isLoading: false,
+        error: error.message || "Failed to add item",
+      });
+    }
+  },
+
+  clearCart: async (uid) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const currentState = get();
+      // Send empty cart to backend
+      const backendData = currentState.formatCartForBackend([]);
+      await cartService.updateCart(backendData);
+
+      set({
+        cart: [],
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      set({
+        isLoading: false,
+        error: error.message || "Failed to clear cart",
+      });
+    }
+  },
+
+  getTotal: () => {
+    const currentState = get();
+    return currentState.cart.reduce((total, wholesaler) => {
+      return (
+        total +
+        wholesaler.items.reduce((subTotal, item) => {
           return subTotal + item.price * item.quantity;
-        }, 0);
-      }, 0);
-    },
-  }));
+        }, 0)
+      );
+    }, 0);
+  },
+}));

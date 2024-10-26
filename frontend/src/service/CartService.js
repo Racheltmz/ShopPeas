@@ -1,5 +1,6 @@
 import apiClient from "../api/apiClient";
-import { REACT_APP_BACKEND_CART} from '@env';
+import { REACT_APP_BACKEND_CART } from "@env";
+import { useUserStore } from "../lib/userStore";
 
 const cartService = {
     getCart : async (uid) => {
@@ -17,7 +18,7 @@ const cartService = {
             throw error;
         }
     },
-    addToCart : async (bodyData) => {
+    addToCart : async (bodyData, uid) => {
         try {
             const response = await apiClient.post(`${REACT_APP_BACKEND_CART}/add`,bodyData, {
                 headers: {
@@ -32,7 +33,7 @@ const cartService = {
             throw error;
         }
     },
-    updateCart : async (bodyData) => {
+    updateCart : async (bodyData, uid) => {
         try {
             const response = await apiClient.patch(`${REACT_APP_BACKEND_CART}/update`,bodyData, {
                 headers: {
@@ -47,7 +48,7 @@ const cartService = {
             throw error;
         }
     },
-    checkout : async (bodyData) => {
+    checkout : async (bodyData, uid) => {
         const endpoint = "/transaction/checkout"; 
         try {
             const response = await apiClient.post(`${REACT_APP_BACKEND_AUTH}/${endpoint}`,bodyData, {
