@@ -197,6 +197,7 @@ public class TransactionController {
         String cid = cartNow.getCid();
         cartService.deleteWholeCart(cid);
 
+
         //only if the wholesaler's selected currency is MYR, will the currency api be invoked
         // shifted above
         //double price = Double.parseDouble(data.get("price").toString());
@@ -268,10 +269,6 @@ public class TransactionController {
     }
 
 
-
-    //TODO: @saffron WHOLESALER METHODS
-    
-    //get all transactions
 
     
 }

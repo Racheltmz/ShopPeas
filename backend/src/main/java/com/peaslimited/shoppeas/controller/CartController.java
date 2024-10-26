@@ -3,7 +3,9 @@ package com.peaslimited.shoppeas.controller;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
+import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.ShoppingCart;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -178,22 +180,39 @@ public class CartController {
     @PatchMapping("/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void updateCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
+    public Map<String,Object> updateCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
+        Map<String, Object> returnMap = new HashMap<>();
 
+        ArrayList<String> transactionList = new ArrayList<>();
+        float checkoutPrice = 0;
         //ACTION: GET TRANSACTION DATA
         //convert order data to array
         ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+
         //for each transaction
         for(int i = 0; i< cartList.size(); i++)
         {
+            float transactionPrice = 0;
+            //from data
             Map<String, Object> transactionMap = (Map<String, Object>) cartList.get(i);
+            //to update
+            Map<String, Object> newTransactionMap = new HashMap<>();
+            ArrayList<Object> newProductsList = new ArrayList<>();
+
             String wholesalerName = transactionMap.get("wholesaler").toString();
             ArrayList<Object> itemList = (ArrayList<Object>) transactionMap.get("items");
 
             String tid = transactionController.getTransactionFromUIDandWName(uid, wholesalerName);
+            transactionList.add(tid);
+            TransactionsDTO transaction = transactionsService.findByTID(tid);
 
+            String uen = transaction.getUen();
+
+            //checkoutPrice += transactionController.updateOneTransactionAndStock(products, tid, uen);
+
+            //ACTION: updating transactions
             for(int j = 0; j<itemList.size(); j++)
             {
                 Map<String, Object> itemMap = (Map<String, Object>) itemList.get(i);
@@ -201,19 +220,54 @@ public class CartController {
                 int quantity = Integer.parseInt(itemMap.get("quantity").toString());
                 float price = (float) itemMap.get("unit_price");
 
+                if(quantity == 0)
+                    continue;
 
+                //ACTION: get PID
+                Product product = productService.findByProductName(name);
+                if(product == null)
+                {
+                    returnMap.put("update", "failed, product does not exist");
+                    return returnMap;
+                }
+                String pid = product.getPid();
+
+                //ACTION: get SWP_ID
+                WholesalerProducts wholesalerProducts = wholesalerProductService.getWProductByPIDandUEN(pid, uen);
+                if(wholesalerProducts == null)
+                {
+                    returnMap.put("update", "failed, product does not exist");
+                    return returnMap;
+                }
+                String swpid = wholesalerProducts.getSwpid();
+
+                //ACTION:UPDATING DATA
+                Map<String, Object> newProductMap = new HashMap<>();
+                newProductMap.put("price", price);
+                newProductMap.put("quantity",quantity);
+                newProductMap.put("swpid", swpid);
+                newProductsList.add(newProductMap);
+                transactionPrice += price*quantity;
+                checkoutPrice+= transactionPrice;
             }
+            newTransactionMap.put("products", newProductsList);
+            newTransactionMap.put("total_price", transactionPrice);
+
+            //ACTION: UPDATES TRANSACTION DOCUMENT
+            transactionsService.updateTransaction(tid, newTransactionMap);
 
         }
 
-        // cart record exists for uid
-        //String cid = data.get("cid").toString();
-        String cid = getCID(uid);
         //ACTION: UPDATES CART
-        //cartService.updateCartByOrder(cid, data);
+        String cid = getCID(uid);
+        Map<String, Object> newCart = new HashMap<>();
+        newCart.put("orders", transactionList);
+        newCart.put("total_price", checkoutPrice);
+        cartService.updateCart(cid, newCart);
 
+        returnMap.put("update", "success");
+        return returnMap;
     }
-
 
     //delete cart item
     @PatchMapping("/delete")

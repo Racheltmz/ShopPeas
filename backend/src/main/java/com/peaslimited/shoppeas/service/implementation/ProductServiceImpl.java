@@ -41,5 +41,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.updateByPID(PID,data);
     }
 
+    @Override
+    public Product findByProductName(String name) throws ExecutionException, InterruptedException
+    {
+        return productRepository.findByProductName(name);
+    }
+
 
 }

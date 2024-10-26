@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.service;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 
 import java.util.Map;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface WholesalerProductService {
     void deleteWholesalerProduct(String swpid);
 
     String getWholesalerProductName(String swpid) throws ExecutionException, InterruptedException;
+
+    public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException;
 }

@@ -17,6 +17,8 @@ public interface ShoppingCartService {
 
     void updateCartByOrder(String cid, int quantity, String tid, double newPrice) throws ExecutionException, InterruptedException;
 
+    void updateCart(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException;
+
     void deleteWholeCart(String cid) throws ExecutionException, InterruptedException;
 
     void deleteItemByOID(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException;

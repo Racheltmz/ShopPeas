@@ -1,10 +1,7 @@
 package com.peaslimited.shoppeas.repository.implementation;
 
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.repository.ProductRepository;
@@ -13,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -90,6 +88,26 @@ public class ProductRepositoryImpl implements ProductRepository {
         for (String key : data.keySet()) {
             docRef.update(key, data.get(key));
         }
+    }
+
+    @Override
+    public Product findByProductName(String name) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("name", name).get();
+
+        // Asynchronously retrieve the document
+        QuerySnapshot querySnapshot = query.get();
+
+        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+        DocumentSnapshot document = null;
+        Product product = null;
+        // Check if any documents match
+        if (!documents.isEmpty()) {
+            // Get the first matching document and return its ID
+            document = documents.getFirst();
+            product = document.toObject(Product.class);
+        }
+
+        return product;
     }
 
 }
