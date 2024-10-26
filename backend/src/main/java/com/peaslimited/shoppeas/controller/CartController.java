@@ -14,6 +14,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -42,6 +44,8 @@ public class CartController {
     private WholesalerProductService wholesalerProductService;
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ApiExceptionHandler apiExceptionHandler;
 
     //get cart (DTO object)
     @GetMapping("/view")
@@ -184,12 +188,17 @@ public class CartController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
         Map<String, Object> returnMap = new HashMap<>();
+        Map<String, Object> returnMapFail = new HashMap<>();
+        returnMapFail.put("update", null);
 
         ArrayList<String> transactionList = new ArrayList<>();
         float checkoutPrice = 0;
         //ACTION: GET TRANSACTION DATA
         //convert order data to array
         ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+        if(cartList.isEmpty())
+            return returnMapFail;
+
 
         //for each transaction
         for(int i = 0; i< cartList.size(); i++)
@@ -205,6 +214,8 @@ public class CartController {
             ArrayList<Object> itemList = (ArrayList<Object>) transactionMap.get("items");
 
             String tid = transactionController.getTransactionFromUIDandWName(uid, wholesalerName);
+            if(tid.equals("null"))
+                return returnMapFail;
             transactionList.add(tid);
             TransactionsDTO transaction = transactionsService.findByTID(tid);
 
@@ -225,20 +236,12 @@ public class CartController {
 
                 //ACTION: get PID
                 Product product = productService.findByProductName(name);
-                if(product == null)
-                {
-                    returnMap.put("update", "failed, product does not exist");
-                    return returnMap;
-                }
+                if(product == null) return returnMapFail;
                 String pid = product.getPid();
 
                 //ACTION: get SWP_ID
                 WholesalerProducts wholesalerProducts = wholesalerProductService.getWProductByPIDandUEN(pid, uen);
-                if(wholesalerProducts == null)
-                {
-                    returnMap.put("update", "failed, product does not exist");
-                    return returnMap;
-                }
+                if(wholesalerProducts == null) return returnMapFail;
                 String swpid = wholesalerProducts.getSwpid();
 
                 //ACTION:UPDATING DATA
