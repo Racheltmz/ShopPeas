@@ -21,7 +21,6 @@ const Explore = () => {
     navigation.navigate('ProductDetails', { product: item });
   }
 
-
   const loadProducts = async (userUid) => {
     try {
       const productsList = await productService.fetchProductData(userUid);

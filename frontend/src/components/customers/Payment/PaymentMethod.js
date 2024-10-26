@@ -1,17 +1,62 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { React, useState, useEffect }  from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../../lib/userStore';
 import { Divider } from 'react-native-paper';
+import paymentService from '../../../service/PaymentService';
 
 const PaymentMethod = () => {
   const navigation = useNavigation();
-  const { paymentDetails } = useUserStore();
+  const { userUid, paymentDetails } = useUserStore(); 
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [payments, setPayments] = useState([]); 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleAddCard = () => {
     navigation.navigate('AddCard');
   };
+
+  const loadPaymentMethods = async (userUid) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const paymentsList = await paymentService.getPayment(userUid);
+      setPayments(paymentsList);
+    } catch (err) {
+      setError('Failed to load existing payment methods. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const Item = ({item}) => (
+    <TouchableOpacity 
+      style={[
+        styles.item,
+        selectedPayment === item && styles.selectedItem
+      ]}
+      onPress={() => setSelectedPayment(item)}
+    >
+      <Ionicons 
+        name="card-outline" 
+        size={24} 
+        color="#0C5E52" 
+        style={styles.cardIcon} 
+      />
+      <View style={styles.cardDetails}>
+        <Text style={styles.cardType}>Card ending in {item}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+
+  useEffect(() => {
+    if (userUid) {
+      loadPaymentMethods(userUid);
+    }
+  }, [userUid]);
 
   return (
     <View style={styles.container}>
@@ -23,29 +68,29 @@ const PaymentMethod = () => {
           <Text style={styles.headerTitle}>Payment Method</Text>
         </View>
       </View>
-      <ScrollView>
+      <View>
         <Divider />
         <Text style={styles.sectionTitle}>Existing payment methods</Text>
-        {paymentDetails && (
-          <TouchableOpacity style={styles.cardItem}>
-            <View style={styles.cardIcon}>
-              <Ionicons name="card" size={24} color="#0C5E52" />
-            </View>
-            <View style={styles.cardDetails}>
-              <Text style={styles.cardType}>
-                {/* {paymentDetails.card_no.toString().startsWith('4') ? 'Visa' : 'Mastercard'} */}
+        {loading ? (
+          <Text style={styles.loadingText}>Loading payment methods...</Text>
+        ) : (
+          <FlatList
+            data={payments}
+            renderItem={({ item }) => <Item item={item} />}
+            keyExtractor={item => item}
+            ListEmptyComponent={() => (
+              <Text style={[styles.cardNumber, { padding: 16, textAlign: 'center' }]}>
+                No payment methods found
               </Text>
-              {/* <Text style={styles.cardNumber}>Card *{paymentDetails.card_no.toString().slice(-4)}</Text> */}
-            </View>
-            <Ionicons name="radio-button-on" size={24} color="#0C5E52" />
-          </TouchableOpacity>
+            )}
+          />
         )}
         <Text style={styles.sectionTitle}>Add a new credit/debit card</Text>
         <TouchableOpacity style={styles.addCardButton} onPress={handleAddCard}>
           <Ionicons name="add-circle-outline" size={24} color="#0C5E52" />
           <Text style={styles.addCardText}>Add Card</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
       <TouchableOpacity style={styles.addButton} onPress={handleAddCard}>
         <Text style={styles.addButtonText}>Add</Text>
         <Ionicons name="arrow-forward" size={24} color="white" />
