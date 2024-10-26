@@ -13,5 +13,5 @@ import java.util.List;
 public class WholesalerDetailsDTO {
     private WholesalerDTO wholesaler;
     private WholesalerAddressDTO wholesalerAddress;
-    private List<Product> wholesalerProducts;
+    private List<ProductDetailedDTO> wholesalerProducts;
 }

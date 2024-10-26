@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.dto.mapper;
 
 import com.peaslimited.shoppeas.dto.*;
-import com.peaslimited.shoppeas.model.Product;
 
 import java.util.List;
 
@@ -9,7 +8,7 @@ public class WholesalerMapper {
 
     public static WholesalerDetailsDTO toDetailsDTO(WholesalerDTO wholesaler,
                                                     WholesalerAddressDTO wholesalerAddress,
-                                                    List<Product> wholesalerProducts) {
+                                                    List<ProductDetailedDTO> wholesalerProducts) {
         return new WholesalerDetailsDTO(wholesaler, wholesalerAddress, wholesalerProducts);
     }
 

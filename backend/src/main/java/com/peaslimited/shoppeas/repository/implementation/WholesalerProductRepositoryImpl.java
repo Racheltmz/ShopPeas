@@ -2,11 +2,7 @@ package com.peaslimited.shoppeas.repository.implementation;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
-import com.peaslimited.shoppeas.dto.ProductDTO;
-import com.peaslimited.shoppeas.dto.WholesalerDTO;
-import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
-import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
-import com.peaslimited.shoppeas.model.Product;
+import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.model.WholesalerAddress;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.ProductRepository;
@@ -44,15 +40,19 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Override
     // Fetch wholesaler products by uen
-    public List<Product> findByUEN(String uen) throws ExecutionException, InterruptedException {
+    public List<ProductDetailedDTO> findByUEN(String uen) throws ExecutionException, InterruptedException {
         QuerySnapshot snapshot = firestore.collection(COLLECTION).whereEqualTo("uen", uen).whereEqualTo("active", true).get().get();
 
-        List<String> products = snapshot.getDocuments().stream()
+        List<WholesalerProducts> products = snapshot.getDocuments().stream()
+                .map(doc -> doc.toObject(WholesalerProducts.class))
+                .toList();
+
+        List<String> productid_list = snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
                 .map(WholesalerProducts::getPid)
                 .toList();
 
-        return productRepository.findProductDetails(products);
+        return productRepository.findProductDetails(productid_list, products);
     }
 
     // Fetch products by their PID

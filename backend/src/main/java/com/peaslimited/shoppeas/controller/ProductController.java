@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.controller;
 
+import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
@@ -67,11 +68,11 @@ public class ProductController {
     @GetMapping("/wholesaler")
     @PreAuthorize("hasAnyRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public List<Product> getProductsByUEN() throws ExecutionException, InterruptedException {
+    public List<ProductDetailedDTO> getProductsByUEN() throws ExecutionException, InterruptedException {
         // Get UID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
-        return wholesalerProductService.getByWholesalerUEN(uid);
+        return wholesalerProductService.getByWholesalerUID(uid);
     }
 
     /**

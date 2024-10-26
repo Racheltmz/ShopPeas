@@ -21,23 +21,23 @@ const Explore = () => {
     navigation.navigate('ProductDetails', { product: item });
   }
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true);
-        const productsList = await productService.fetchProductData(userUid);
-        setProducts(productsList);
-        setFilteredProducts(productsList);
-      } catch (err) {
-        console.error('Error loading products:', err);
-        setError('Failed to load products. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    loadProducts();
-  }, []);
+  const loadProducts = async (userUid) => {
+    try {
+      const productsList = await productService.fetchProductData(userUid);
+      setProducts(productsList);
+      setFilteredProducts(productsList);
+    } catch (err) {
+      setError('Failed to load products. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    loadProducts(userUid);
+  }, [userUid]);
 
   const fuse = useMemo(() => new Fuse(products, {
     // fields to search

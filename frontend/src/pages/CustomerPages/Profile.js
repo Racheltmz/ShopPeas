@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ProfileDetails from "../../components/customers/ProfileDetails";
 import { createStackNavigator } from '@react-navigation/stack';
 import { useUserStore } from "../../lib/userStore";
@@ -8,7 +8,7 @@ import consumerService from "../../service/ConsumerService";
 const Profile = ({ navigation }) => {
   const { currentUser, userUid, userAddress, paymentDetails} = useUserStore();
   const Stack = createStackNavigator();
-  const [userData, setUserData] = [{
+  const [userData, setUserData] = useState([{
     name: currentUser.first_name + " " + currentUser.last_name,
     email: currentUser.email,
     contact: currentUser.phone_number,
@@ -18,13 +18,12 @@ const Profile = ({ navigation }) => {
     buildingName: '',
     city: '',
     postalCode: '',
-  }];
+  }]);
 
   // todo: update this in line with user store
   const fetchData = async (userUid) => {
     await consumerService.viewProfile(userUid)
       .then((res) => {
-        console.log(res);
         if (res.consumerAddress.buildingName === null) {
           res.consumerAddress.buildingName = '';
         }
@@ -45,7 +44,7 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     fetchData(userUid);
-  }, [userUid, userData]);
+  }, [userUid]);
 
   const handleSaveProfile = (updatedUserData) => {
     // This is where you would typically make an API call to update the user's profile
