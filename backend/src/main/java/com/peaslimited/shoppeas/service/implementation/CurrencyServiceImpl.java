@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.service.implementation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Value;
 import com.peaslimited.shoppeas.service.CurrencyService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -14,9 +13,6 @@ import java.net.*;
 
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
-
-    @Value("${currency.api-key.path}")
-    private String apiKeyPath;
 
     @PostConstruct
     public String getApiKeyPath() throws IOException {

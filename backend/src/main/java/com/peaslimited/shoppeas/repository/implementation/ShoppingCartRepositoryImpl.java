@@ -141,6 +141,18 @@ public class ShoppingCartRepositoryImpl implements ShoppingCartRepository {
         }
     }
 
+
+    @Override
+    public void updateCart(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        // Update an existing document
+        DocumentReference docRef = firestore.collection(COLLECTION).document(cid);
+
+        // Update fields
+        for (String key : data.keySet()) {
+            docRef.update(key, data.get(key));
+        }
+    }
+
     public OrderDTO findByOID(String OID) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection("orders").document(OID);
 

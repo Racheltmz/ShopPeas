@@ -21,9 +21,12 @@ public class WholesalerMapper {
     public static WholesalerProductDetailsDTO toWholesalerProfileDTO(String wholesaler,
                                                                      String uen,
                                                                      String location,
+                                                                     String postal_code,
+                                                                     int duration,
+                                                                     double distance,
                                                                      int stock,
                                                                      double price,
                                                                      double ratings) {
-        return new WholesalerProductDetailsDTO(wholesaler, uen, location, stock, price, ratings);
+        return new WholesalerProductDetailsDTO(wholesaler, uen, location, postal_code, duration, distance, stock, price, ratings);
     }
 }

@@ -9,14 +9,18 @@ import com.peaslimited.shoppeas.repository.ProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerAddressRepository;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
+import com.peaslimited.shoppeas.service.OneMapService;
 import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Repository
 public class WholesalerProductRepositoryImpl implements WholesalerProductRepository {
@@ -28,6 +32,9 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Autowired
     private ProductService productService;
+
+    @Autowired
+    private OneMapService oneMapService;
 
     @Autowired
     private ProductRepository productRepository;
@@ -57,7 +64,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     // Fetch products by their PID
     @Override
-    public List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException {
+    public List<WholesalerProductDetailsDTO> findByPid(String pid, String userPostalCode) throws ExecutionException, InterruptedException, IOException {
         // Query database to get all wholesaler products with the given PID
         QuerySnapshot snapshot = firestore.collection(COLLECTION)
                 .whereEqualTo("pid", pid)
@@ -80,18 +87,47 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         List<WholesalerAddress> wholesalerAddresses = wholesalerAddressRepository.findAllWholesalerAddress(wholesalerProducts);
 
         // Combine product and wholesaler data into DTOs
-        List<WholesalerProductDetailsDTO> wholesalerList = new ArrayList<>();
+        List<CompletableFuture<WholesalerProductDetailsDTO>> futures = new ArrayList<>();
 
         for (int i = 0; i < wholesalerProducts.size(); i++) {
-            wholesalerList.add(new WholesalerProductDetailsDTO(
-                    wholesalers.get(i).getName(),
-                    wholesalers.get(i).getUEN(),
-                    wholesalerAddresses.get(i).getStreet_name(),
-                    wholesalerProducts.get(i).getStock(),
-                    wholesalerProducts.get(i).getPrice(),
-                    wholesalers.get(i).getRating()
-            ));
+//            // Get coordinates for user and wholesaler
+//            String userCoordinates = oneMapService.getCoordinates(userPostalCode);
+//            String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerAddresses.get(i).getPostal_code());
+//
+//            // Calculate driving time
+//            String duration = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
+
+            WholesalerProducts product = wholesalerProducts.get(i);
+            WholesalerDTO wholesaler = wholesalers.get(i);
+            WholesalerAddress address = wholesalerAddresses.get(i);
+
+            CompletableFuture<WholesalerProductDetailsDTO> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    String userCoordinates = oneMapService.getCoordinates(userPostalCode);
+                    String wholesalerCoordinates = oneMapService.getCoordinates(address.getPostal_code());
+                    LocationDTO travelStats = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
+
+                    return new WholesalerProductDetailsDTO(
+                            wholesaler.getName(),
+                            wholesaler.getUEN(),
+                            address.getStreet_name(),
+                            address.getPostal_code(),
+                            travelStats.getDuration(),
+                            travelStats.getDistance(),
+                            product.getStock(),
+                            product.getPrice(),
+                            wholesaler.getRating()
+                    );
+                } catch (Exception e) {
+                    return null;
+                }
+            });
+
+            futures.add(future);
         }
+        List<WholesalerProductDetailsDTO> wholesalerList = futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
 
         return wholesalerList;
     }
@@ -164,6 +200,26 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         // Update an existing document
         DocumentReference docRef = firestore.collection(COLLECTION).document(swp_id);
         docRef.update("active", false);
+    }
+
+    @Override
+    public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("pid", pid)
+                .whereEqualTo("uen", uen).get();
+
+        QuerySnapshot querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+        DocumentSnapshot document = null;
+
+        WholesalerProducts product = null;
+        // Check if any documents match
+        if (!documents.isEmpty()) {
+            // Get the first matching document and return its ID
+            document = documents.getFirst();
+            product = document.toObject(WholesalerProducts.class);
+        }
+
+        return product;
     }
 
 }

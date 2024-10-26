@@ -4,11 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConsumerAccountDTO {
-    private Map<String, Object> paymentMtds;
+public class LocationDTO {
+    private int duration;
+    private double distance;
 }

@@ -27,18 +27,19 @@ public class PaymentController {
     public Map<String, Object> getPayment() throws ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
-
         // ACTION: GET PAYMENTS
         ConsumerAccountDTO conAcc = consumerAccService.getConsumerAccount(uid);
-        ArrayList<Object> paymentMethodsList = conAcc.getPaymentMtds();
+
+        Map<String,Object> paymentMethodsMap = conAcc.getPaymentMtds();
         // for returning
         Map<String, Object> payments = new HashMap<>();
         ArrayList<String> cardNumList = new ArrayList<>();
 
         // ACTION: CONVERT TO MAP
-        for (Object o : paymentMethodsList) {
+        for (int i = 0; i < paymentMethodsMap.size(); i++) {
             Map<String, Object> card = new HashMap<>();
-            card = (Map<String, Object>) o;
+            String index = Integer.toString(i);
+            card = (Map<String, Object>) paymentMethodsMap.get(index);
             String cardNum = card.get("card_no").toString();
             // get first four digits from card number
             cardNum = cardNum.substring(0, Math.min(cardNum.length(), 4));
@@ -47,7 +48,6 @@ public class PaymentController {
         payments.put("card_numbers", cardNumList);
 
         return payments;
-
     }
 
     //add payment
@@ -77,18 +77,20 @@ public class PaymentController {
         {
             //ACTION: CREATE CONSUMER ACC ENTRY
             //nested list
-            ArrayList<Object> paymentMethodsList =  new ArrayList<Object>();
-            paymentMethodsList.add(paymentMap);
-            ConsumerAccountDTO newConsumerAcc = new ConsumerAccountDTO(paymentMethodsList);
+            Map<String, Object> paymentMethodsMap =  new HashMap<>();
+            paymentMethodsMap.put("0", paymentMap);
+            ConsumerAccountDTO newConsumerAcc = new ConsumerAccountDTO(paymentMethodsMap);
             consumerAccService.addConsumerAccount(uid, newConsumerAcc);
         }
         else // consumer account entry exists
         {
             //ACTION: UPDATE PAYMENT METHOD LIST IN EXISTING CONSUMER ACC
-            ArrayList<Object> currPaymentMethodList = consumerAcc.getPaymentMtds();
-            currPaymentMethodList.add(paymentMap);
+            Map<String, Object> currPaymentMethodMap = consumerAcc.getPaymentMtds();
+            int newIndex = currPaymentMethodMap.size() - 1;
+            String index= Integer.toString(newIndex);
+            currPaymentMethodMap.put(index, paymentMap);
             Map<String, Object> newData = new HashMap<String, Object>();
-            newData.put("paymentMtds", currPaymentMethodList);
+            newData.put("paymentMtds", currPaymentMethodMap);
             consumerAccService.updateConsumerAccount(uid, newData);
         }
     }
@@ -105,21 +107,22 @@ public class PaymentController {
 
         // ACTION: GET PAYMENTS
         ConsumerAccountDTO conAcc = consumerAccService.getConsumerAccount(uid);
-        ArrayList<Object> paymentMethodsList = conAcc.getPaymentMtds();
+        Map<String, Object> paymentMethodsMap = conAcc.getPaymentMtds();
 
-        for(int i = 0; i < paymentMethodsList.size(); i++) {
+        for(int i = 0; i < paymentMethodsMap.size(); i++) {
             Map<String, Object> card = new HashMap<>();
-            card = (Map<String, Object>) paymentMethodsList.get(i);
+            String index = Integer.toString(i);
+            card = (Map<String, Object>) paymentMethodsMap.get(index);
             String cardNum = card.get("card_no").toString();
             if(cardNum.equals(card_no)) //ACTION: REMOVE MAP
             {
-                paymentMethodsList.remove(i);
+                paymentMethodsMap.remove(i);
                 break;
             }
         }
         //ACTION: UPDATE CONSUMER ACC
         Map<String, Object> newData = new HashMap<String, Object>();
-        newData.put("paymentMtds", paymentMethodsList);
+        newData.put("paymentMtds", paymentMethodsMap);
         consumerAccService.updateConsumerAccount(uid, newData);
     }
 

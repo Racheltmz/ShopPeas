@@ -4,19 +4,13 @@ import { useUserStore } from "../lib/userStore";
 
 const cartService = {
     getCart : async (uid) => {
-        try {
-            const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/view`, {
-                headers: {
-                    Authorization: `Bearer ${uid}`,
-                    Accept: "application/json",
-                },
-            });
-            return response.data;
-
-        } catch (error) {
-            console.error("Error config:", JSON.stringify(error.config, null, 2));
-            throw error;
-        }
+        const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/view`, {
+            headers: {
+                Authorization: `Bearer ${uid}`,
+                Accept: "application/json",
+            },
+        });
+        return response.data;
     },
     addToCart : async (bodyData, uid) => {
         try {

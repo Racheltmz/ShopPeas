@@ -1,26 +1,42 @@
-import React, { useEffect } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
-import { useCart } from "../../lib/userCart";
-import { Ionicons } from "@expo/vector-icons";
-import CartItem from "../../components/customers/CartItem";
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import { Ionicons } from '@expo/vector-icons'; 
+import { useCart } from '../../lib/userCart';
 import { useUserStore } from "../../lib/userStore";
-import Loader from "../../components/utils/Loader";
+import CartItem from '../../components/customers/CartItem';
+import cartService from '../../service/CartService';
 
 const Cart = ({ navigation }) => {
-  const { cart, clearCart, getTotal, isLoading } = useCart();
   const { userUid } = useUserStore();
-  const { fetchCart } = useCart();
+  const { cart, clearCart, getTotal } = useCart();
 
+  const fetchData = (userUid) => {
+    cartService.getCart(userUid)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        if (err.status.code === 404) {
+          // TODO: Display empty page instead
+          Alert.alert("no records");
+        } else {
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: err.status.code,
+            textBody: err.message,
+            button: 'close',
+          })
+        }
+      })
+  }
   useEffect(() => {
-    fetchCart(userUid);
-  }, []);
+    fetchData(userUid);
+  }, [userUid]);
+
+  const handleClearCart = () => {
+    clearCart();
+  };
 
   const handleCheckout = () => {
     navigation.navigate("Payment");
@@ -130,10 +146,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#0C5E52",
-  },
-  wholesalerLocation: {
-    color: "gray",
-    marginBottom: 10,
   },
   footer: {
     flexDirection: "row",
