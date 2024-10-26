@@ -149,7 +149,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         int quantity = Integer.parseInt(data.get("quantity").toString());
         String uen = data.get("uen").toString();
         DocumentSnapshot transaction = findDocByUIDandStatus(uid, status);
-        System.out.println(transaction);
 
         double price = getProductPrice(swp_id, uen);
         double total_price = (double) transaction.get("total_price");
@@ -245,8 +244,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             Map<String, Object> docProduct = (Map<String, Object>) o;
             Map<String, Object> product = new HashMap<>();
             String swpid = docProduct.get("swp_id").toString();
-            System.out.println(swpid);
-            System.out.println("--");
             int quantity = Integer.parseInt(docProduct.get("quantity").toString());
 
             String productName = wholesalerProductService.getWholesalerProductName(swpid);

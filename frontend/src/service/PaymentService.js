@@ -1,10 +1,11 @@
-import {REACT_APP_BACKEND_CART} from "@env";
+import apiClient from '../api/apiClient'
+import { REACT_APP_BACKEND_PAYMENT } from "@env";
 
 const paymentService = {
-    addCard : async (uid) => {
-        const endpoint = "checkout/addpayment"; 
+    addCard : async (uid, requestBody) => {
+        const endpoint = "add"; 
         try {
-            const response = await apiClient.post(`${REACT_APP_BACKEND_CART}/${endpoint}`, {
+            const response = await apiClient.post(`${REACT_APP_BACKEND_PAYMENT}/${endpoint}`, requestBody,{
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
@@ -18,9 +19,9 @@ const paymentService = {
         }
     },
     getPayment : async (uid) => {
-        const endpoint = "checkout/getpayment"; 
+        const endpoint = "get"; 
         try {
-            const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/${endpoint}`, {
+            const response = await apiClient.get(`${REACT_APP_BACKEND_PAYMENT}/${endpoint}`, {
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
@@ -34,9 +35,9 @@ const paymentService = {
         }
     },
     deletePayment : async (requestBody) => {
-        const endpoint = "/shoppingcart/checkout/deletepayment"; 
+        const endpoint = "delete"; 
         try {
-            const response = await apiClient.patch(`${REACT_APP_BACKEND_AUTH}/${endpoint}`,requestBody, {
+            const response = await apiClient.delete(`${REACT_APP_BACKEND_PAYMENT}/${endpoint}`,requestBody, {
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",

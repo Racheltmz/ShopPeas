@@ -4,14 +4,18 @@ import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from '../../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Divider } from 'react-native-paper';
+import paymentService from '../../../service/PaymentService';
 
 const AddCard = () => {
   const navigation = useNavigation();
-  const { currentUser, paymentDetails, fetchUserInfo } = useUserStore();
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
-  const [nameOnCard, setNameOnCard] = useState('');
+  const { currentUser } = useUserStore();
+
+  const [formData, setFormData] = useState({
+    card_no: '',
+    cvv: '',
+    expiry_date: '',
+    name: ''
+  });
 
   const validateCardNumber = (number) => {
     return number.replace(/\s/g, '').match(/^[0-9]{16}$/);
@@ -26,23 +30,46 @@ const AddCard = () => {
   };
 
   const handleSubmit = () => {
-    if (!validateCardNumber(cardNumber)) {
+    if (!validateCardNumber(formData.card_no)) {
       Alert.alert('Invalid Card Number', 'Please enter a valid 16-digit card number.');
       return;
     }
-    if (!validateExpiryDate(expiryDate)) {
+    if (!validateExpiryDate(formData.expiry_date)) {
       Alert.alert('Invalid Expiry Date', 'Please enter a valid expiry date (MM/YY).');
       return;
     }
-    if (!validateCVV(cvv)) {
+    if (!validateCVV(formData.cvv)) {
       Alert.alert('Invalid CVV', 'Please enter a valid CVV (3 or 4 digits).');
       return;
     }
-    if (nameOnCard.trim().length === 0) {
+    if (formData.name.trim().length === 0) {
       Alert.alert('Invalid Name', 'Please enter the name on the card.');
       return;
     }
 
+    try{
+       // setIsLoading(true);
+        
+        // Prepare data in format backend expects
+        const paymentDetails = {
+            card_no: formData.card_no.replace(/\s/g, ''),
+            cvv: formData.cvv,
+            expiry_date: formData.expiry_date,
+            name: formData.name.trim()
+        };
+
+        paymentService.addCard(currentUser.uid, paymentDetails)
+        .catch((err) => {
+          console.log(err); // TODO: replace with show error alert
+        })
+    } catch(err){
+      alert("Addition of card failed: " + err.message);
+    }
+
+    // Navigate back to the Payment Method page
+    navigation.goBack();
+
+    {/*
     // Here you would typically send the new card details to your backend
     console.log('Submitting new card:', { cardNumber, expiryDate, cvv, nameOnCard });
     
@@ -53,12 +80,14 @@ const AddCard = () => {
       
       // Navigate back to the Payment Method page
       navigation.goBack();
+    
       
       // Show a success message
-      Alert.alert('Success', 'Your new card has been added successfully.');
-    }, 1000);
+    Alert.alert('Success', 'Your new card has been added successfully.'); 
+    }, 1000); */}
   };
 
+  //TODO: Show payment methods
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -75,8 +104,8 @@ const AddCard = () => {
         <Text style={styles.label}>Card Number:</Text>
         <TextInput
           style={styles.input}
-          value={cardNumber}
-          onChangeText={(text) => setCardNumber(text.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim())}
+          value={formData.card_no}
+          onChangeText={(text) => setFormData({...formData, ['card_no']:text.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim()})}
           placeholder="1234 5678 9012 3456"
           keyboardType="numeric"
           maxLength={19}
@@ -86,13 +115,13 @@ const AddCard = () => {
             <Text style={styles.label}>Expiry Date (MM/YY):</Text>
             <TextInput
               style={styles.input}
-              value={expiryDate}
+              value={formData.expiry_date}
               onChangeText={(text) => {
                 text = text.replace(/\D/g, '');
                 if (text.length > 2) {
                   text = text.slice(0, 2) + '/' + text.slice(2);
                 }
-                setExpiryDate(text);
+                setFormData({...formData, ['expiry_date']:text});
               }}
               placeholder="MM/YY"
               maxLength={5}
@@ -103,8 +132,10 @@ const AddCard = () => {
             <Text style={styles.label}>CVV:</Text>
             <TextInput
               style={styles.input}
-              value={cvv}
-              onChangeText={setCvv}
+              value={formData.cvv}
+              onChangeText={(text) => {
+                setFormData({...formData, ['cvv']: text})
+              }}
               placeholder="123"
               keyboardType="numeric"
               maxLength={4}
@@ -114,8 +145,10 @@ const AddCard = () => {
         <Text style={styles.label}>Name on Card:</Text>
         <TextInput
           style={styles.input}
-          value={nameOnCard}
-          onChangeText={setNameOnCard}
+          value={formData.name}
+          onChangeText={(text) => {
+            setFormData({...formData, ['name']: text})
+          }}
           placeholder="John Doe"
         />
       </View>
