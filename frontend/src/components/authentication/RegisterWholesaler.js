@@ -108,6 +108,15 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
 
             // API call to add user details into database collections
             authService.register(res.user.uid, "wholesaler", formData)
+                .then(() => {
+                    Dialog.show({
+                        type: ALERT_TYPE.SUCCESS,
+                        title: "Registration Successful",
+                        textBody: "Thank you for registering!",
+                        autoClose: 2000,
+                        button: 'close',
+                    })
+                })
                 .catch((err) => {
                     Dialog.show({
                         type: ALERT_TYPE.DANGER,

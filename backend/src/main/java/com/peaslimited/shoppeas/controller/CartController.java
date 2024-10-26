@@ -3,7 +3,6 @@ package com.peaslimited.shoppeas.controller;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
-import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
@@ -44,8 +43,6 @@ public class CartController {
     private WholesalerProductService wholesalerProductService;
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ApiExceptionHandler apiExceptionHandler;
 
     //get cart (DTO object)
     @GetMapping("/view")
