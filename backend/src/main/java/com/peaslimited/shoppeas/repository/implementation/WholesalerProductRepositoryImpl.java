@@ -202,4 +202,24 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         docRef.update("active", false);
     }
 
+    @Override
+    public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("pid", pid)
+                .whereEqualTo("uen", uen).get();
+
+        QuerySnapshot querySnapshot = query.get();
+        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+        DocumentSnapshot document = null;
+
+        WholesalerProducts product = null;
+        // Check if any documents match
+        if (!documents.isEmpty()) {
+            // Get the first matching document and return its ID
+            document = documents.getFirst();
+            product = document.toObject(WholesalerProducts.class);
+        }
+
+        return product;
+    }
+
 }

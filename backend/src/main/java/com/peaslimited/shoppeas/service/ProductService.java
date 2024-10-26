@@ -18,4 +18,6 @@ public interface ProductService {
     void addProduct(String PID, ProductDTO product);
 
     void updateProduct(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
+
+    Product findByProductName(String name) throws ExecutionException, InterruptedException;
 }

@@ -19,5 +19,8 @@ public interface ProductRepository {
 
     void addByPID(String pid, ProductDTO product);
 
-    void updateByPID(String pid, Map<String, Object> data) throws ExecutionException, InterruptedException;
+    void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
+
+    Product findByProductName(String name) throws ExecutionException, InterruptedException;
+
 }
