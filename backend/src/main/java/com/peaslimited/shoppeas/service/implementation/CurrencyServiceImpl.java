@@ -15,9 +15,6 @@ import java.net.*;
 @Service
 public class CurrencyServiceImpl implements CurrencyService {
 
-    @Value("${currency.api-key.path}")
-    private String apiKeyPath;
-
     @PostConstruct
     public String getApiKeyPath() throws IOException {
         // Load resource from classpath
