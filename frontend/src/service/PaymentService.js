@@ -1,5 +1,5 @@
-import {REACT_APP_BACKEND_PAYMENT} from "@env";
 import apiClient from '../api/apiClient'
+import { REACT_APP_BACKEND_PAYMENT } from "@env";
 
 const paymentService = {
     addCard : async (uid, requestBody) => {

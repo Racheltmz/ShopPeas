@@ -192,7 +192,7 @@ public class CartController {
         float checkoutPrice = 0;
         //ACTION: GET TRANSACTION DATA
         //convert order data to array
-        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
         if(cartList.isEmpty())
             return returnMapFail;
 

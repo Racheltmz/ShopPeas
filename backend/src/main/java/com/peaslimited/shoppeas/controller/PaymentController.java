@@ -28,10 +28,8 @@ public class PaymentController {
     public Map<String, Object> getPayment() throws ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
-        System.out.println("hi");
         // ACTION: GET PAYMENTS
         ConsumerAccountDTO conAcc = consumerAccService.getConsumerAccount(uid);
-        System.out.println(conAcc);
 
         Map<String,Object> paymentMethodsMap = conAcc.getPaymentMtds();
         // for returning
@@ -51,7 +49,6 @@ public class PaymentController {
         payments.put("card_numbers", cardNumList);
 
         return payments;
-
     }
 
     //add payment

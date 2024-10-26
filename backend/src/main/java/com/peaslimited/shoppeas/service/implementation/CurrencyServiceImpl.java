@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.service.implementation;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Value;
 import com.peaslimited.shoppeas.service.CurrencyService;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;

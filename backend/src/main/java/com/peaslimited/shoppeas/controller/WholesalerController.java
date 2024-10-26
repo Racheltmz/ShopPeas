@@ -3,7 +3,6 @@ package com.peaslimited.shoppeas.controller;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.WholesalerMapper;
-import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
