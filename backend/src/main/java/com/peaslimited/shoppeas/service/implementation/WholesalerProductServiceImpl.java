@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.service.implementation;
 import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
@@ -62,6 +63,12 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     @Override
     public String getWholesalerProductName(String swp_id) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.getWholesalerProductName(swp_id);
+    }
+
+    @Override
+    public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException
+    {
+        return wholesalerProductRepository.getWProductByPIDandUEN(pid,uen);
     }
 
 

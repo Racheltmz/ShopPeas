@@ -284,7 +284,6 @@ public class CartController {
         //ACTION: DELETE ITEM IN PRODUCTS LIST FROM TRANSACTIONS FIREBASE COLLECTION
         String oid_toDelete = data.get("oid").toString();
 
-
     }
 
     //delete whole cart from firebase (i.e., empty cart)
