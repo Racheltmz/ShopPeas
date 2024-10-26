@@ -46,10 +46,17 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    public void updateCart(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException
+    {
+        cartRepo.updateCart(cid, data);
+    }
+
+    @Override
     public void deleteWholeCart(String cid) throws ExecutionException, InterruptedException
     {
         cartRepo.deleteWholeCart(cid);
     }
+
 
     public void deleteItemByOID(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException
     {

@@ -6,36 +6,46 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
+  SafeAreaView
 } from "react-native";
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useNavigation } from "@react-navigation/native";
-import { Divider } from 'react-native-paper';
 import { useUserStore } from "../../lib/userStore";
+import { Divider } from 'react-native-paper';
+import Loader from '../../components/utils/Loader';
+import MapView, { Marker } from 'react-native-maps';
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
 import productService from "../../service/ProductService";
+import locationService from "../../service/LocationService";
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
   const { userUid } = useUserStore();
+  const [loading, setLoading] = useState(true);
   const [wholesalerInfo, setWholesalerInfo] = useState([]);
   const [sortBy, setSortBy] = useState("price");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [showModal, setShowModal] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [location, setLocation] = useState([1.290270, 103.851959]); // by default, set to Singapore's coordinates
   const { addItem } = useCart();
   const navigation = useNavigation();
 
-  useEffect(() => {
-    productService.getDetailsByPID(userUid, product.pid)
+  const fetchProductData = (userUid, pid) => {
+    productService.getDetailsByPID(userUid, pid)
       .then((res) => {
-        let data = []
+        let data = [];
         for (let i = 0; i < res.length; i++) {
           let record = {
             'name': res[i].name,
             'package_size': res[i].package_size,
             'location': res[i].location,
-            'timeAway': 39, // TODO
+            'postal_code': res[i].postal_code,
+            'duration': res[i].duration,
+            'distance': res[i].distance,
             'stocks': res[i].stock,
             'price': res[i].price,
             'ratings': res[i].ratings.toFixed(1),
@@ -44,11 +54,33 @@ const ProductDetails = ({ route }) => {
           data.push(record);
         }
         setWholesalerInfo(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: "Error",
+          textBody: err.message,
+          button: 'close',
+        })
+      });
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProductData(userUid, product.pid);
+  }, [product.pid, userUid]);
+
+  const getLatLong = async (postalCode) => {
+    await locationService.getCoordinates(postalCode)
+      .then((res) => {
+        setLocation([parseFloat(res.results[0]['LATITUDE']), parseFloat(res.results[0]['LONGITUDE'])]);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [product.pid, userUid]);
+  }
 
   const handleWholesalerPress = () => {
     setShowModal(false);
@@ -57,11 +89,33 @@ const ProductDetails = ({ route }) => {
     });
   };
 
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      // Toggle between ascending, descending, and reset sorter
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortBy(null); // Reset sort field
+        setSortDirection("asc"); // Reset direction
+      } else {
+        setSortDirection("asc");
+      }
+    } else {
+      // Change to a new field with ascending order
+      setSortBy(field);
+      setSortDirection("asc");
+    }
+  };
+
   const sortedWholesalers = [...wholesalerInfo].sort((a, b) => {
-    if (sortBy === "price") return a.price - b.price;
-    if (sortBy === "duration") return a.timeAway - b.timeAway;
-    if (sortBy === "stocks") return b.stocks - a.stocks;
-    return 0;
+    if (!sortBy) return 0; // No sorting implemented when sortBy is reset
+  
+    let result = 0;
+    if (sortBy === "price") result = a.price - b.price;
+    if (sortBy === "duration") result = a.duration - b.duration;
+    if (sortBy === "stocks") result = a.stocks - b.stocks;
+  
+    return sortDirection === "asc" ? result : -result;
   });
 
   const renderWholesalerItem = ({ item }) => (
@@ -69,6 +123,7 @@ const ProductDetails = ({ route }) => {
       style={styles.wholesalerItem}
       onPress={() => {
         setSelectedWholesaler(item);
+        setLocation(getLatLong(item.postal_code));
         setShowModal(true);
       }}
     >
@@ -82,7 +137,7 @@ const ProductDetails = ({ route }) => {
               </View>
             </View>
             <Text style={styles.wholesalerLocation}>
-              {item.location}, {item.timeAway} Minutes away
+              {item.location}{"\n"}{item.duration} minutes away from your house{"\n"}{item.distance} km drive
             </Text>
           </View>
 
@@ -104,7 +159,7 @@ const ProductDetails = ({ route }) => {
     const wholesaler = {
       wholesaler: selectedWholesaler.name,
       location: selectedWholesaler.location,
-      distance: selectedWholesaler.timeAway,
+      distance: selectedWholesaler.duration,
     };
     const item = { name: product.name, price: selectedWholesaler.price };
     addItem(wholesaler, item, quantity);
@@ -115,38 +170,33 @@ const ProductDetails = ({ route }) => {
   return (
     <View style={{ flex: 1 }}>
       <ProductDetailsHeader name={product.name} desc={`${product.package_size}`} navigation={navigation} />
+      {loading && <Loader loading={loading}></Loader>}
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
-          <TouchableOpacity onPress={() => setSortBy("price")}>
+          <TouchableOpacity onPress={() => handleSort("price")}>
             <Text
-              style={
-                sortBy === "price" ? styles.activeSortButton : styles.sortButton
-              }
+              style={sortBy === "price" ? styles.activeSortButton : styles.sortButton}
             >
-              Price ▼
+              Price {sortBy === "price" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSortBy("duration")}>
+          <TouchableOpacity onPress={() => handleSort("duration")}>
             <Text
               style={
-                sortBy === "duration"
-                  ? styles.activeSortButton
-                  : styles.sortButton
+                sortBy === "duration" ? styles.activeSortButton : styles.sortButton
               }
             >
-              Duration ▼
+              Duration {sortBy === "duration" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSortBy("stocks")}>
+          <TouchableOpacity onPress={() => handleSort("stocks")}>
             <Text
               style={
-                sortBy === "stocks"
-                  ? styles.activeSortButton
-                  : styles.sortButton
+                sortBy === "stocks" ? styles.activeSortButton : styles.sortButton
               }
             >
-              Stocks ▼
+              Stocks {sortBy === "stocks" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -176,10 +226,16 @@ const ProductDetails = ({ route }) => {
                 </Text>
               </TouchableOpacity>
               <Text style={styles.wholesalerLocation}>
-                {selectedWholesaler?.location}, {selectedWholesaler?.timeAway}{" "}
-                Minutes away
+                {selectedWholesaler?.location}{"\n"}{selectedWholesaler?.duration} minutes away from your house, {selectedWholesaler?.distance} km drive
               </Text>
               <Text style={styles.wholesalerStocks}>Stocks: {selectedWholesaler?.stocks}</Text>
+              <SafeAreaView style={styles.wholesalerMapContainer}>
+                <MapView style={styles.map}>
+                  <Marker coordinate={{ latitude: location[0], longitude: location[1] }} >
+                    <Ionicons name="location" size={24} color="red" />
+                  </Marker>
+                </MapView>
+              </SafeAreaView>
               <View style={styles.quantityContainer}>
                 <Text style={styles.wholesalerQty}>Quantity</Text>
                 <View style={styles.row}>
@@ -212,7 +268,8 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flex: 1,
     backgroundColor: "#ffffff",
-    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     padding: 10,
   },
   row: {
@@ -322,7 +379,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 20,
   },
   quantityButton: {
     fontSize: 24,
@@ -343,6 +399,17 @@ const styles = StyleSheet.create({
     color: "#0C5E52",
     fontSize: 20,
     fontWeight: "bold",
+  },
+  wholesalerMapContainer: {
+    height: 300,
+    marginVertical: 10,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+    borderWidth: 2,
+    borderColor: '#D1D1D1',
+    borderRadius: 10,
   },
 });
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Fuse from 'fuse.js';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import Products from '../../components/customers/Products';
 import { useUserStore } from '../../lib/userStore';
 import { Searchbar } from 'react-native-paper';
@@ -11,10 +12,9 @@ import productService from '../../service/ProductService';
 const Explore = () => {
   const [searchText, setSearchText] = useState("");
   const navigation = useNavigation();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [error, setError] = useState("");
   const { userUid } = useUserStore();
 
   const handleProductPress = (item) => {
@@ -22,15 +22,21 @@ const Explore = () => {
   }
 
   const loadProducts = async (userUid) => {
-    try {
-      const productsList = await productService.fetchProductData(userUid);
-      setProducts(productsList);
-      setFilteredProducts(productsList);
-    } catch (err) {
-      setError('Failed to load products. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
+    await productService.fetchProductData(userUid)
+      .then((res) => {
+        setProducts(res);
+        setFilteredProducts(res);
+        setLoading(false);
+      })
+      .catch((err) => {
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: err.status.code,
+          textBody: "Failed to load products, please try again later.",
+          button: 'close',
+        })
+        setLoading(false);
+      })
   };
 
   useEffect(() => {
@@ -67,7 +73,6 @@ const Explore = () => {
         />
       </View>
       {loading && <Loader loading={loading}></Loader>}
-      {error ? <Text>{error}</Text> : null}
       <View style={{ flex: 2, justifyContent: 'center' }}>
         <Products onProductPress={handleProductPress} productData={filteredProducts}/>
       </View>

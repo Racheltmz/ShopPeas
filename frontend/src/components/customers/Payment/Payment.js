@@ -10,7 +10,6 @@ const Payment = () => {
   const navigation = useNavigation();
   const { currentUser, paymentDetails } = useUserStore();
   const { cart, getTotal } = useCart();
-  console.log(paymentDetails);
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
@@ -54,7 +53,6 @@ const Payment = () => {
             <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.wholesaler)}>
               <Text style={styles.wholesalerName}>{wholesaler.wholesaler} <Ionicons name="chevron-forward" size={14} color="#0C5E52" /></Text>
             </TouchableOpacity>
-            <Text style={styles.wholesalerLocation}>{wholesaler.location}, {wholesaler.distance} Minutes away</Text>
             {wholesaler.items.map((item, itemIndex) => (
               <View key={itemIndex} style={styles.itemContainer}>
                 <Image source={require('../../../../assets/imgs/DummyImage.jpg')} style={styles.itemImage} />
@@ -165,11 +163,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0C5E52',
     marginBottom: 5,
-  },
-  wholesalerLocation: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
   },
   itemContainer: {
     flexDirection: 'row',

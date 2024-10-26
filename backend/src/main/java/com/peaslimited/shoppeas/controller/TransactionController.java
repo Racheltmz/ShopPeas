@@ -197,6 +197,7 @@ public class TransactionController {
         String cid = cartNow.getCid();
         cartService.deleteWholeCart(cid);
 
+
         //only if the wholesaler's selected currency is MYR, will the currency api be invoked
         // shifted above
         //double price = Double.parseDouble(data.get("price").toString());
@@ -259,19 +260,17 @@ public class TransactionController {
 
     public String getTransactionFromUIDandWName(String uid, String wholesalerName) throws ExecutionException, InterruptedException {
         DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
+        if(doc == null) return "null";
         String uen = doc.get("uen").toString();
 
         DocumentSnapshot transactionDoc = transactionService.getDocByUENAndWName(uen, uid);
+        if(transactionDoc == null) return "null";
         String tid = transactionDoc.getId();
         return tid;
 
     }
 
 
-
-    //TODO: @saffron WHOLESALER METHODS
-    
-    //get all transactions
 
     
 }

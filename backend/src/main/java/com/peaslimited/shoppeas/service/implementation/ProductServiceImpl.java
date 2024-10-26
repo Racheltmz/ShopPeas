@@ -22,8 +22,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     // get Product details
-    public ProductDTO getProductById(String PID) throws ExecutionException, InterruptedException {
-        return productRepository.findByPID(PID);
+    public ProductDTO getProductById(String pid) throws ExecutionException, InterruptedException {
+        return productRepository.findByPID(pid);
     }
 
     @Override
@@ -39,6 +39,12 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void updateProduct(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         productRepository.updateByPID(PID,data);
+    }
+
+    @Override
+    public Product findByProductName(String name) throws ExecutionException, InterruptedException
+    {
+        return productRepository.findByProductName(name);
     }
 
 
