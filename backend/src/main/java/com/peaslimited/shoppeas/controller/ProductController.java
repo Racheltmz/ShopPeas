@@ -111,28 +111,4 @@ public class ProductController {
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {
         wholesalerProductService.deleteWholesalerProduct(swpid); // Call service to delete the product by PID
     }
-
-    /**
-     * Calculate driving distance between user and wholesaler
-     * @return driving distance in minutes
-     */
-    @GetMapping("/distance/{uen}")
-    @PreAuthorize("hasRole('CONSUMER')")
-    @ResponseStatus(code = HttpStatus.OK)
-    // example of how to call in postman: http://localhost:8080/products/distance/199203796C?userPostalCode=733684, where userpostalcode is their current location
-    public String getDistanceToWholesaler(@PathVariable String uen, @RequestParam String userPostalCode) throws ExecutionException, InterruptedException, IOException {
-        // Get wholesaler address by UEN
-        WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(uen);
-
-        // Get postal code from the wholesaler address
-        String wholesalerPostalCode = wholesalerAddress.getPostal_code();
-
-        // Get coordinates for user and wholesaler
-        String userCoordinates = oneMapService.getCoordinates(userPostalCode);
-        String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerPostalCode);
-
-        // Calculate driving time
-        return oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
-    }
-
 }

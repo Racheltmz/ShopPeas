@@ -9,7 +9,6 @@ const Payment = () => {
   const navigation = useNavigation();
   const { currentUser, paymentDetails } = useUserStore();
   const { cart, getTotal } = useCart();
-  console.log(paymentDetails);
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');

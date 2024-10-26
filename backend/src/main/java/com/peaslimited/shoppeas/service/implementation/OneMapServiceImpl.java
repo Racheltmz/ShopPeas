@@ -1,7 +1,7 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.beans.factory.annotation.Value;
+import com.peaslimited.shoppeas.dto.LocationDTO;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -68,7 +68,7 @@ public class OneMapServiceImpl implements OneMapService {
     }
 
     @Override
-    public String calculateDrivingTime(String startCoordinates, String endCoordinates) throws IOException {
+    public LocationDTO calculateDrivingTime(String startCoordinates, String endCoordinates) throws IOException {
         // Split start and end coordinates (assuming they are formatted as "latitude,longitude")
         String url = getString(startCoordinates, endCoordinates);
 
@@ -116,7 +116,7 @@ public class OneMapServiceImpl implements OneMapService {
         }
     }
 
-    private String extractDrivingTime(String response) throws IOException {
+    private LocationDTO extractDrivingTime(String response) throws IOException {
         // Parse the JSON response
         JsonNode rootNode = objectMapper.readTree(response);
 
@@ -131,13 +131,13 @@ public class OneMapServiceImpl implements OneMapService {
             int totalTimeInMinutes = totalTimeInSeconds / 60;
 
             // Extract the total distance in Meters
-            float totalDistanceInMeters = routeSummary.path("total_distance").asInt();
+            double totalDistanceInMeters = routeSummary.path("total_distance").asInt();
 
             // Convert from M to Km
-            float totalDistanceInKm = totalDistanceInMeters/1000;
+            double totalDistanceInKm = totalDistanceInMeters/1000;
 
             // Return the driving time in minutes
-            return "Time: " + totalTimeInMinutes + " Minutes, Distance: " + totalDistanceInKm + "Km";
+            return new LocationDTO(totalTimeInMinutes, totalDistanceInKm);
         } else {
             return null;  // No route found
         }

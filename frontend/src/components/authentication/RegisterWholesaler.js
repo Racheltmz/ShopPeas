@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Text, StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
+import { FirebaseAuth } from '../../lib/firebase';
 import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from '@expo/vector-icons';
 import authService from '../../service/AuthService';
@@ -35,7 +35,6 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     });
 
     const auth = FirebaseAuth;
-    const db = FirebaseDb;
 
     const handleInputChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
@@ -103,6 +102,7 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         }
 
         setIsLoading(true);
+
         try {
             const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
@@ -116,8 +116,6 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
                         button: 'close',
                     })
                 })
-
-            // TODO: fix this navigation it jumps to auth page after reg
         } catch (err) {
             showAlert("Error", "Registration failed: " + err.message, () => setAlertVisible(false));
         } finally {

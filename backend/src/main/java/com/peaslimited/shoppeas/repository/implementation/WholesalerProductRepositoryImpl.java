@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Repository
 public class WholesalerProductRepositoryImpl implements WholesalerProductRepository {
@@ -85,27 +87,47 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         List<WholesalerAddress> wholesalerAddresses = wholesalerAddressRepository.findAllWholesalerAddress(wholesalerProducts);
 
         // Combine product and wholesaler data into DTOs
-        List<WholesalerProductDetailsDTO> wholesalerList = new ArrayList<>();
+        List<CompletableFuture<WholesalerProductDetailsDTO>> futures = new ArrayList<>();
 
         for (int i = 0; i < wholesalerProducts.size(); i++) {
-            // Get coordinates for user and wholesaler
-            String userCoordinates = oneMapService.getCoordinates(userPostalCode);
-            String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerAddresses.get(i).getPostal_code());
+//            // Get coordinates for user and wholesaler
+//            String userCoordinates = oneMapService.getCoordinates(userPostalCode);
+//            String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerAddresses.get(i).getPostal_code());
+//
+//            // Calculate driving time
+//            String duration = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
 
-            // Calculate driving time
-            String duration = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
+            WholesalerProducts product = wholesalerProducts.get(i);
+            WholesalerDTO wholesaler = wholesalers.get(i);
+            WholesalerAddress address = wholesalerAddresses.get(i);
 
-            wholesalerList.add(new WholesalerProductDetailsDTO(
-                    wholesalers.get(i).getName(),
-                    wholesalers.get(i).getUEN(),
-                    wholesalerAddresses.get(i).getStreet_name(),
-                    wholesalerAddresses.get(i).getPostal_code(),
-                    duration,
-                    wholesalerProducts.get(i).getStock(),
-                    wholesalerProducts.get(i).getPrice(),
-                    wholesalers.get(i).getRating()
-            ));
+            CompletableFuture<WholesalerProductDetailsDTO> future = CompletableFuture.supplyAsync(() -> {
+                try {
+                    String userCoordinates = oneMapService.getCoordinates(userPostalCode);
+                    String wholesalerCoordinates = oneMapService.getCoordinates(address.getPostal_code());
+                    LocationDTO travelStats = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
+
+                    return new WholesalerProductDetailsDTO(
+                            wholesaler.getName(),
+                            wholesaler.getUEN(),
+                            address.getStreet_name(),
+                            address.getPostal_code(),
+                            travelStats.getDuration(),
+                            travelStats.getDistance(),
+                            product.getStock(),
+                            product.getPrice(),
+                            wholesaler.getRating()
+                    );
+                } catch (Exception e) {
+                    return null;
+                }
+            });
+
+            futures.add(future);
         }
+        List<WholesalerProductDetailsDTO> wholesalerList = futures.stream()
+                .map(CompletableFuture::join)
+                .collect(Collectors.toList());
 
         return wholesalerList;
     }

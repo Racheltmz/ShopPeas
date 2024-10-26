@@ -3,7 +3,7 @@ import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
 import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
-import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
+import { FirebaseAuth } from '../../lib/firebase';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
 import Address from './Address';
@@ -30,7 +30,6 @@ const RegisterCustomer = ({ onBackPress }) => {
   });
 
   const auth = FirebaseAuth;
-  const db = FirebaseDb;
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -47,7 +46,7 @@ const RegisterCustomer = ({ onBackPress }) => {
   };
 
   const validatePhone = (phone_number) => {
-    const regex = /^\d{8}$/;
+    const regex = /^(\+65 )?\d{8}$/;
     return regex.test(phone_number);
   };
 
@@ -96,30 +95,23 @@ const RegisterCustomer = ({ onBackPress }) => {
       return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
 
-      try {
-          const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+    try {
+      const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
-          // API call to add user details into database collections
-          authService.register(res.user.uid, "consumer", formData)
-            .catch((err) => {
-              Dialog.show({
-                type: ALERT_TYPE.DANGER,
-                title: err.status.code,
-                textBody: err.message,
-                button: 'close',
-              })
-            })
-
-      // TODO: Navigate to login page
+      // API call to add user details into database collections
+      authService.register(res.user.uid, "consumer", formData)
+        .catch((err) => {
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: err.status.code,
+            textBody: err.message,
+            button: 'close',
+          })
+        })
     } catch (err) {
-      Dialog.show({
-        type: ALERT_TYPE.DANGER,
-        title: err.status.code,
-        textBody: err.message,
-        button: 'close',
-      })
+      showAlert("Error", "Registration failed: " + err.message, () => setAlertVisible(false));
     } finally {
       setIsLoading(false);
     }

@@ -22,10 +22,11 @@ public class WholesalerMapper {
                                                                      String uen,
                                                                      String location,
                                                                      String postal_code,
-                                                                     String duration,
+                                                                     int duration,
+                                                                     double distance,
                                                                      int stock,
                                                                      double price,
                                                                      double ratings) {
-        return new WholesalerProductDetailsDTO(wholesaler, uen, location, postal_code, duration, stock, price, ratings);
+        return new WholesalerProductDetailsDTO(wholesaler, uen, location, postal_code, duration, distance, stock, price, ratings);
     }
 }

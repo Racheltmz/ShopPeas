@@ -26,6 +26,7 @@ const ProductDetails = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const [wholesalerInfo, setWholesalerInfo] = useState([]);
   const [sortBy, setSortBy] = useState("price");
+  const [sortDirection, setSortDirection] = useState("asc");
   const [showModal, setShowModal] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -36,14 +37,15 @@ const ProductDetails = ({ route }) => {
   const fetchProductData = (userUid, pid) => {
     productService.getDetailsByPID(userUid, pid)
       .then((res) => {
-        let data = []
+        let data = [];
         for (let i = 0; i < res.length; i++) {
           let record = {
             'name': res[i].name,
             'package_size': res[i].package_size,
             'location': res[i].location,
             'postal_code': res[i].postal_code,
-            'timeAway': res[i].duration,
+            'duration': res[i].duration,
+            'distance': res[i].distance,
             'stocks': res[i].stock,
             'price': res[i].price,
             'ratings': res[i].ratings.toFixed(1),
@@ -58,7 +60,7 @@ const ProductDetails = ({ route }) => {
         setLoading(false);
         Dialog.show({
           type: ALERT_TYPE.DANGER,
-          title: err.status.code,
+          title: "Error",
           textBody: err.message,
           button: 'close',
         })
@@ -87,11 +89,33 @@ const ProductDetails = ({ route }) => {
     });
   };
 
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      // Toggle between ascending, descending, and reset sorter
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else if (sortDirection === "desc") {
+        setSortBy(null); // Reset sort field
+        setSortDirection("asc"); // Reset direction
+      } else {
+        setSortDirection("asc");
+      }
+    } else {
+      // Change to a new field with ascending order
+      setSortBy(field);
+      setSortDirection("asc");
+    }
+  };
+
   const sortedWholesalers = [...wholesalerInfo].sort((a, b) => {
-    if (sortBy === "price") return a.price - b.price;
-    if (sortBy === "duration") return a.timeAway - b.timeAway;
-    if (sortBy === "stocks") return b.stocks - a.stocks;
-    return 0;
+    if (!sortBy) return 0; // No sorting implemented when sortBy is reset
+  
+    let result = 0;
+    if (sortBy === "price") result = a.price - b.price;
+    if (sortBy === "duration") result = a.duration - b.duration;
+    if (sortBy === "stocks") result = a.stocks - b.stocks;
+  
+    return sortDirection === "asc" ? result : -result;
   });
 
   const renderWholesalerItem = ({ item }) => (
@@ -113,7 +137,7 @@ const ProductDetails = ({ route }) => {
               </View>
             </View>
             <Text style={styles.wholesalerLocation}>
-              {item.location}, {item.timeAway}
+              {item.location}{"\n"}{item.duration} minutes away from your house{"\n"}{item.distance} km drive
             </Text>
           </View>
 
@@ -135,7 +159,7 @@ const ProductDetails = ({ route }) => {
     const wholesaler = {
       wholesaler: selectedWholesaler.name,
       location: selectedWholesaler.location,
-      distance: selectedWholesaler.timeAway,
+      distance: selectedWholesaler.duration,
     };
     const item = { name: product.name, price: selectedWholesaler.price };
     addItem(wholesaler, item, quantity);
@@ -150,39 +174,33 @@ const ProductDetails = ({ route }) => {
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
-          <TouchableOpacity onPress={() => setSortBy("price")}>
+          <TouchableOpacity onPress={() => handleSort("price")}>
             <Text
-              style={
-                sortBy === "price" ? styles.activeSortButton : styles.sortButton
-              }
+              style={sortBy === "price" ? styles.activeSortButton : styles.sortButton}
             >
-              Price ▼
+              Price {sortBy === "price" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSortBy("duration")}>
+          <TouchableOpacity onPress={() => handleSort("duration")}>
             <Text
               style={
-                sortBy === "duration"
-                  ? styles.activeSortButton
-                  : styles.sortButton
+                sortBy === "duration" ? styles.activeSortButton : styles.sortButton
               }
             >
-              Duration ▼
+              Duration {sortBy === "duration" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setSortBy("stocks")}>
+          <TouchableOpacity onPress={() => handleSort("stocks")}>
             <Text
               style={
-                sortBy === "stocks"
-                  ? styles.activeSortButton
-                  : styles.sortButton
+                sortBy === "stocks" ? styles.activeSortButton : styles.sortButton
               }
             >
-              Stocks ▼
+              Stocks {sortBy === "stocks" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
         </View>
-              
+
         <FlatList
           data={sortedWholesalers}
           renderItem={renderWholesalerItem}
@@ -208,12 +226,12 @@ const ProductDetails = ({ route }) => {
                 </Text>
               </TouchableOpacity>
               <Text style={styles.wholesalerLocation}>
-                {selectedWholesaler?.location}, {selectedWholesaler?.timeAway}
+                {selectedWholesaler?.location}{"\n"}{selectedWholesaler?.duration} minutes away from your house, {selectedWholesaler?.distance} km drive
               </Text>
               <Text style={styles.wholesalerStocks}>Stocks: {selectedWholesaler?.stocks}</Text>
               <SafeAreaView style={styles.wholesalerMapContainer}>
                 <MapView style={styles.map}>
-                  <Marker coordinate={{latitude: location[0], longitude: location[1]}} >
+                  <Marker coordinate={{ latitude: location[0], longitude: location[1] }} >
                     <Ionicons name="location" size={24} color="red" />
                   </Marker>
                 </MapView>
@@ -250,7 +268,8 @@ const styles = StyleSheet.create({
   bodyContainer: {
     flex: 1,
     backgroundColor: "#ffffff",
-    borderRadius: 24,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
     padding: 10,
   },
   row: {
