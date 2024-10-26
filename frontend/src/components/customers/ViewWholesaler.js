@@ -9,21 +9,18 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { useUserStore } from "../../lib/userStore";
 import ProductItem from "./ProductItem";
-import Alert from '../utils/Alert';
 import wholesalerService from "../../service/WholesalerService";
 
 const ViewWholesaler = ({ route }) => {
   const navigation = useNavigation();
   const { userUid } = useUserStore();
   const { wholesalerUEN } = route.params;
-  const [alertVisible, setAlertVisible] = useState(false);
   const [isGridView, setIsGridView] = useState(true);
-  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => {} });
   const [wholesalerInfo, setWholesalerInfo] = useState({
     name: '',
-    location: '',
     address: '',
     averageRating: 0,
     ratingCounts: [],
@@ -41,7 +38,6 @@ const ViewWholesaler = ({ route }) => {
         }
         const data = {
           name: res.wholesaler.name,
-          location: "Bishan, 39 Minutes away",
           address: `${res.wholesalerAddress.street_name}, ${res.wholesalerAddress.unit_no} ${res.wholesalerAddress.building_name}\n${res.wholesalerAddress.city}, ${res.wholesalerAddress.postal_code}`,
           averageRating: res.wholesaler.rating.toFixed(1),
           ratingCounts: Array.from(res.wholesaler.num_ratings),
@@ -50,17 +46,12 @@ const ViewWholesaler = ({ route }) => {
         setWholesalerInfo(data);
       })
       .catch((err) => {
-        setAlertVisible(true);
-        <Alert
-            visible={alertVisible}
-            title={err.response.status}
-            message={err.message}
-            onConfirm={() => {
-              setAlertVisible(false);
-              customAlert.onConfirm();
-            }}
-            onCancel={() => setAlertVisible(false)}
-        />
+        Dialog.show({
+          type: ALERT_TYPE.DANGER,
+          title: err.status.code,
+          textBody: err.message,
+          button: 'close',
+        })
       });
   }, [userUid, wholesalerUEN]);
 
@@ -80,7 +71,6 @@ const ViewWholesaler = ({ route }) => {
         <View style={styles.headerContent}>
           <View style={styles.headerInfo}>
             <Text style={styles.wholesalerName}>{wholesalerInfo.name}</Text>
-            <Text style={styles.location}>📍{wholesalerInfo.location}</Text>
             <Text style={styles.addressHeader}>Address</Text>
             <Text style={styles.address}>{wholesalerInfo.address}</Text>
           </View>
@@ -177,10 +167,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#0C5E52",
     marginTop: "3%",
-  },
-  location: {
-    fontSize: 14,
-    color: "#0C5E52",
   },
   addressHeader: {
     fontSize: 16,

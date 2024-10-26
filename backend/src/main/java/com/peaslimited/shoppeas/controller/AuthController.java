@@ -1,7 +1,9 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
+import com.peaslimited.shoppeas.factory.RegistrationFactory;
 import com.peaslimited.shoppeas.service.AuthService;
+import com.peaslimited.shoppeas.strategy.RegistrationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -17,25 +19,26 @@ import java.util.Map;
 public class AuthController {
 
     @Autowired
-    private AuthService authService;
+    private RegistrationFactory registrationFactory;
 
     @PostMapping("/consumer")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void registerConsumer(@RequestBody Map<String, Object> consumer) throws IOException, FirebaseAuthException {
-        // Get UID
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String uid = (String) authentication.getPrincipal();
-
-        authService.registerConsumer(uid, consumer);
+        String uid = getUid();
+        RegistrationStrategy strategy = registrationFactory.getRegistrationStrategy("consumer");
+        strategy.register(uid, consumer);
     }
 
     @PostMapping("/wholesaler")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void registerWholesaler(@RequestBody Map<String, Object> wholesaler) throws IOException, FirebaseAuthException {
-        // Get UID
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String uid = (String) authentication.getPrincipal();
+        String uid = getUid();
+        RegistrationStrategy strategy = registrationFactory.getRegistrationStrategy("wholesaler");
+        strategy.register(uid, wholesaler);
+    }
 
-        authService.registerWholesaler(uid, wholesaler);
+    private String getUid() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (String) authentication.getPrincipal();
     }
 }

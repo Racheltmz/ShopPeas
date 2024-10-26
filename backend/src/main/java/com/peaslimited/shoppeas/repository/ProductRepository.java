@@ -11,15 +11,16 @@ import java.util.concurrent.ExecutionException;
 
 public interface ProductRepository {
 
-    ProductDTO findByPID(String PID) throws ExecutionException, InterruptedException;
+    ProductDTO findByPID(String pid) throws ExecutionException, InterruptedException;
 
     List<Product> findAll() throws ExecutionException, InterruptedException;
 
     List<ProductDetailedDTO> findProductDetails(List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException;
 
-    void addByPID(String PID, ProductDTO product);
+    void addByPID(String pid, ProductDTO product);
 
     void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
     Product findByProductName(String name) throws ExecutionException, InterruptedException;
+
 }

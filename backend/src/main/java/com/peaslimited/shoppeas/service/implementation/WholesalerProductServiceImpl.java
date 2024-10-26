@@ -4,12 +4,14 @@ import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
+import com.peaslimited.shoppeas.repository.ConsumerAddressRepository;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -23,9 +25,13 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     @Autowired
     WholesalerProductRepository wholesalerProductRepository;
 
+    @Autowired
+    ConsumerAddressRepository connsumerAddressRepository;
+
     @Override
-    public List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException {
-        return wholesalerProductRepository.findByPid(pid);
+    public List<WholesalerProductDetailsDTO> findByPid(String pid, String uid) throws ExecutionException, InterruptedException, IOException {
+        String userPostalCode =connsumerAddressRepository.findByUID(uid).getPostal_code();
+        return wholesalerProductRepository.findByPid(pid, userPostalCode);
     }
 
     @Override
@@ -50,8 +56,7 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
-    public WholesalerProductDTO getBySwp_id(String swp_id) throws ExecutionException, InterruptedException
-    {
+    public WholesalerProductDTO getBySwp_id(String swp_id) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.findBySwp_id(swp_id);
     }
 
