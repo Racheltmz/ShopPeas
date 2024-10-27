@@ -126,6 +126,36 @@ public class CartController {
         return cid;
     }
 
+    @GetMapping("/getswpid")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public Map<String, Object> getSWP_IDbyProductName(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+        Map<String, Object> returnMap = new HashMap<>();
+        //ACTION: parse input data
+        String name = data.get("product_name").toString();
+        String uen = data.get("uen").toString();
+
+        //ACTION: get PID
+        Product product = productService.findByProductName(name);
+        if(product == null)
+        {
+            returnMap.put("swp_id", "null");
+            return returnMap;
+        }
+        String pid = product.getPid();
+        WholesalerProducts wholesalerProducts = wholesalerProductService.getWProductByPIDandUEN(pid, uen);
+        if(wholesalerProducts == null)
+        {
+            returnMap.put("swp_id", "null");
+            return returnMap;
+        }
+        String swpid = wholesalerProducts.getSwpid();
+        returnMap.put("swp_id", swpid);
+        return returnMap;
+    }
+
 
     //add order
     @PostMapping("/add")
@@ -169,6 +199,7 @@ public class CartController {
         //ACTION: ADDS ORDER TO CART
         if(cartService.getCartByUID(uid) == null)
         {
+
             createCart(data, uid, tid, price);
         }
         else

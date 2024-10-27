@@ -141,6 +141,7 @@ public class TransactionController {
                 String uid = document.get("uid").toString();
                 double total_price = (double) document.get("total_price");
                 double price = (double) total_price;
+                dataMap.put("tid", document.getId());
                 dataMap.put("uid", uid);
                 dataMap.put("total_price", price);
                 dataMap.put("items", transactionService.getProductListfromTransaction(document, false));
@@ -173,7 +174,7 @@ public class TransactionController {
 
         //ACTION: GET TRANSACTION DATA
         //convert order data to array
-        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
         //for each transaction
         for(int i = 0; i< cartList.size(); i++)
         {
