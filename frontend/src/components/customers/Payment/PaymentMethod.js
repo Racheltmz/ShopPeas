@@ -51,6 +51,7 @@ const PaymentMethod = () => {
     </TouchableOpacity>
   );
 
+
   useEffect(() => {
     if (userUid) {
       loadPaymentMethods(userUid);
@@ -83,15 +84,12 @@ const PaymentMethod = () => {
               </Text>
             )}
           />
-            )}
-          />
         )}
         <Text style={styles.sectionTitle}>Add a new credit/debit card</Text>
         <TouchableOpacity style={styles.addCardButton} onPress={handleAddCard}>
           <Ionicons name="add-circle-outline" size={24} color="#0C5E52" />
           <Text style={styles.addCardText}>Add Card</Text>
         </TouchableOpacity>
-      </View>
       </View>
       <TouchableOpacity style={styles.addButton} onPress={handleAddCard}>
         <Text style={styles.addButtonText}>Add</Text>

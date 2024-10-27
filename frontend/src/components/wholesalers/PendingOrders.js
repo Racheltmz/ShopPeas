@@ -3,16 +3,18 @@ import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native
 import Order from './Order';
 
 const PendingOrders = ({ orders, onAccept, onComplete }) => {
-  const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
+  const [selectedStatus, setSelectedStatus] = useState('PENDING-ACCEPTANCE');
 
   const { filteredOrders, orderCounts } = useMemo(() => {
     const pendingOrders = orders.filter(order => 
-      order.status === 'to_be_accepted' || order.status === 'to_be_completed'
+      order.status === 'PENDING-ACCEPTANCE' || order.status === 'PENDING-COMPLETION'
     );
+    
     const filtered = pendingOrders.filter(order => order.status === selectedStatus);
+    
     const counts = {
-      to_be_accepted: pendingOrders.filter(order => order.status === 'to_be_accepted').length,
-      to_be_completed: pendingOrders.filter(order => order.status === 'to_be_completed').length,
+      'PENDING-ACCEPTANCE': pendingOrders.filter(order => order.status === 'PENDING-ACCEPTANCE').length,
+      'PENDING-COMPLETION': pendingOrders.filter(order => order.status === 'PENDING-COMPLETION').length,
     };
 
     return { filteredOrders: filtered, orderCounts: counts };
@@ -22,28 +24,45 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
     <View style={styles.container}>
       <View style={styles.statusTabs}>
         <TouchableOpacity 
-          style={[styles.statusTab, selectedStatus === 'to_be_accepted' && styles.activeTab]}
-          onPress={() => setSelectedStatus('to_be_accepted')}
+          style={[
+            styles.statusTab, 
+            selectedStatus === 'PENDING-ACCEPTANCE' && styles.activeTab
+          ]}
+          onPress={() => setSelectedStatus('PENDING-ACCEPTANCE')}
         >
           <Text style={styles.statusTabText}>To be accepted</Text>
           <View style={styles.statusCount}>
-            <Text style={styles.statusCountText}>{orderCounts.to_be_accepted}</Text>
+            <Text style={styles.statusCountText}>
+              {orderCounts['PENDING-ACCEPTANCE']}
+            </Text>
           </View>
         </TouchableOpacity>
+        
         <TouchableOpacity 
-          style={[styles.statusTab, selectedStatus === 'to_be_completed' && styles.activeTab]}
-          onPress={() => setSelectedStatus('to_be_completed')}
+          style={[
+            styles.statusTab, 
+            selectedStatus === 'PENDING-COMPLETION' && styles.activeTab
+          ]}
+          onPress={() => setSelectedStatus('PENDING-COMPLETION')}
         >
           <Text style={styles.statusTabText}>To be completed</Text>
           <View style={styles.statusCount}>
-            <Text style={styles.statusCountText}>{orderCounts.to_be_completed}</Text>
+            <Text style={styles.statusCountText}>
+              {orderCounts['PENDING-COMPLETION']}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
       
       <FlatList
         data={filteredOrders}
-        renderItem={({ item }) => <Order order={item} onAccept={onAccept} onComplete={onComplete}/>}
+        renderItem={({ item }) => (
+          <Order 
+            order={item} 
+            onAccept={onAccept} 
+            onComplete={onComplete}
+          />
+        )}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.orderList}
         style={styles.flatList}
