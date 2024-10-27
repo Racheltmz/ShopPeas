@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text, Image, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Text, View } from 'react-native';
 import { FirebaseAuth } from '../../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useUserStore } from '../../lib/userStore';
@@ -50,7 +50,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
             </TouchableOpacity>
 
             <View style={styles.headerContainer}>
-                <Text style={styles.header}>Welcome Back.</Text>
+                <Text style={styles.header}>Welcome Back!</Text>
                 <Text style={styles.subHeader}>Log in to your account</Text>
             </View>
             <View style={styles.inputContainer}>
@@ -75,11 +75,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                     onChangeText={setPassword} 
                 />
             </View>
-         
-            <TouchableOpacity onPress={{/* TODO: rmb to do forget password popup/component */}}>
-                <Text style={styles.forgotPassword}>Forgot Password?</Text>
-            </TouchableOpacity>
-            
+        
             <TouchableOpacity 
                 style={styles.loginButton} 
                 onPress={handleLogin}
@@ -90,6 +86,8 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                 </Text>
                 <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
             </TouchableOpacity>
+            
+            <Text style={styles.forgotPassword}>Forgot Password?</Text>
             
             <View style={styles.signupContainer}>
                 <Text style={styles.signupText}>No Account? </Text>

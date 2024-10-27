@@ -1,11 +1,38 @@
-import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
-import { useCart } from '../../lib/userCart';
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from '@expo/vector-icons'; 
+import { useCart } from '../../lib/userCart';
+import { useUserStore } from "../../lib/userStore";
 import CartItem from '../../components/customers/CartItem';
+import cartService from '../../service/CartService';
 
 const Cart = ({ navigation }) => {
+  const { userUid } = useUserStore();
   const { cart, clearCart, getTotal } = useCart();
+
+  const fetchData = (userUid) => {
+    cartService.getCart(userUid)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        if (err.status.code === 404) {
+          // TODO: Display empty page instead
+          Alert.alert("no records");
+        } else {
+          Dialog.show({
+            type: ALERT_TYPE.DANGER,
+            title: err.status.code,
+            textBody: err.message,
+            button: 'close',
+          })
+        }
+      })
+  }
+  useEffect(() => {
+    fetchData(userUid);
+  }, [userUid]);
 
   const handleClearCart = () => {
     clearCart();
@@ -36,9 +63,6 @@ const Cart = ({ navigation }) => {
             <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.wholesaler)}>
               <Text style={styles.wholesalerName}>{wholesaler.wholesaler} <Ionicons name="chevron-forward" size={14} color="#0C5E52" /></Text>
             </TouchableOpacity>
-            <Text style={styles.wholesalerLocation}>
-              {wholesaler.location}, {wholesaler.distance} Minutes away
-            </Text>
             {wholesaler.items.map((item, itemIndex) => (
               <CartItem key={itemIndex} item={item} wholesalerName = {wholesaler.wholesaler}/>
             ))}
@@ -88,10 +112,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#0C5E52',
-  },
-  wholesalerLocation: {
-    color: 'gray',
-    marginBottom: 10,
   },
   footer: {
     flexDirection: 'row',

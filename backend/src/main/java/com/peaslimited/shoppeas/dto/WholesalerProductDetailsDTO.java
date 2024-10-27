@@ -11,6 +11,9 @@ public class WholesalerProductDetailsDTO {
     private String name;
     private String uen;
     private String location;
+    private String postal_code;
+    private int duration;
+    private double distance;
     private int stock;
     private double price;
     private double ratings;

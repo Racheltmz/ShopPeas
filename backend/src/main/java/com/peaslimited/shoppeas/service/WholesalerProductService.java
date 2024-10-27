@@ -6,12 +6,13 @@ import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
 
 import java.util.Map;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface WholesalerProductService {
     // to find a particular product but different wholesalers
-    List<WholesalerProductDetailsDTO> findByPid(String pid) throws ExecutionException, InterruptedException;
+    List<WholesalerProductDetailsDTO> findByPid(String pid, String uid) throws ExecutionException, InterruptedException, IOException;
 
     List<ProductDetailedDTO> getByWholesalerUID(String uid) throws ExecutionException, InterruptedException;
 

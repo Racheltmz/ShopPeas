@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Text, StyleSheet, View, TextInput, TouchableOpacity, Image} from 'react-native';
+import { Text, StyleSheet, View, TouchableOpacity, Image} from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { FirebaseAuth, FirebaseDb } from '../../lib/firebase';
-import { setDoc, doc } from 'firebase/firestore';
+import { FirebaseAuth } from '../../lib/firebase';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from '@expo/vector-icons';
 import authService from '../../service/AuthService';
 import WholesalerDetails from './WholesalerDetails';
@@ -35,7 +35,6 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     });
 
     const auth = FirebaseAuth;
-    const db = FirebaseDb;
 
     const handleInputChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
@@ -103,18 +102,21 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
         }
 
         setIsLoading(true);
+
         try {
             const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
 
             // API call to add user details into database collections
             authService.register(res.user.uid, "wholesaler", formData)
-            .catch((err) => {
-                console.log(err); // TODO: replace with show error alert
-            })
-
-            // TODO: fix this navigation it jumps to auth page after reg
+                .catch((err) => {
+                    Dialog.show({
+                        type: ALERT_TYPE.DANGER,
+                        title: err.status.code,
+                        textBody: err.message,
+                        button: 'close',
+                    })
+                })
         } catch (err) {
-        console.error(err)
             showAlert("Error", "Registration failed: " + err.message, () => setAlertVisible(false));
         } finally {
             setIsLoading(false);

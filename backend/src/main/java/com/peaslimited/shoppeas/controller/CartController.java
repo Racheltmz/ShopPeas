@@ -3,6 +3,7 @@ package com.peaslimited.shoppeas.controller;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
+import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
@@ -14,10 +15,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -131,7 +131,7 @@ public class CartController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void addToCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
+    public void addToCart(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
@@ -181,8 +181,7 @@ public class CartController {
     }
 
     //create cart and add single order to cart
-    public void createCart(@RequestBody Map<String, Object> data, String uid, String oid, double price) throws IOException, URISyntaxException
-    {
+    public void createCart(@RequestBody Map<String, Object> data, String uid, String oid, double price) {
         ArrayList<String> orderList = new ArrayList<String>();
         orderList.add(oid);
         //ACTION: ADDS CART RECORD
@@ -192,15 +191,13 @@ public class CartController {
         cartService.createCart(cart);
     }
 
-
-
-
     //update cart
-    //new order is added to existing cart (i.e., cart already has other items)
+    //new order is added to an existing cart (i.e., cart already has other items)
     //or quantity is updated
     @PatchMapping("/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
+
     public Map<String,Object> updateCart(@RequestBody Map<String, Object> data) throws IOException, URISyntaxException, ExecutionException, InterruptedException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
