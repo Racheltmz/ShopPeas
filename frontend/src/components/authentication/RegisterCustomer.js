@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
-import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import AwesomeAlert from 'react-native-awesome-alerts';
 import { FirebaseAuth } from '../../lib/firebase';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
@@ -30,6 +30,7 @@ const RegisterCustomer = ({ onBackPress }) => {
   });
 
   const auth = FirebaseAuth;
+
 
   const handleInputChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
@@ -102,14 +103,23 @@ const RegisterCustomer = ({ onBackPress }) => {
 
       // API call to add user details into database collections
       authService.register(res.user.uid, "consumer", formData)
+        .then(() => {
+          Dialog.show({
+            type: ALERT_TYPE.SUCCESS,
+            title: "Registration Successful",
+            textBody: "Thank you for registering!",
+            autoClose: 2000,
+            button: 'close',
+          });
+        })
         .catch((err) => {
           Dialog.show({
             type: ALERT_TYPE.DANGER,
             title: err.status.code,
             textBody: err.message,
             button: 'close',
-          })
-        })
+          });
+        });
     } catch (err) {
       showAlert("Error", "Registration failed: " + err.message, () => setAlertVisible(false));
     } finally {
