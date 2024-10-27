@@ -13,7 +13,6 @@ import { useCart } from "../../lib/userCart";
 import { useUserStore } from "../../lib/userStore";
 import CartItem from "../../components/customers/CartItem";
 import cartService from "../../service/CartService";
-import Loader from "../../components/utils/Loader";
 
 const Cart = ({ navigation }) => {
   const { userUid } = useUserStore();

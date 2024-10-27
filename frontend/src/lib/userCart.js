@@ -49,10 +49,7 @@ export const useCart = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      // Get current state using get()
       const currentState = get();
-
-      // Update cart state locally first
       const updatedCart = currentState.cart
         .map((wholesaler) => {
           if (wholesaler.wholesaler === wholesalerName) {
@@ -95,8 +92,6 @@ export const useCart = create((set, get) => ({
 
     try {
       const currentState = get();
-
-      // Update cart state locally first
       const updatedCart = currentState.cart
         .map((wholesaler) => {
           if (wholesaler.wholesaler === wholesalerName) {
@@ -129,39 +124,12 @@ export const useCart = create((set, get) => ({
     }
   },
 
-  addItem: async (wholesaler, item, quantity, uid) => {
+  addItem: async (data, uid) => {
     set({ isLoading: true, error: null });
 
     try { 
-      const currentState = get();
-
-      // Update cart state locally first
-      let updatedCart = [...currentState.cart];
-      const wholesalerIndex = updatedCart.findIndex(
-        (w) => w.wholesaler === wholesaler.wholesaler
-      );
-
-      if (wholesalerIndex !== -1) {
-        const itemIndex = updatedCart[wholesalerIndex].items.findIndex(
-          (i) => i.name === item.name
-        );
-        if (itemIndex !== -1) {
-          updatedCart[wholesalerIndex].items[itemIndex].quantity += quantity;
-        } else {
-          updatedCart[wholesalerIndex].items.push({ ...item, quantity });
-        }
-      } else {
-        updatedCart.push({
-          ...wholesaler,
-          items: [{ ...item, quantity }],
-        });
-      }
-
-      // Format cart data for backend
-      const backendData = currentState.formatCartForBackend(updatedCart);
-
       // Send update to backend
-      await cartService.updateCart(backendData, uid);
+      await cartService.addToCart(data, uid);
 
       // Update local state if backend update successful
       set({
@@ -217,7 +185,7 @@ export const useCart = create((set, get) => ({
     const currentState = get();
     try {
       const backendData = currentState.formatCartForBackend(...currentState.cart);
-
+      
     } catch(error) {
       console.log("Checkout failed: ", error)
       set({

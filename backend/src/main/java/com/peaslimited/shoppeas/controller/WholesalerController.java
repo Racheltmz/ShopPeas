@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.controller;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.WholesalerMapper;
@@ -108,5 +109,21 @@ public class WholesalerController {
         String tid = data.get("tid").toString();
         Integer new_rating = Integer.valueOf(data.get("rating").toString());
         wholesalerService.addRating(uen, tid, new_rating);
+    }
+
+    @GetMapping("/getUen")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public String getUEN(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        // Get UID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+
+        assert uid != null;
+        String wholesalerName = data.get("name").toString();
+        DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
+        if(doc == null) return "null";
+        String uen = doc.get("uen").toString();
+        return uen;
     }
 }

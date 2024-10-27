@@ -156,15 +156,14 @@ const ProductDetails = ({ route }) => {
   );
 
   const handleAddCartItem = () => {
-    const wholesaler = {
-      wholesaler: selectedWholesaler.name,
-      location: selectedWholesaler.location,
-      distance: selectedWholesaler.duration,
+    const productSubmitData = {
+      "wholesalerName": selectedWholesaler.name,
+      "uen": selectedWholesaler.uen,
+      "productName": product.name,
+      "quantity": quantity,
     };
-    const item = { name: product.name, price: selectedWholesaler.price };
-    let success = addItem(wholesaler, item, quantity, userUid);
+    let success = addItem(productSubmitData, userUid);
     setQuantity(1);
-    setShowModal(false);
   };
 
   return (
