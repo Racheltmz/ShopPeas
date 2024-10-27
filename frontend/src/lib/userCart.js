@@ -71,12 +71,10 @@ export const useCart = create((set, get) => ({
           return wholesaler;
         })
         .filter((wholesaler) => wholesaler.items.length > 0);
-
-      // Format cart data for backend using the method from the store
+      
       const backendData = currentState.formatCartForBackend(updatedCart);
 
-      // Send update to backend
-      await cartService.updateCart(backendData);
+      await cartService.updateCart(backendData, uid);
 
       // Update local state if backend update successful
       set({
@@ -112,7 +110,7 @@ export const useCart = create((set, get) => ({
         .filter((wholesaler) => wholesaler.items.length > 0);
 
       // Format cart data for backend
-      const backendData = currentState.formatCartForBackend(updatedCart);
+      const backendData = currentState.formatCartForBackend(updatedCart, uid);
 
       // Send update to backend
       await cartService.updateCart(backendData);
@@ -163,13 +161,15 @@ export const useCart = create((set, get) => ({
       const backendData = currentState.formatCartForBackend(updatedCart);
 
       // Send update to backend
-      await cartService.updateCart(backendData);
+      await cartService.updateCart(backendData, uid);
 
       // Update local state if backend update successful
       set({
         cart: updatedCart,
         isLoading: false,
       });
+      // show that success
+      return true;
     } catch (error) {
       console.error("Error adding item:", error);
       set({
@@ -212,4 +212,18 @@ export const useCart = create((set, get) => ({
       );
     }, 0);
   },
+
+  checkout: async (uid) => {
+    const currentState = get();
+    try {
+      const backendData = currentState.formatCartForBackend(...currentState.cart);
+
+    } catch(error) {
+      console.log("Checkout failed: ", error)
+      set({
+        isLoading: false,
+        error: error.message || "Failed to checkout",
+      });
+    }
+  }
 }));

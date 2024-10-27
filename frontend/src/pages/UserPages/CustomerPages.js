@@ -14,6 +14,7 @@ import AddCard from '../../components/customers/Payment/AddCard';
 import ViewWholesaler from '../../components/customers/ViewWholesaler';
 import cartService from '../../service/CartService';
 import { useUserStore } from '../../lib/userStore';
+import { useCart } from '../../lib/userCart';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -28,19 +29,11 @@ const ExploreStack = () => (
 
 const CustomerPages = () => {
   const { userUid } = useUserStore();
-
-  // load the cartItems
-  // useEffect(() => {
-  //   const loadCart = async () => {
-  //     try {
-  //       const cartList = await cartService.getCart(userUid);
-  //       console.log(cartList);
-  //     } catch (err) {
-  //       console.log("Error loading cart: ", err)
-  //     }
-  //   }
-  //   loadCart()
-  // }, []);
+  const { fetchCart } = useCart();
+  
+  useEffect(() => {
+    fetchCart(userUid);
+  }, [userUid]);
 
 
   return (

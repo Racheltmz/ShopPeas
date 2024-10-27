@@ -162,7 +162,7 @@ const ProductDetails = ({ route }) => {
       distance: selectedWholesaler.duration,
     };
     const item = { name: product.name, price: selectedWholesaler.price };
-    addItem(wholesaler, item, quantity);
+    let success = addItem(wholesaler, item, quantity, userUid);
     setQuantity(1);
     setShowModal(false);
   };

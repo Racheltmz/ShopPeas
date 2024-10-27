@@ -12,7 +12,7 @@ const CartItem = ({ item, wholesalerName }) => {
     try {
       await updateItemQuantity(wholesalerName, item.name, item.quantity + 1, userUid);
     } catch (error) {
-      // Handle error (show toast, etc.)
+      // Handle error 
     }
   };
 
