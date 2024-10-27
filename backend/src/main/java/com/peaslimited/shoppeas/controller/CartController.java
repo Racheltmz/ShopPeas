@@ -68,12 +68,13 @@ public class CartController {
             String wholesalerName = wholesaler.getName();
             WholesalerAddressDTO wholesalerAddress = wholesalerAddressService.getWholesalerAddress(uen);
 
-            ArrayList<Object> productsList = transaction.getProducts();
+            Map<String, Object> productsMapOld = transaction.getProducts();
             ArrayList<Object> itemsList = new ArrayList<>();
 
-            for (Object o : productsList) {
+            for (int i = 0; i< productsMapOld.size(); i++) {
                 Map<String, Object> itemsMap = new HashMap<>();
-                Map<String, Object> productsMap = (Map<String, Object>) o;
+                String index = Integer.toString(i);
+                Map<String, Object> productsMap = (Map<String, Object>) productsMapOld.get(index);
 
                 Long q = (Long) productsMap.get("quantity");
                 int quantity = q.intValue();
@@ -139,12 +140,28 @@ public class CartController {
         int quantity = Integer.parseInt(data.get("quantity").toString());
         String uen = data.get("uen").toString();
 
+        if(quantity <= 0)
+        {
+            System.out.println("Error! Invalid quantity");
+            return;
+        }
+        else if(wholesalerProductService.getBySwp_id(swp_id) == null)
+        {
+            System.out.println("Error! Wholesaler product does not exist");
+            return;
+        }
+
         //ACTION: ADDS TRANSACTION RECORD
         transactionController.newTransaction(data);
 
         // check if cart record exists for uid
         // else: create cart and add to cart
         DocumentSnapshot transactionDoc = transactionsService.findDocByUIDandStatus(uid, "IN-CART");
+        if(transactionDoc == null)
+        {
+            System.out.println("Error adding to cart!");
+            return;
+        }
         String tid = transactionDoc.getId();
         double total_price = (double) transactionDoc.get("total_price");
         double price = (double) total_price;

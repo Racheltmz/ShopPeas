@@ -93,15 +93,17 @@ public class TransactionController {
         productMap.put("quantity", quantity);
         productMap.put("swp_id", swp_id);
 
-        ArrayList<Object> productsList = new ArrayList<>();
-        productsList.add(productMap);
+        Map<String, Object> productsMapNew = new HashMap<>();
+        int size = productsMapNew.size();
+        String newIndex = Integer.toString(size);
+        productsMapNew.put(newIndex, productMap);
 
         //find unit price
         double price = getProductPrice(swp_id,uen);
         if(price != 0)
         {
             TransactionsDTO transaction = new TransactionsDTO(
-                    productsList,
+                    productsMapNew,
                     "IN-CART",
                     price*quantity,
                     uen,
@@ -185,7 +187,8 @@ public class TransactionController {
             TransactionsDTO transaction = transactionService.findByTID(tid);
 
             System.out.println(transaction.getProducts());
-            ArrayList<Object> products = transaction.getProducts();
+
+            Map<String, Object> products = transaction.getProducts();
             String uen = transaction.getUen();
 
             checkoutPrice += updateOneTransactionAndStock(products, tid, uen);
@@ -215,7 +218,7 @@ public class TransactionController {
 
     }
 
-    public float updateOneTransactionAndStock(ArrayList<Object> products, String tid, String uen) throws ExecutionException, InterruptedException {
+    public float updateOneTransactionAndStock(Map<String, Object> products, String tid, String uen) throws ExecutionException, InterruptedException {
         Map<String, Object> updateT = new HashMap<>();
         float totalPrice = 0;
 
@@ -228,7 +231,8 @@ public class TransactionController {
             //ACTION: add price field to products list
             double productPrice = getProductPrice(swpid, uen)*quantity;
             productsMap.put("price", productPrice);
-            products.set(i, productsMap);
+            String index = Integer.toString(i);
+            products.put(index, productsMap);
 
             //ACTION: get cart total price
             totalPrice += productPrice;
