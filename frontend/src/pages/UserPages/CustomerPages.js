@@ -30,18 +30,17 @@ const CustomerPages = () => {
   const { userUid } = useUserStore();
 
   // load the cartItems
-  useEffect(() => {
-    const loadCart = async () => {
-      try {
-        console.log(userUid);
-        const cartList = await cartService.getCart(userUid);
-        console.log(cartList);
-      } catch (err) {
-        console.log("Error loading cart: ", err)
-      }
-    }
-    loadCart()
-  }, []);
+  // useEffect(() => {
+  //   const loadCart = async () => {
+  //     try {
+  //       const cartList = await cartService.getCart(userUid);
+  //       console.log(cartList);
+  //     } catch (err) {
+  //       console.log("Error loading cart: ", err)
+  //     }
+  //   }
+  //   loadCart()
+  // }, []);
 
 
   return (

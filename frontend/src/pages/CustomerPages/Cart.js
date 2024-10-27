@@ -6,32 +6,34 @@ import { useCart } from '../../lib/userCart';
 import { useUserStore } from "../../lib/userStore";
 import CartItem from '../../components/customers/CartItem';
 import cartService from '../../service/CartService';
+import Loader from '../../components/utils/Loader';
 
 const Cart = ({ navigation }) => {
   const { userUid } = useUserStore();
-  const { cart, clearCart, getTotal } = useCart();
+  const { cart, clearCart, getTotal, isLoading, fetchCart } = useCart();
 
-  const fetchData = (userUid) => {
-    cartService.getCart(userUid)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        if (err.status.code === 404) {
-          // TODO: Display empty page instead
-          Alert.alert("no records");
-        } else {
-          Dialog.show({
-            type: ALERT_TYPE.DANGER,
-            title: err.status.code,
-            textBody: err.message,
-            button: 'close',
-          })
-        }
-      })
-  }
+
+  // const fetchData = (userUid) => {
+  //   cartService.getCart(userUid)
+  //     .then((res) => {
+  //       console.log(res);
+  //     })
+  //     .catch((err) => {
+  //       if (err.status.code === 404) {
+  //         // TODO: Display empty page instead
+  //         Alert.alert("no records");
+  //       } else {
+  //         Dialog.show({
+  //           type: ALERT_TYPE.DANGER,
+  //           title: err.status.code,
+  //           textBody: err.message,
+  //           button: 'close',
+  //         })
+  //       }
+  //     })
+  // }
   useEffect(() => {
-    fetchData(userUid);
+    fetchCart(userUid);
   }, [userUid]);
 
   const handleClearCart = () => {
@@ -60,6 +62,7 @@ const Cart = ({ navigation }) => {
       {isLoading ? (
        <Loader loading={isLoading}></Loader>
       ) : (
+        <>
         <ScrollView style={styles.container}>
           {cart.map((wholesaler, index) => {
             const formattedLocation = wholesaler.location
@@ -98,16 +101,17 @@ const Cart = ({ navigation }) => {
             );
           })}
         </ScrollView>
+        <View style={styles.footer}>
+          <Text style={styles.totalPrice}>Total ${totalPrice.toFixed(2)}</Text>
+          <TouchableOpacity
+            style={styles.checkoutButton}
+            onPress={handleCheckout}
+          >
+            <Text style={styles.checkoutButtonText}>Check Out</Text>
+          </TouchableOpacity>
+        </View>
+        </>
       )}
-      <View style={styles.footer}>
-        <Text style={styles.totalPrice}>Total ${totalPrice.toFixed(2)}</Text>
-        <TouchableOpacity
-          style={styles.checkoutButton}
-          onPress={handleCheckout}
-        >
-          <Text style={styles.checkoutButtonText}>Check Out</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 };
