@@ -43,6 +43,7 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             String uen = Objects.requireNonNull(document.get("uen")).toString();
             double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
             Map<String,Object> products = (Map<String,Object>) document.get("products");
+            Map<String,Object> products = (Map<String,Object>) document.get("products");
             return new TransactionsDTO(products, status, total_price, uen, uid);
         }
         return null;
@@ -284,7 +285,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             throws ExecutionException, InterruptedException {
         Map<String,Object> productList = (Map<String,Object>) document.get("products");
         ArrayList<Object> returnProdList = new ArrayList<>();
-
 
         for (int i = 0; i< productList.size(); i++) {
             String index = Integer.toString(i);

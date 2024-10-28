@@ -114,6 +114,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             // Get the first matching document and return its ID
             document = documents.getFirst();
             product = document.toObject(Product.class);
+            product.setPid(document.getId());
         }
 
         return product;
