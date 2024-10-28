@@ -15,17 +15,20 @@ const cartService = {
     addToCart : async (data, uid) => {
         let swpId;
 
+        const getSwpIdBodyData = JSON.stringify({
+            uen: data["uen"],
+            product_name: data["productName"]
+        })
+
         // get wholesaler product ID
         try {
-            const response = await apiClient.post(`${REACT_APP_BACKEND_CART}/getswpid`, {
-                uen: data["uen"],
-                product_name: data["productName"]
-            }, {
+            const response = await apiClient.get(`${REACT_APP_BACKEND_CART}/getswpid`, {
                 headers: {
                     Authorization: `Bearer ${uid}`,
                     Accept: "application/json",
                     'Content-Type': 'application/json'
-                }
+                },
+                data: getSwpIdBodyData,
             });
             swpId = response.data;
         } catch (error) {
