@@ -217,6 +217,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
             // Get the first matching document and return its ID
             document = documents.getFirst();
             product = document.toObject(WholesalerProducts.class);
+            product.setSwpid(document.getId());
         }
 
         return product;

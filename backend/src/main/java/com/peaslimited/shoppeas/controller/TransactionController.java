@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
@@ -71,25 +72,26 @@ public class TransactionController {
         }
     }
 
-    public void createTransactionRecord(String swp_id, int quantity, String uid, String uen)
-            throws ExecutionException, InterruptedException {
+    public void createTransactionRecord(String swp_id, int quantity, String uid, String uen) throws ExecutionException, InterruptedException {
         Map<String, Object> productMap = new HashMap<>();
         productMap.put("quantity", quantity);
         productMap.put("swp_id", swp_id);
 
-        ArrayList<Object> productsList = new ArrayList<>();
-        productsList.add(productMap);
+        Map<String, Object> productsMapNew = new HashMap<>();
+        int size = productsMapNew.size();
+        String newIndex = Integer.toString(size);
+        productsMapNew.put(newIndex, productMap);
 
         // find unit price
         double price = getProductPrice(swp_id);
         if (price != 0) {
             TransactionsDTO transaction = new TransactionsDTO(
-                productsList,
-                "IN-CART",
-                price * quantity,
-                uen,
-                uid
-            );
+                    productsMapNew,
+                    "IN-CART",
+                    price*quantity,
+                    uen,
+                    uid);
+
             transactionService.createTransaction(transaction);
         }
 
@@ -100,31 +102,34 @@ public class TransactionController {
         return wholesalerProd.getPrice();
     }
 
-//    @GetMapping("/gettransactionsbyuen")
-//    @PreAuthorize("hasRole('WHOLESALER')")
-//    @ResponseStatus(code = HttpStatus.OK)
-//    public Map<String, Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status)
-//            throws ExecutionException, InterruptedException {
-//        List<QueryDocumentSnapshot> docList = transactionService.getDocByUENAndStatus(uen, status);
-//
-//        ArrayList<Object> transactionList = new ArrayList<>();
-//        Map<String, Object> dataMap = new HashMap<>();
-//
-//        DocumentSnapshot document = null;
-//        for (QueryDocumentSnapshot queryDocumentSnapshot : docList) {
-//            if (queryDocumentSnapshot != null) {
-//                document = queryDocumentSnapshot;
-//
-//                String uid = Objects.requireNonNull(document.get("uid")).toString();
-//                double total_price = (double) document.get("total_price");
-//                dataMap.put("uid", uid);
-//                dataMap.put("total_price", total_price);
-//                dataMap.put("items", transactionService.getProductListfromTransaction(document, false));
-//                transactionList.add(dataMap);
-//            }
-//        }
-//        return dataMap;
-//    }
+
+    @GetMapping("/gettransactionsbyuen")
+    @PreAuthorize("hasRole('WHOLESALER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public Map<String,Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot>  docList = transactionService.getDocByUENAndStatus(uen, status);
+        System.out.println(docList);
+
+        ArrayList<Object> transactionList = new ArrayList<>();
+        Map<String, Object> dataMap = new HashMap<>();
+
+        DocumentSnapshot document = null;
+        for (QueryDocumentSnapshot queryDocumentSnapshot : docList) {
+            if (queryDocumentSnapshot != null) {
+                document = queryDocumentSnapshot;
+
+                String uid = document.get("uid").toString();
+                double total_price = (double) document.get("total_price");
+                double price = (double) total_price;
+                dataMap.put("tid", document.getId());
+                dataMap.put("uid", uid);
+                dataMap.put("total_price", price);
+                dataMap.put("items", transactionService.getProductListfromTransaction(document, false));
+                transactionList.add(dataMap);
+            }
+        }
+        return dataMap;
+    }
 
     @PatchMapping("/updatetransactionstatus")
     @PreAuthorize("hasRole('WHOLESALER')")
@@ -147,19 +152,21 @@ public class TransactionController {
         ArrayList<Double> priceList = new ArrayList<>();
         double checkoutPrice = 0;
 
-        // ACTION: GET TRANSACTION DATA
-        // convert order data to array
+        //ACTION: GET TRANSACTION DATA
+        //convert order data to array
         ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
-        // for each transaction
-        for (Object cart : cartList) {
-            Map<String, Object> transactionMap = (Map<String, Object>) cart;
+        //for each transaction
+        for (Object o : cartList) {
+            Map<String, Object> transactionMap = (Map<String, Object>) o;
             String wholesalerName = transactionMap.get("wholesaler").toString();
 
             String tid = getTransactionFromUIDandWName(uid, wholesalerName);
             transactionList.add(tid);
             TransactionsDTO transaction = transactionService.findByTID(tid);
 
-            ArrayList<Object> products = transaction.getProducts();
+            System.out.println(transaction.getProducts());
+
+            Map<String, Object> products = transaction.getProducts();
             String uen = transaction.getUen();
             uenList.add(uen);
 
@@ -176,8 +183,7 @@ public class TransactionController {
         cartService.deleteWholeCart(cid);
     }
 
-    public double updateOneTransactionAndStock(ArrayList<Object> products, String tid)
-            throws ExecutionException, InterruptedException {
+    public double updateOneTransactionAndStock(Map<String, Object> products, String tid) throws ExecutionException, InterruptedException {
         Map<String, Object> updateT = new HashMap<>();
         double totalPrice = 0;
 
@@ -189,7 +195,8 @@ public class TransactionController {
             // ACTION: add price field to products list
             double productPrice = getProductPrice(swp_id) * quantity;
             productsMap.put("price", productPrice);
-            products.set(i, productsMap);
+            String index = Integer.toString(i);
+            products.put(index, productsMap);
 
             // ACTION: get cart total price
             totalPrice += productPrice;
@@ -208,18 +215,17 @@ public class TransactionController {
         return totalPrice;
     }
 
-    public void updateWProductQuant(String swpid, int quantity) throws ExecutionException, InterruptedException {
-        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swpid);
+    public void updateWProductQuant(String swp_id, int quantity) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swp_id);
         float oldQuantity = wholesalerProductDTO.getStock();
 
         Map<String, Object> wholeSalerProductMap = new HashMap<>();
         wholeSalerProductMap.put("stock", oldQuantity - quantity);
 
-        wholesalerProductService.updateWholesalerProduct(swpid, wholeSalerProductMap);
+        wholesalerProductService.updateWholesalerProduct(swp_id, wholeSalerProductMap);
     }
 
-    public String getTransactionFromUIDandWName(String uid, String wholesalerName)
-            throws ExecutionException, InterruptedException {
+    public String getTransactionFromUIDandWName(String uid, String wholesalerName) throws ExecutionException, InterruptedException {
         DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
         if (doc == null)
             return "null";
