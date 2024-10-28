@@ -1,27 +1,29 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Order = ({ order, onAccept, onComplete }) => {
-  const isToBeAccepted = order.status === 'to_be_accepted';
-  const isToBeCompleted = order.status === 'to_be_completed';
-  const isCompleted = order.status === 'completed';
+const Order = ({ orderGroup, onAccept, onComplete }) => {
+  if (!orderGroup || !orderGroup.items) return null;
+
+  const isToBeAccepted = orderGroup.status === 'PENDING-ACCEPTANCE';
+  const isToBeCompleted = orderGroup.status === 'PENDING-COMPLETION';
+  const isCompleted = orderGroup.status === 'COMPLETED';
 
   const handleAccept = () => {
-    if (isToBeAccepted) {
-      onAccept(order.id);
+    if (isToBeAccepted && onAccept) {
+      onAccept(orderGroup.orderId);
     }
   };
 
   const handleComplete = () => {
-    if (isToBeCompleted) {
-      onComplete(order.id);
+    if (isToBeCompleted && onComplete) {
+      onComplete(orderGroup.orderId);
     }
   };
 
   return (
     <View style={styles.orderItem}>
       <View style={styles.orderHeader}>
-        <Text style={styles.orderId}>OID: {order.id}</Text>
+        <Text style={styles.orderId}>Order ID: {orderGroup.orderId}</Text>
         {isToBeAccepted && (
           <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
             <Text style={styles.buttonText}>Accept</Text>
@@ -38,25 +40,21 @@ const Order = ({ order, onAccept, onComplete }) => {
           </View>
         )}
       </View>
-      <View style={styles.orderContent}>
-        <View style={styles.orderPic}>
+      
+      {orderGroup.items.map((item, index) => (
+        <View key={index} style={styles.orderContent}>
+          <View style={styles.orderDetails}>
+            <Text style={styles.productName}>{item.name || 'Product Name N/A'}</Text>
+            <Text style={styles.quantity}>Quantity: {item.quantity || 0}</Text>
+          </View>
         </View>
-        <View style={styles.orderDetails}>
-          <Text style={styles.productName}>{order.productName}</Text>
-          <Text style={styles.quantity}>Qty: {order.quantity}</Text>
-        </View>
-      </View>
+      ))}
+
       <View style={styles.orderFooter}>
-        <View style={styles.paidStatus}>
-          <Text style={styles.paidText}>{order.paid}</Text>
-          <Text style={styles.dateText}>{order.date}</Text>
-        </View>
-        <View style={styles.buyerInfo}>
-          <Text style={styles.buyerName}>Buyer: {order.buyerName}</Text>
-          <Text style={styles.pickupMethod}>{order.pickupMethod}</Text>
-        </View>
         <View style={styles.totalAndDetails}>
-          <Text style={styles.totalAmount}>Total: S${order.total.toFixed(2)}</Text>
+          <Text style={styles.totalAmount}>
+            Order Total: S${orderGroup.totalAmount}
+          </Text>
           <TouchableOpacity>
             <Text style={styles.viewDetails}>View more details &gt;</Text>
           </TouchableOpacity>
@@ -68,10 +66,9 @@ const Order = ({ order, onAccept, onComplete }) => {
 
 const styles = StyleSheet.create({
   orderItem: {
-    backgroundColor: 'w',
     backgroundColor: '#EBF3D1',
     borderRadius: 10,
-    padding: '5%',
+    padding: 16,
     marginBottom: 10,
     width: '95%',
     alignSelf: 'center',
@@ -87,66 +84,55 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     backgroundColor: '#FFA07A',
-    padding: 5,
+    padding: 8,
     borderRadius: 5,
+    minWidth: 80,
+    alignItems: 'center',
   },
   completeButton: {
     backgroundColor: '#FFA07A',
-    padding: 5,
+    padding: 8,
     borderRadius: 5,
+    minWidth: 80,
+    alignItems: 'center',
   },
   completedButton: {
     backgroundColor: '#15b33f',
-    padding: 5,
+    padding: 8,
     borderRadius: 5,
+    minWidth: 80,
+    alignItems: 'center',
   },
   buttonText: {
     color: 'white',
+    fontWeight: '500',
   },
   orderContent: {
-    flexDirection: 'row',
     marginBottom: 10,
-  },
-  productImage: {
-    width: 50,
-    height: 50,
-    marginRight: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DDD',
+    paddingBottom: 10,
   },
   orderDetails: {
     justifyContent: 'center',
   },
   productName: {
     fontWeight: 'bold',
+    fontSize: 16,
+    marginBottom: 4,
   },
   quantity: {
     color: '#666',
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  itemPrice: {
+    color: '#666',
+    fontSize: 14,
   },
   orderFooter: {
-    borderTopWidth: 1,
-    borderTopColor: '#DDD',
     paddingTop: 10,
-  },
-  paidStatus: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-  },
-  paidText: {
-    backgroundColor: '#90EE90',
-    padding: 2,
-    borderRadius: 3,
-  },
-  dateText: {
-    color: '#666',
-  },
-  buyerInfo: {
-    marginBottom: 5,
-  },
-  buyerName: {
-    fontWeight: 'bold',
-  },
-  pickupMethod: {
-    color: '#666',
+    marginTop: 10,
   },
   totalAndDetails: {
     flexDirection: 'row',
@@ -155,6 +141,7 @@ const styles = StyleSheet.create({
   },
   totalAmount: {
     fontWeight: 'bold',
+    fontSize: 16,
   },
   viewDetails: {
     color: '#0C5E52',

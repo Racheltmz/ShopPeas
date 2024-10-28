@@ -13,9 +13,8 @@ const Transactions = ({ defaultValue }) => {
   const { currentUser, userUid } = useUserStore();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
 
-  const loadTransactions = async (status) => {
+  const loadTransactions = async () => {
     if (!currentUser?.uen || !userUid) {
       console.log('Missing uen or userUid:', { uen: currentUser?.uen, userUid });
       return;
@@ -23,14 +22,41 @@ const Transactions = ({ defaultValue }) => {
   
     setLoading(true);
     try {
-      const res = await transactionService.getTransactions(
-        userUid, 
-        currentUser.uen, 
-        status === 'pending' ? 'PENDING' : 'COMPLETED'
-      );
-      console.log('API Response:', res);
+      // load both statuses at once as they are on the same 'pending orders' page
+      const [pendingAcceptanceRes, pendingCompletionRes, completedRes] = await Promise.all([
+        transactionService.getTransactions(userUid, currentUser.uen, 'PENDING-ACCEPTANCE'),
+        transactionService.getTransactions(userUid, currentUser.uen, 'PENDING-COMPLETION'),
+        transactionService.getTransactions(userUid, currentUser.uen, 'COMPLETED')
+      ]);
       
-      setTransactions(res);
+      console.log('API Responses:', {
+        pendingAcceptance: pendingAcceptanceRes,
+        pendingCompletion: pendingCompletionRes,
+        pendingCompletion: completedRes
+      });
+      
+      const getOrders = (res, status) => {
+        if (!res) return [];
+        const orders = Array.isArray(res) ? res : [res];
+        return orders.map(order => ({
+          id: order.tid || order.id,
+          status: status,
+          items: Array.isArray(order.items) ? order.items : [],
+          total_price: order.total_price,
+          uid: userUid
+        })).filter(order => order.items.length > 0);
+      };
+
+      const pendingAcceptanceOrders = getOrders(pendingAcceptanceRes, 'PENDING-ACCEPTANCE');
+      const pendingCompletionOrders = getOrders(pendingCompletionRes, 'PENDING-COMPLETION');
+      const completedOrders = getOrders(completedRes, 'COMPLETED');
+      
+      // combine orders from both statuses
+      const allOrders = [...pendingAcceptanceOrders, ...pendingCompletionOrders, ...completedOrders];
+      
+      console.log('Processed orders:', allOrders);
+      setTransactions(allOrders);
+      
     } catch (err) {
       console.error('Load transactions error:', err);
       setTransactions([]); 
@@ -46,38 +72,15 @@ const Transactions = ({ defaultValue }) => {
   };
 
   useEffect(() => {
-    console.log('Loading transactions for status:', selectedOption);
-    loadTransactions(selectedOption);
-  }, [currentUser?.uen, userUid, selectedOption]);
-  
-  // console.log('Filtered transactions:', filteredTransactions);
-
-
-  const filteredTransactions = transactions.filter(transaction => {
-    const isPending = selectedOption === 'pending' && 
-      ['PENDING-ACCEPTANCE', 'PENDING-COMPLETION'].includes(transaction.status);
-    
-    const isCompleted = selectedOption === 'completed' && 
-      transaction.status === 'COMPLETED';
-
-    return isPending || isCompleted;
-  });
-
-  const options = [
-    { label: 'Pending Orders', value: 'pending' },
-    { label: 'Completed Orders', value: 'completed' },
-  ];
+    loadTransactions();
+  }, [currentUser?.uen, userUid]);
 
   const handleAccept = async (orderId) => {
     try {
-      setTransactions(prevTransactions =>
-        prevTransactions.map(transaction =>
-          transaction.id === orderId
-            ? { ...transaction, status: 'PENDING-COMPLETION' }
-            : transaction
-        )
-      );
+      await transactionService.updateStatus(userUid, orderId, 'PENDING-COMPLETION');
+      await loadTransactions();
     } catch (error) {
+      console.error('Accept order error:', error);
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: 'Error',
@@ -86,16 +89,13 @@ const Transactions = ({ defaultValue }) => {
       });
     }
   };
+
   const handleComplete = async (orderId) => {
     try {
-      setTransactions(prevTransactions =>
-        prevTransactions.map(transaction =>
-          transaction.id === orderId
-            ? { ...transaction, status: 'COMPLETED' }
-            : transaction
-        )
-      );
+      await transactionService.updateStatus(userUid, orderId, 'COMPLETED');
+      await loadTransactions();
     } catch (error) {
+      console.error('Complete order error:', error);
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: 'Error',
@@ -104,6 +104,12 @@ const Transactions = ({ defaultValue }) => {
       });
     }
   };
+
+  const options = [
+    { label: 'Pending Orders', value: 'pending' },
+    { label: 'Completed Orders', value: 'completed' },
+  ];
+
 
   return (
     <SafeAreaView style = {styles.container}>

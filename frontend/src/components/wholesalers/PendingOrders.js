@@ -1,24 +1,50 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Order from './Order';
 
 const PendingOrders = ({ orders, onAccept, onComplete }) => {
   const [selectedStatus, setSelectedStatus] = useState('PENDING-ACCEPTANCE');
+  console.log('Raw orders data:', orders);
 
-  const { filteredOrders, orderCounts } = useMemo(() => {
-    const pendingOrders = orders.filter(order => 
-      order.status === 'PENDING-ACCEPTANCE' || order.status === 'PENDING-COMPLETION'
+  const { groupedOrders, orderCounts } = useMemo(() => {
+    if (!orders) {
+      return {
+        groupedOrders: [],
+        orderCounts: {
+          'PENDING-ACCEPTANCE': 0,
+          'PENDING-COMPLETION': 0
+        }
+      };
+    }
+
+    // convert orders into an array
+    const ordersList = Array.isArray(orders) ? orders : [orders];
+    
+    const orderGroups = ordersList.map(order => ({
+      orderId: order.id || order.tid,
+      status: order.status,
+      items: Array.isArray(order.items) ? order.items : [],
+      totalAmount: order.total_price || order.totalAmount,
+      uid: order.uid
+    }));
+
+    // filter orders based on status
+    const filtered = orderGroups.filter(group => 
+      group.status === selectedStatus && group.items.length > 0
     );
-    
-    const filtered = pendingOrders.filter(order => order.status === selectedStatus);
-    
+
+    // counting for header
     const counts = {
-      'PENDING-ACCEPTANCE': pendingOrders.filter(order => order.status === 'PENDING-ACCEPTANCE').length,
-      'PENDING-COMPLETION': pendingOrders.filter(order => order.status === 'PENDING-COMPLETION').length,
+      'PENDING-ACCEPTANCE': orderGroups.filter(group => group.status === 'PENDING-ACCEPTANCE').length,
+      'PENDING-COMPLETION': orderGroups.filter(group => group.status === 'PENDING-COMPLETION').length,
     };
 
-    return { filteredOrders: filtered, orderCounts: counts };
-  }, [selectedStatus, orders]);
+    return { groupedOrders: filtered, orderCounts: counts };
+  }, [orders, selectedStatus]); 
+
+  const handleStatusChange = (newStatus) => {
+    setSelectedStatus(newStatus);
+  };
 
   return (
     <View style={styles.container}>
@@ -28,7 +54,7 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
             styles.statusTab, 
             selectedStatus === 'PENDING-ACCEPTANCE' && styles.activeTab
           ]}
-          onPress={() => setSelectedStatus('PENDING-ACCEPTANCE')}
+          onPress={() => handleStatusChange('PENDING-ACCEPTANCE')}
         >
           <Text style={styles.statusTabText}>To be accepted</Text>
           <View style={styles.statusCount}>
@@ -43,7 +69,7 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
             styles.statusTab, 
             selectedStatus === 'PENDING-COMPLETION' && styles.activeTab
           ]}
-          onPress={() => setSelectedStatus('PENDING-COMPLETION')}
+          onPress={() => handleStatusChange('PENDING-COMPLETION')}
         >
           <Text style={styles.statusTabText}>To be completed</Text>
           <View style={styles.statusCount}>
@@ -55,17 +81,22 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
       </View>
       
       <FlatList
-        data={filteredOrders}
+        data={groupedOrders}
         renderItem={({ item }) => (
           <Order 
-            order={item} 
-            onAccept={onAccept} 
+            orderGroup={item}
+            onAccept={onAccept}
             onComplete={onComplete}
           />
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.orderId?.toString()}
         contentContainerStyle={styles.orderList}
         style={styles.flatList}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No orders found</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -109,6 +140,16 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 20,
+  },
+  emptyText: {
+    color: '#666',
+    fontSize: 16,
   },
 });
 

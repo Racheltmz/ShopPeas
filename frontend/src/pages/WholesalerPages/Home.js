@@ -65,6 +65,8 @@ const Home = () => {
     }
   };
 
+  console.log('CurrentUser: ', currentUser.name)
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.searchBar}>
