@@ -31,7 +31,7 @@ const wholesalerService = {
         });
         return response.data;
     },
-    
+    // TODO: is this being used?
     getUenByName: async (name, uid) => {
         const requestBody = {
             "name": name,

@@ -1,22 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   StyleSheet,
   Text,
   View,
   ScrollView,
   TouchableOpacity,
-  Alert,
 } from "react-native";
-import { Dialog, ALERT_TYPE } from "react-native-alert-notification";
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
-import { useUserStore } from "../../lib/userStore";
 import CartItem from "../../components/customers/CartItem";
-import cartService from "../../service/CartService";
+import Empty from '../../components/utils/Empty';
 
 const Cart = ({ navigation }) => {
-  const { userUid } = useUserStore();
-  const { cart, clearCart, getTotal, isLoading, fetchCart } = useCart();
+  const { cart, clearCart, getTotal } = useCart();
 
   const handleClearCart = () => {
     clearCart();
@@ -42,38 +38,42 @@ const Cart = ({ navigation }) => {
         <Ionicons name="cart-outline" size={24} color="#0C5E52" />
       </View>
 
-      <ScrollView style={styles.container}>
-        {cart.map((wholesaler, index) => {
-          const formattedLocation = wholesaler.location
-            ? `${wholesaler.location.street_name}${
-                wholesaler.location.unit_no
-                  ? `, ${wholesaler.location.unit_no}`
-                  : ""
+      {cart.length === 0 ? (
+        <Empty subject="Cart Items" />
+      ) : (
+        <ScrollView style={styles.container}>
+          {cart.map((wholesaler, index) => {
+            const formattedLocation = wholesaler.location
+              ? `${wholesaler.location.street_name}${wholesaler.location.unit_no
+                ? `, ${wholesaler.location.unit_no}`
+                : ""
               }`
-            : "";
+              : "";
 
-          return (
-            <View key={index} style={styles.wholesalerSection}>
-              <TouchableOpacity
-                onPress={() => handleWholesalerPress(wholesaler.wholesaler)}
-              >
-                <Text style={styles.wholesalerName}>
-                  {wholesaler.wholesaler}{" "}
-                  <Ionicons name="chevron-forward" size={14} color="#0C5E52" />
-                </Text>
-              </TouchableOpacity>
-              <Text style={styles.wholesalerLocation}>{formattedLocation}</Text>
-              {wholesaler.items.map((item, itemIndex) => (
-                <CartItem
-                  key={itemIndex}
-                  item={item}
-                  wholesalerName={wholesaler.wholesaler}
-                />
-              ))}
-            </View>
-          );
-        })}
-      </ScrollView>
+            return (
+              <View key={index} style={styles.wholesalerSection}>
+                <TouchableOpacity
+                  onPress={() => handleWholesalerPress(wholesaler.wholesaler)}
+                >
+                  <Text style={styles.wholesalerName}>
+                    {wholesaler.wholesaler}{" "}
+                    <Ionicons name="chevron-forward" size={14} color="#0C5E52" />
+                  </Text>
+                </TouchableOpacity>
+                <Text style={styles.wholesalerLocation}>{formattedLocation}</Text>
+                {wholesaler.items.map((item, itemIndex) => (
+                  <CartItem
+                    key={itemIndex}
+                    item={item}
+                    wholesalerName={wholesaler.wholesaler}
+                  />
+                ))}
+              </View>
+            );
+          })}
+        </ScrollView>
+      )}
+
       <View style={styles.footer}>
         <Text style={styles.totalPrice}>Total ${totalPrice.toFixed(2)}</Text>
         <TouchableOpacity
@@ -83,7 +83,7 @@ const Cart = ({ navigation }) => {
           <Text style={styles.checkoutButtonText}>Check Out</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </View >
   );
 };
 

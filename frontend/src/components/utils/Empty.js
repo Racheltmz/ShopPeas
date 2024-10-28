@@ -25,8 +25,8 @@ const styles = StyleSheet.create({
         height: 150,
     },
     emptyText: {
-        marginTop: 20,
-        fontSize: 24,
+        marginTop: 30,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#333333',
     },

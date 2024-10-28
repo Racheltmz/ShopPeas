@@ -111,6 +111,7 @@ public class WholesalerController {
         wholesalerService.addRating(uen, tid, new_rating);
     }
 
+    // TODO: is this being used?
     @GetMapping("/getUen")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)

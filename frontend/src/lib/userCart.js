@@ -22,27 +22,34 @@ export const useCart = create((set, get) => ({
   fetchCart: async (userUid) => {
     set({ isLoading: true, error: null });
 
-    try {
-      const response = await cartService.getCart(userUid);
-
-      const transformedCart = response.cart.map((group) => ({
-        items: Array.isArray(group.items) ? group.items : [],
-        location: group.location || {},
-        wholesaler: group.wholesaler || "",
-      }));
-
-      set({
-        cart: transformedCart,
-        isLoading: false,
-      });
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-      set({
-        cart: [],
-        isLoading: false,
-        error: error.message || "Failed to fetch cart",
-      });
-    }
+    await cartService.getCart(userUid)
+      .then((res) => {
+        console.log(res);
+        const transformedCart = res.cart.map((group) => ({
+          items: Array.isArray(group.items) ? group.items : [],
+          location: group.location || {},
+          wholesaler: group.wholesaler || "",
+        }));
+  
+        set({
+          cart: transformedCart,
+          isLoading: false,
+        });
+      })
+      .catch((err) => {
+        if (err.status === 404) {
+          set({
+            cart: [],
+            isLoading: false,
+          });
+        } else {
+          set({
+            cart: [],
+            isLoading: false,
+            error: err.message || "Failed to fetch cart",
+          });
+        }
+      })
   },
 
   updateItemQuantity: async (wholesalerName, itemName, newQuantity, uid) => {
