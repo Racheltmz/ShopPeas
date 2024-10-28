@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
@@ -71,8 +72,7 @@ public class TransactionController {
         }
     }
 
-    public void createTransactionRecord(String swp_id, int quantity, String uid, String uen)
-            throws ExecutionException, InterruptedException {
+    public void createTransactionRecord(String swp_id, int quantity, String uid, String uen) throws ExecutionException, InterruptedException {
         Map<String, Object> productMap = new HashMap<>();
         productMap.put("quantity", quantity);
         productMap.put("swp_id", swp_id);
@@ -114,11 +114,9 @@ public class TransactionController {
         Map<String, Object> dataMap = new HashMap<>();
 
         DocumentSnapshot document = null;
-        for(int i = 0; i < docList.size(); i++)
-        {
-            if(docList.get(i) != null)
-            {
-                document = docList.get(i);
+        for (QueryDocumentSnapshot queryDocumentSnapshot : docList) {
+            if (queryDocumentSnapshot != null) {
+                document = queryDocumentSnapshot;
 
                 String uid = document.get("uid").toString();
                 double total_price = (double) document.get("total_price");
@@ -158,9 +156,8 @@ public class TransactionController {
         //convert order data to array
         ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
         //for each transaction
-        for(int i = 0; i< cartList.size(); i++)
-        {
-            Map<String, Object> transactionMap = (Map<String, Object>) cartList.get(i);
+        for (Object o : cartList) {
+            Map<String, Object> transactionMap = (Map<String, Object>) o;
             String wholesalerName = transactionMap.get("wholesaler").toString();
 
             String tid = getTransactionFromUIDandWName(uid, wholesalerName);
@@ -184,26 +181,9 @@ public class TransactionController {
         ShoppingCart cartNow = cartService.getCartByUID_NonDTO(uid);
         String cid = cartNow.getCid();
         cartService.deleteWholeCart(cid);
-
-
-        //only if the wholesaler's selected currency is MYR, will the currency api be invoked
-        // shifted above
-        //double price = Double.parseDouble(data.get("price").toString());
-        /*String preferredCurrency = data.get("currency").toString();
-        double exchangeRate = 0.0;
-        double finalPrice = 0.0;
-
-        if (preferredCurrency.equals("MYR")) {
-            // NOTE: I didn't return anything for now but feel free to change accordingly
-            exchangeRate = currencyService.exchangeRate(checkoutPrice, preferredCurrency);
-            finalPrice = checkoutPrice * exchangeRate;
-            // NOTE: temporary print statement to validate output
-            System.out.println(finalPrice);
-        }*/
-
     }
 
-    public float updateOneTransactionAndStock(Map<String, Object> products, String tid, String uen) throws ExecutionException, InterruptedException {
+    public double updateOneTransactionAndStock(Map<String, Object> products, String tid) throws ExecutionException, InterruptedException {
         Map<String, Object> updateT = new HashMap<>();
         double totalPrice = 0;
 
@@ -235,18 +215,17 @@ public class TransactionController {
         return totalPrice;
     }
 
-    public void updateWProductQuant(String swpid, int quantity) throws ExecutionException, InterruptedException {
-        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swpid);
+    public void updateWProductQuant(String swp_id, int quantity) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swp_id);
         float oldQuantity = wholesalerProductDTO.getStock();
 
         Map<String, Object> wholeSalerProductMap = new HashMap<>();
         wholeSalerProductMap.put("stock", oldQuantity - quantity);
 
-        wholesalerProductService.updateWholesalerProduct(swpid, wholeSalerProductMap);
+        wholesalerProductService.updateWholesalerProduct(swp_id, wholeSalerProductMap);
     }
 
-    public String getTransactionFromUIDandWName(String uid, String wholesalerName)
-            throws ExecutionException, InterruptedException {
+    public String getTransactionFromUIDandWName(String uid, String wholesalerName) throws ExecutionException, InterruptedException {
         DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
         if (doc == null)
             return "null";
