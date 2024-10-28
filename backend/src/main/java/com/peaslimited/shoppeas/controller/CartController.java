@@ -3,7 +3,6 @@ package com.peaslimited.shoppeas.controller;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.*;
 import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
-import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
@@ -44,8 +43,6 @@ public class CartController {
     private WholesalerProductService wholesalerProductService;
     @Autowired
     private ProductService productService;
-    @Autowired
-    private ApiExceptionHandler apiExceptionHandler;
 
     //get cart (DTO object)
     @GetMapping("/view")
@@ -240,7 +237,7 @@ public class CartController {
         float checkoutPrice = 0;
         //ACTION: GET TRANSACTION DATA
         //convert order data to array
-        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart items");
+        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
         if(cartList.isEmpty())
             return returnMapFail;
 

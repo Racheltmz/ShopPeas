@@ -6,7 +6,6 @@ import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
-import com.peaslimited.shoppeas.dto.WholesalerAddressDTO;
 import com.peaslimited.shoppeas.service.OneMapService;
 import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;

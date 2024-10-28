@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
 import com.peaslimited.shoppeas.factory.RegistrationFactory;
-import com.peaslimited.shoppeas.service.AuthService;
 import com.peaslimited.shoppeas.strategy.RegistrationStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

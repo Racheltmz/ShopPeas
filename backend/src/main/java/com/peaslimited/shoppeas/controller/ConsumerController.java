@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.controller;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import com.peaslimited.shoppeas.dto.ConsumerAccountDTO;
 import com.peaslimited.shoppeas.dto.ConsumerAddressDTO;
 import com.peaslimited.shoppeas.dto.ConsumerDTO;
 import com.peaslimited.shoppeas.dto.ConsumerProfileDTO;
