@@ -31,6 +31,14 @@ const wholesalerService = {
         });
         return response.data;
     },
+    editProfile: async (token, requestBody) => {
+        const response = await apiClient.patch(`${REACT_APP_BACKEND_WHOLESALER}/profile/update`, requestBody, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
 };
 
 export default wholesalerService;
