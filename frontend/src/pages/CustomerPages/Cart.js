@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect} from "react";
 import {
   StyleSheet,
   Text,
@@ -8,11 +8,13 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
+import { useUserStore } from "../../lib/userStore";
 import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
 
 const Cart = ({ navigation }) => {
-  const { cart, clearCart, getTotal } = useCart();
+  const { userUid } = useUserStore();
+  const { cart, clearCart, checkout, getTotal } = useCart();
 
   const handleClearCart = () => {
     clearCart();
@@ -22,8 +24,8 @@ const Cart = ({ navigation }) => {
     navigation.navigate("Payment");
   };
 
-  const handleWholesalerPress = (wholesalerName) => {
-    navigation.navigate("ViewWholesaler", { wholesalerName });
+  const handleWholesalerPress = (uen) => {
+    navigation.navigate("ViewWholesaler", { wholesalerUEN: uen });
   };
 
   const totalPrice = getTotal();
@@ -53,19 +55,19 @@ const Cart = ({ navigation }) => {
             return (
               <View key={index} style={styles.wholesalerSection}>
                 <TouchableOpacity
-                  onPress={() => handleWholesalerPress(wholesaler.wholesaler)}
+                  onPress={() => handleWholesalerPress(wholesaler.uen)}
                 >
                   <Text style={styles.wholesalerName}>
                     {wholesaler.wholesaler}{" "}
                     <Ionicons name="chevron-forward" size={14} color="#0C5E52" />
                   </Text>
                 </TouchableOpacity>
-                <Text style={styles.wholesalerLocation}>{formattedLocation}</Text>
+                <Text>{formattedLocation}</Text>
                 {wholesaler.items.map((item, itemIndex) => (
                   <CartItem
                     key={itemIndex}
                     item={item}
-                    wholesalerName={wholesaler.wholesaler}
+                    wholesalerUEN={wholesaler.uen}
                   />
                 ))}
               </View>

@@ -14,7 +14,6 @@ import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -64,17 +63,24 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     // Fetch products by their PID
     @Override
-    public List<WholesalerProductDetailsDTO> findByPid(String pid, String userPostalCode) throws ExecutionException, InterruptedException, IOException {
+    public List<WholesalerProductDetailsDTO> findByPid(String pid, String userPostalCode) throws ExecutionException, InterruptedException {
         // Query database to get all wholesaler products with the given PID
         QuerySnapshot snapshot = firestore.collection(COLLECTION)
                 .whereEqualTo("pid", pid)
                 .whereEqualTo("active", true)
                 .get().get();
 
+        // Get list of swp_id
+        List<String> swp_id_list = snapshot.getDocuments().stream()
+                .map(DocumentSnapshot::getId)
+                .toList();
+
+        // Get list of products
         List<WholesalerProducts> wholesalerProducts = snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
                 .toList();
 
+        // Get list of UEN
         List<String> uen_list = snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
                 .map(WholesalerProducts::getUen)
@@ -90,16 +96,10 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         List<CompletableFuture<WholesalerProductDetailsDTO>> futures = new ArrayList<>();
 
         for (int i = 0; i < wholesalerProducts.size(); i++) {
-//            // Get coordinates for user and wholesaler
-//            String userCoordinates = oneMapService.getCoordinates(userPostalCode);
-//            String wholesalerCoordinates = oneMapService.getCoordinates(wholesalerAddresses.get(i).getPostal_code());
-//
-//            // Calculate driving time
-//            String duration = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
-
             WholesalerProducts product = wholesalerProducts.get(i);
             WholesalerDTO wholesaler = wholesalers.get(i);
             WholesalerAddress address = wholesalerAddresses.get(i);
+            String swp_id = swp_id_list.get(i);
 
             CompletableFuture<WholesalerProductDetailsDTO> future = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -108,6 +108,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                     LocationDTO travelStats = oneMapService.calculateDrivingTime(userCoordinates, wholesalerCoordinates);
 
                     return new WholesalerProductDetailsDTO(
+                            swp_id,
                             wholesaler.getName(),
                             wholesaler.getUEN(),
                             address.getStreet_name(),
@@ -125,11 +126,10 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
             futures.add(future);
         }
-        List<WholesalerProductDetailsDTO> wholesalerList = futures.stream()
+
+        return futures.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-
-        return wholesalerList;
     }
 
     @Override
@@ -204,8 +204,10 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
     @Override
     public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("pid", pid)
-                .whereEqualTo("uen", uen).get();
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION)
+                .whereEqualTo("pid", pid)
+                .whereEqualTo("uen", uen)
+                .get();
 
         QuerySnapshot querySnapshot = query.get();
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
@@ -217,6 +219,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
             // Get the first matching document and return its ID
             document = documents.getFirst();
             product = document.toObject(WholesalerProducts.class);
+            product.setSwpid(document.getId());
         }
 
         return product;

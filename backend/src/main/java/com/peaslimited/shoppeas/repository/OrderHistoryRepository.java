@@ -12,5 +12,5 @@ public interface OrderHistoryRepository {
 
     List<OrderHistoryDTO> getOrderHistoryByUID(String uid) throws ExecutionException, InterruptedException;
 
-    void addOrderHistory(String uid, ArrayList<String> uenList, ArrayList<String> transactionList, ArrayList<Double> priceList) throws ExecutionException, InterruptedException, IOException, URISyntaxException;
+    void addOrderHistory(String uid, ArrayList<Object> cartList) throws ExecutionException, InterruptedException, IOException, URISyntaxException;
 }

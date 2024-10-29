@@ -31,18 +31,6 @@ const wholesalerService = {
         });
         return response.data;
     },
-    // TODO: is this being used?
-    getUenByName: async (name, uid) => {
-        const requestBody = {
-            "name": name,
-        }
-        const response = await apiClient.patch(`${REACT_APP_BACKEND_WHOLESALER}/getUen`, requestBody, {
-            headers: {
-                'Authorization': `Bearer ${uid}`
-            }
-        });
-        return response.data;
-    }
 };
 
 export default wholesalerService;

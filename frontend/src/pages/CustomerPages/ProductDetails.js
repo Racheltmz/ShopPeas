@@ -31,7 +31,7 @@ const ProductDetails = ({ route }) => {
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [location, setLocation] = useState([1.290270, 103.851959]); // by default, set to Singapore's coordinates
-  const { addItem } = useCart();
+  const { addItem, fetchCart } = useCart();
   const navigation = useNavigation();
 
   const fetchProductData = (userUid, pid) => {
@@ -40,8 +40,8 @@ const ProductDetails = ({ route }) => {
         let data = [];
         for (let i = 0; i < res.length; i++) {
           let record = {
+            'swp_id': res[i].swp_id,
             'name': res[i].name,
-            'package_size': res[i].package_size,
             'location': res[i].location,
             'postal_code': res[i].postal_code,
             'duration': res[i].duration,
@@ -109,12 +109,12 @@ const ProductDetails = ({ route }) => {
 
   const sortedWholesalers = [...wholesalerInfo].sort((a, b) => {
     if (!sortBy) return 0; // No sorting implemented when sortBy is reset
-  
+
     let result = 0;
     if (sortBy === "price") result = a.price - b.price;
     if (sortBy === "duration") result = a.duration - b.duration;
     if (sortBy === "stocks") result = a.stocks - b.stocks;
-  
+
     return sortDirection === "asc" ? result : -result;
   });
 
@@ -157,12 +157,15 @@ const ProductDetails = ({ route }) => {
 
   const handleAddCartItem = () => {
     const productSubmitData = {
-      "wholesalerName": selectedWholesaler.name,
-      "uen": selectedWholesaler.uen,
-      "productName": product.name,
+      "swp_id": selectedWholesaler.swp_id,
+      "price": selectedWholesaler.price,
       "quantity": quantity,
+      "total_price": (selectedWholesaler.price * quantity).toFixed(2),
+      "uen": selectedWholesaler.uen,
     };
-    let success = addItem(productSubmitData, userUid);
+    let success = addItem(userUid, productSubmitData, product.name, quantity);
+    fetchCart(userUid);
+    // TODO: ADD AN ALERT HERE to notify user that the item was added to cart
     setQuantity(1);
   };
 

@@ -4,31 +4,50 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useUserStore } from "../../lib/userStore";
 
-const CartItem = ({ item, wholesalerName }) => {
-  const { updateItemQuantity, removeItem, } = useCart();
+const CartItem = ({ item, wholesalerUEN }) => {
+  const { fetchCart, updateItemQuantity, removeItem } = useCart();
   const { userUid } = useUserStore();
 
   const handleIncrease = async () => {
     try {
-      await updateItemQuantity(wholesalerName, item.name, item.quantity + 1, userUid);
+      const quantityData = {
+        "swp_id": item.swp_id,
+        "price": item.price,
+        "quantity": item.quantity + 1,
+        "uen": wholesalerUEN,
+      };
+      await updateItemQuantity(userUid, quantityData, item.name, item.quantity + 1);
     } catch (error) {
       // Handle error 
+      console.error(error);
     }
   };
 
   const handleDecrease = async () => {
     if (item.quantity > 1) {
       try {
-        await updateItemQuantity(wholesalerName, item.name, item.quantity - 1, userUid);
+        const quantityData = {
+          "swp_id": item.swp_id,
+          "price": item.price * -1,
+          "quantity": item.quantity - 1,
+          "uen": wholesalerUEN,
+        };
+        await updateItemQuantity(userUid, quantityData, item.name, item.quantity - 1);
       } catch (error) {
         // Handle error
+        console.error(error);
       }
     }
   };
 
   const handleRemove = async () => {
     try {
-      await removeItem(wholesalerName, item.name, userUid);
+      const deleteData = {
+        "swp_id": item.swp_id,
+        "uen": wholesalerUEN,
+      };
+      await removeItem(userUid, deleteData, item.name);
+      await fetchCart(userUid);
     } catch (error) {
       // Handle error
     }
