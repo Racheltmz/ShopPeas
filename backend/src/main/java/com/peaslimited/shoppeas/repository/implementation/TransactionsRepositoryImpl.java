@@ -4,9 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.TransactionsOrderedDTO;
-import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.Transactions;
-import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,17 +54,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             return transactionsDTO;
         } else
             return null;
-    public TransactionsDTO getTransactionByUID(String uid, String status)
-            throws ExecutionException, InterruptedException {
-        DocumentSnapshot document = findDocByUIDandStatus(uid, status);
-
-        if (document != null) {
-            String uen = Objects.requireNonNull(document.get("uen")).toString();
-            double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
-            Map<String,Object> products = (Map<String,Object>) document.get("products");
-            return new TransactionsDTO(products, status, total_price, uen, uid);
-        }
-        return null;
     }
 
     @Override
@@ -130,10 +117,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             product.put("name", productName);
             product.put("quantity", quantity);
 
-            // TODO: CHECK IF NEEDED
-            if (cart) {
-                // ACTION: get wholesaler name, unit price
-            }
             returnProdList.add(product);
         }
         return returnProdList;
@@ -310,51 +293,3 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
 
 
 }
-
-
-
-
-
-
-
-//
-//    @Override
-//    public DocumentSnapshot getDocByUENAndWName(String uen, String uid)
-//            throws ExecutionException, InterruptedException {
-//        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", uen)
-//                .whereEqualTo("uid", uid).whereEqualTo("status", "IN-CART").get();
-//
-//        QuerySnapshot querySnapshot = query.get();
-//        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
-//
-//        DocumentSnapshot document = null;
-//        if (!documents.isEmpty()) {
-//            // Get the first matching document and return its ID
-//            document = documents.getFirst();
-//        }
-//        return document;
-//    }
-//
-//
-//
-//    @Override
-//    public void updateTransaction(String tid, Map<String, Object> data)
-//            throws ExecutionException, InterruptedException {
-//        // Update an existing document
-//        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
-//
-//        // Update fields
-//        for (String key : data.keySet()) {
-//            docRef.update(key, data.get(key));
-//        }
-//    }
-//
-//
-//
-
-//
-
-//
-
-//
-

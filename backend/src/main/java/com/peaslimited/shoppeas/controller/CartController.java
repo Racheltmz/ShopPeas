@@ -1,10 +1,5 @@
 package com.peaslimited.shoppeas.controller;
 
-import com.peaslimited.shoppeas.dto.*;
-import com.peaslimited.shoppeas.dto.mapper.ShoppingCartMapper;
-import com.peaslimited.shoppeas.model.Product;
-import com.peaslimited.shoppeas.model.ShoppingCart;
-import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -81,157 +72,4 @@ public class CartController {
 
         cartService.deleteCartProduct(uid, data);
     }
-//
-//    // create cart and add single order to cart
-//    public void createCart(@RequestBody Map<String, Object> data, String uid, String oid, double price) {
-//        ArrayList<String> orderList = new ArrayList<String>();
-//        orderList.add(oid);
-//        // ACTION: ADDS CART RECORD
-//        ShoppingCartDTO cart = ShoppingCartMapper.toCartDTO(orderList, uid, price);
-//
-//        // TODO: CREATE CID
-//        cartService.createCart(cart);
-//    }
-//
-//    // update cart
-//    // new order is added to an existing cart (i.e., cart already has other items)
-//    // or quantity is updated
-//    @PatchMapping("/update")
-//    @PreAuthorize("hasRole('CONSUMER')")
-//    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-//
-//    public Map<String, Object> updateCart(@RequestBody Map<String, Object> data)
-//            throws IOException, URISyntaxException, ExecutionException, InterruptedException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String uid = (String) authentication.getPrincipal();
-//        Map<String, Object> returnMap = new HashMap<>();
-//        Map<String, Object> returnMapFail = new HashMap<>();
-//        returnMapFail.put("update", null);
-//
-//        ArrayList<String> transactionList = new ArrayList<>();
-//        float checkoutPrice = 0;
-//        // ACTION: GET TRANSACTION DATA
-//        // convert order data to array
-//        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
-//        if (cartList.isEmpty())
-//            return returnMapFail;
-//
-//        // for each transaction
-//        for (int i = 0; i < cartList.size(); i++) {
-//            float transactionPrice = 0;
-//            // from data
-//            Map<String, Object> transactionMap = (Map<String, Object>) cartList.get(i);
-//            // to update
-//            Map<String, Object> newTransactionMap = new HashMap<>();
-//            ArrayList<Object> newProductsList = new ArrayList<>();
-//
-//            String wholesalerName = transactionMap.get("wholesaler").toString();
-//            ArrayList<Object> itemList = (ArrayList<Object>) transactionMap.get("items");
-//
-//            String tid = transactionController.getTransactionFromUIDandWName(uid, wholesalerName);
-//            if (tid.equals("null"))
-//                return returnMapFail;
-//            transactionList.add(tid);
-//            TransactionsDTO transaction = transactionsService.findByTID(tid);
-//
-//            String uen = transaction.getUen();
-//
-//            // checkoutPrice += transactionController.updateOneTransactionAndStock(products,
-//            // tid, uen);
-//
-//            // ACTION: updating transactions
-//            for (int j = 0; j < itemList.size(); j++) {
-//                Map<String, Object> itemMap = (Map<String, Object>) itemList.get(i);
-//                String name = itemMap.get("name").toString();
-//                int quantity = Integer.parseInt(itemMap.get("quantity").toString());
-//                float price = (float) itemMap.get("unit_price");
-//
-//                if (quantity == 0)
-//                    continue;
-//
-//                // ACTION: get PID
-//                Product product = productService.findByProductName(name);
-//                if (product == null)
-//                    return returnMapFail;
-//                String pid = product.getPid();
-//
-//                // ACTION: get SWP_ID
-//                WholesalerProducts wholesalerProducts = wholesalerProductService.getWProductByPIDandUEN(pid, uen);
-//                if (wholesalerProducts == null)
-//                    return returnMapFail;
-//                String swpid = wholesalerProducts.getSwpid();
-//
-//                // ACTION:UPDATING DATA
-//                Map<String, Object> newProductMap = new HashMap<>();
-//                newProductMap.put("price", price);
-//                newProductMap.put("quantity", quantity);
-//                newProductMap.put("swpid", swpid);
-//                newProductsList.add(newProductMap);
-//                transactionPrice += price * quantity;
-//                checkoutPrice += transactionPrice;
-//            }
-//            newTransactionMap.put("products", newProductsList);
-//            newTransactionMap.put("total_price", transactionPrice);
-//
-//            // ACTION: UPDATES TRANSACTION DOCUMENT
-//            transactionsService.updateTransaction(tid, newTransactionMap);
-//
-//        }
-//
-//        // ACTION: UPDATES CART
-//        String cid = getCID(uid);
-//        Map<String, Object> newCart = new HashMap<>();
-//        newCart.put("orders", transactionList);
-//        newCart.put("total_price", checkoutPrice);
-//        cartService.updateCart(cid, newCart);
-//
-//        returnMap.put("update", "success");
-//        return returnMap;
-//    }
-//
-//    // delete cart item
-//    @PatchMapping("/delete")
-//    @PreAuthorize("hasRole('CONSUMER')")
-//    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-//    public void deleteCartItem(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String uid = (String) authentication.getPrincipal();
-//
-//        // ACTION: DELETE ITEM/ORDER FROM CART BY SWPID
-//        cartService.deleteItemByOID(uid, data);
-//
-//        // ACTION: DELETE ITEM IN PRODUCTS LIST FROM TRANSACTIONS FIREBASE COLLECTION
-//        String oid_toDelete = data.get("oid").toString();
-//
-//    }
-//
-//    // delete whole cart from firebase (i.e., empty cart)
-//    @DeleteMapping("/deleteAll")
-//    @PreAuthorize("hasRole('CONSUMER')")
-//    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-//    public void deleteWholeCart() throws ExecutionException, InterruptedException {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        String uid = (String) authentication.getPrincipal();
-//
-//        ShoppingCart cart = cartService.getCartByUID_NonDTO(uid);
-//        String cid = cart.getCid();
-//        cartService.deleteWholeCart(cid);
-//    }
-//
-//    // TODO: NEEDED?
-//    // returns full shopping cart entity object, including cid
-//    @GetMapping("/getCartNonDTO")
-//    @PreAuthorize("hasRole('CONSUMER')")
-//    @ResponseStatus(code = HttpStatus.OK)
-//    public ShoppingCart getCartByUID_NonDTO(@RequestParam String UID_nonDTO) throws ExecutionException, InterruptedException {
-//        return cartService.getCartByUID_NonDTO(UID_nonDTO);
-//    }
-//
-//    // get cid only
-//    public String getCID(String UID) throws ExecutionException, InterruptedException {
-//        ShoppingCart cart = cartService.getCartByUID_NonDTO(UID);
-//        String cid = cart.getCid();
-//        return cid;
-//    }
-
 }

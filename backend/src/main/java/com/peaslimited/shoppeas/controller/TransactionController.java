@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.controller;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
@@ -76,59 +75,4 @@ public class TransactionController {
 
         transactionService.updateToCheckout(uid, data);
     }
-//
-//    public double updateOneTransactionAndStock(Map<String, Object> products, String tid) throws ExecutionException, InterruptedException {
-//        Map<String, Object> updateT = new HashMap<>();
-//        double totalPrice = 0;
-//
-//        // for each wholesaler product
-//        for (int i = 0; i < products.size(); i++) {
-//            Map<String, Object> productsMap = (Map<String, Object>) products.get(i);
-//            String swp_id = productsMap.get("swp_id").toString();
-//            int quantity = Integer.parseInt(productsMap.get("quantity").toString());
-//            // ACTION: add price field to products list
-//            double productPrice = getProductPrice(swp_id) * quantity;
-//            productsMap.put("price", productPrice);
-//            String index = Integer.toString(i);
-//            products.put(index, productsMap);
-//
-//            // ACTION: get cart total price
-//            totalPrice += productPrice;
-//
-//            // ACTION: update stock quantity
-//            updateWProductQuant(swp_id, quantity);
-//        }
-//
-//        // ACTION: update transaction
-//        // updateT.put("tid", tid);
-//        updateT.put("status", "PENDING-ACCEPTANCE");
-//        updateT.put("products", products);
-//        updateT.put("total_price", totalPrice);
-//        transactionService.updateTransaction(tid, updateT);
-//
-//        return totalPrice;
-//    }
-//
-//    public void updateWProductQuant(String swp_id, int quantity) throws ExecutionException, InterruptedException {
-//        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swp_id);
-//        float oldQuantity = wholesalerProductDTO.getStock();
-//
-//        Map<String, Object> wholeSalerProductMap = new HashMap<>();
-//        wholeSalerProductMap.put("stock", oldQuantity - quantity);
-//
-//        wholesalerProductService.updateWholesalerProduct(swp_id, wholeSalerProductMap);
-//    }
-//
-//    public String getTransactionFromUIDandWName(String uid, String wholesalerName) throws ExecutionException, InterruptedException {
-//        DocumentSnapshot doc = wholesalerService.getDocByWholesalerName(wholesalerName);
-//        if (doc == null)
-//            return "null";
-//        String uen = Objects.requireNonNull(doc.get("uen")).toString();
-//
-//        DocumentSnapshot transactionDoc = transactionService.getDocByUENAndWName(uen, uid);
-//        if (transactionDoc == null)
-//            return "null";
-//        return transactionDoc.getId();
-//    }
-
 }
