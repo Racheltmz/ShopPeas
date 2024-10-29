@@ -53,11 +53,8 @@ const Order = ({ orderGroup, onAccept, onComplete }) => {
       <View style={styles.orderFooter}>
         <View style={styles.totalAndDetails}>
           <Text style={styles.totalAmount}>
-            Order Total: S${orderGroup.totalAmount}
+            Total Price: {orderGroup.currency === "SGD" ? "S$" : "MYR"} {orderGroup.totalAmount}
           </Text>
-          <TouchableOpacity>
-            <Text style={styles.viewDetails}>View more details &gt;</Text>
-          </TouchableOpacity>
         </View>
       </View>
     </View>

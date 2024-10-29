@@ -29,12 +29,6 @@ const Transactions = ({ defaultValue }) => {
         transactionService.getTransactions(userUid, currentUser.uen, 'COMPLETED')
       ]);
       
-      console.log('API Responses:', {
-        pendingAcceptance: pendingAcceptanceRes,
-        pendingCompletion: pendingCompletionRes,
-        pendingCompletion: completedRes
-      });
-      
       const getOrders = (res, status) => {
         if (!res) return [];
         const orders = Array.isArray(res) ? res : [res];
@@ -42,7 +36,8 @@ const Transactions = ({ defaultValue }) => {
           id: order.tid || order.id,
           status: status,
           items: Array.isArray(order.items) ? order.items : [],
-          total_price: order.total_price,
+          total_price: order.total_price.toFixed(2),
+          currency: order.currency,
           uid: userUid
         })).filter(order => order.items.length > 0);
       };
@@ -54,11 +49,9 @@ const Transactions = ({ defaultValue }) => {
       // combine orders from both statuses
       const allOrders = [...pendingAcceptanceOrders, ...pendingCompletionOrders, ...completedOrders];
       
-      console.log('Processed orders:', allOrders);
       setTransactions(allOrders);
       
     } catch (err) {
-      console.error('Load transactions error:', err);
       setTransactions([]); 
       Dialog.show({
         type: ALERT_TYPE.DANGER,

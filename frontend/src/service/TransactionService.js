@@ -13,14 +13,12 @@ const transactionService = {
         return response.data;
     },
     getTransactions: async (uid, uen, status) => {
-        console.log('Calling API with:', { uid, uen, status });
-        const response = await apiClient.get(`${REACT_APP_BACKEND_TRANSACTION}/gettransactionsbyuen?uen=${uen}&status=${status}`, {
+        const response = await apiClient.get(`${REACT_APP_BACKEND_TRANSACTION}/get?uen=${uen}&status=${status}`, {
             headers: {
                 Authorization: `Bearer ${uid}`,
                 Accept: "application/json",
             },
         });
-        console.log('TransactionService - Raw API response:', response.data);
         return response.data;
     },
     updateStatus: async (uid, tid, newStatus) => {

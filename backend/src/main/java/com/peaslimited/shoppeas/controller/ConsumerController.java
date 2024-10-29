@@ -33,9 +33,6 @@ public class ConsumerController {
     @Autowired
     private ConsumerAddressService consumerAddressService;
 
-    @Autowired
-    private ConsumerAccountService consumerAccountService;
-
     /**
      * Get consumer details by UID
      * @return consumer details
