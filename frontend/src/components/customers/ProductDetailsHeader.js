@@ -6,10 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 const ProductDetailsHeader = ({ name, desc }) => {
   const navigation = useNavigation();
 
-  const navigateToCart = () => {
-    navigation.navigate('Cart');
-  };
-
   return (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>

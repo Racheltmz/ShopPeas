@@ -30,7 +30,7 @@ const wholesalerService = {
             }
         });
         return response.data;
-    }
+    },
 };
 
 export default wholesalerService;

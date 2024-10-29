@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 public class WholesalerProductDetailsDTO {
+    private String swp_id;
     private String name;
     private String uen;
     private String location;

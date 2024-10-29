@@ -24,8 +24,8 @@ public class OrderHistoryServiceImpl implements OrderHistoryService {
     }
 
     @Override
-    public void addOrderHistory(String uid, ArrayList<String> uenList, ArrayList<String> transactionList, ArrayList<Double> priceList) throws ExecutionException, InterruptedException, IOException, URISyntaxException {
-        orderHistoryRepository.addOrderHistory(uid, uenList, transactionList, priceList);
+    public void addOrderHistory(String uid, ArrayList<Object> cartList) throws ExecutionException, InterruptedException, IOException, URISyntaxException {
+        orderHistoryRepository.addOrderHistory(uid, cartList);
     }
 
 }

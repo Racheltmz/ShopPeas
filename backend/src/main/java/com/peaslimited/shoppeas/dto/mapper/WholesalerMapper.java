@@ -18,7 +18,8 @@ public class WholesalerMapper {
         return new WholesalerProfileDTO(wholesaler, wholesalerAccount, wholesalerAddress);
     }
 
-    public static WholesalerProductDetailsDTO toWholesalerProfileDTO(String wholesaler,
+    public static WholesalerProductDetailsDTO toWholesalerProfileDTO(String swp_id,
+                                                                     String wholesaler,
                                                                      String uen,
                                                                      String location,
                                                                      String postal_code,
@@ -27,6 +28,6 @@ public class WholesalerMapper {
                                                                      int stock,
                                                                      double price,
                                                                      double ratings) {
-        return new WholesalerProductDetailsDTO(wholesaler, uen, location, postal_code, duration, distance, stock, price, ratings);
+        return new WholesalerProductDetailsDTO(swp_id, wholesaler, uen, location, postal_code, duration, distance, stock, price, ratings);
     }
 }
