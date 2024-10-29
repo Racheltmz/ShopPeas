@@ -4,6 +4,7 @@ import { FirebaseAuth } from '../../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useUserStore } from '../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
+import Alert from '../utils/Alert';
 
 const Login = ({ onBackPress, onRegisterPress }) => {
     const auth = FirebaseAuth;
@@ -11,6 +12,13 @@ const Login = ({ onBackPress, onRegisterPress }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [alertVisible, setAlertVisible] = useState(false);
+    const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
+    const showAlert = (title, message, onConfirm) => {
+        setCustomAlert({ title, message, onConfirm });
+        setAlertVisible(true);
+    };
 
     const handleLogin = async () => {
         setIsLoading(true);
@@ -30,7 +38,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
             updateUserType(userType);
             await fetchUserInfo(user.uid);
         } catch(err) {
-            alert("Login failed: " + err.message);
+            showAlert("Error", "Invalid email or password", () => setAlertVisible(false));
         } finally {
             setIsLoading(false);
         }
@@ -95,6 +103,17 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                     <Text style={styles.signupLink}>Create One!</Text>
                 </TouchableOpacity>
             </View>
+
+            <Alert
+                visible={alertVisible}
+                title={customAlert.title}
+                message={customAlert.message}
+                onConfirm={() => {
+                setAlertVisible(false);
+                customAlert.onConfirm();
+                }}
+                onCancel={() => setAlertVisible(false)}
+            />
         </SafeAreaView>
     );
 }

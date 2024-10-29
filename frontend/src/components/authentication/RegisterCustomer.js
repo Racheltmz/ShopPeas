@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Text, StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Ionicons } from '@expo/vector-icons';
-// import AwesomeAlert from 'react-native-awesome-alerts';
 import { FirebaseAuth } from '../../lib/firebase';
 import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
@@ -15,6 +14,7 @@ const RegisterCustomer = ({ onBackPress }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',

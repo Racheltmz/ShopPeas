@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  SafeAreaView
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, SafeAreaView } from "react-native";
 import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
