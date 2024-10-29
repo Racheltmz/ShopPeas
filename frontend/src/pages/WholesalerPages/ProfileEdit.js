@@ -31,22 +31,23 @@ const ProfileEdit = ({ navigation }) => {
   const handleSave = async () => {
     const data = {
       wholesaler: {
-        name: name,
-        phone_number: phone,
-        currency: currency,
+        "name": name,
+        "email": currentUser.email,
+        "phone_number": phone,
+        "currency": currency,
       },
       wholesalerAccount: {
-        bank: bank,
-        bank_account_no: bankNumber,
+        "bank": bank,
+        "bank_account_no": bankNumber,
       },
       wholesalerAddress: {
-        street_name: street,
-        unit_no: unit,
-        building_name: building,
-        postal_code: postalCode,
-        city: city,
+        "street_name": street,
+        "unit_no": unit,
+        "building_name": building,
+        "postal_code": postalCode,
+        "city": city,
       },
-    };
+    };  
     console.log(data);
     await wholesalerService.editProfile(userUid, data)
     .then((res) => {
