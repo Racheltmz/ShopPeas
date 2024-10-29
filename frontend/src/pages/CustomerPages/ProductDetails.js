@@ -11,7 +11,7 @@ import MapView, { Marker } from 'react-native-maps';
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
 import productService from "../../service/ProductService";
 import locationService from "../../service/LocationService";
-import Alert from '../utils/Alert';
+import Alert from '../../components/utils/Alert';
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
