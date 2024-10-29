@@ -34,17 +34,18 @@ const paymentService = {
             throw error;
         }
     },
-    deletePayment : async (requestBody) => {
+    deletePayment: async (uid, cardNumber) => {
         const endpoint = "delete"; 
         try {
-            const response = await apiClient.delete(`${REACT_APP_BACKEND_PAYMENT}/${endpoint}`,requestBody, {
-                headers: {
-                    Authorization: `Bearer ${uid}`,
-                    Accept: "application/json",
-                },
-            });
+            const response = await apiClient.patch(`${REACT_APP_BACKEND_PAYMENT}/${endpoint}`,{ card_no: cardNumber },
+                {
+                    headers: {
+                        Authorization: `Bearer ${uid}`,
+                        Accept: "application/json",
+                    }
+                }
+            );
             return response.data;
-    
         } catch (error) {
             console.error("Error config:", JSON.stringify(error.config, null, 2));
             throw error;

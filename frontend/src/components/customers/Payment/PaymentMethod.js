@@ -18,12 +18,17 @@ const PaymentMethod = () => {
     navigation.navigate('AddCard');
   };
 
+  const handleDeleteCard = async (card_number) => {
+    await paymentService.deletePayment(userUid, card_number);
+    await loadPaymentMethods(userUid);
+  };
+
   const loadPaymentMethods = async (userUid) => {
     try {
       setLoading(true);
       setError(null);
       const paymentsList = await paymentService.getPayment(userUid);
-      setPayments(paymentsList);
+      setPayments(paymentsList.card_numbers);
     } catch (err) {
       setError('Failed to load existing payment methods. Please try again later.');
     } finally {
@@ -39,24 +44,38 @@ const PaymentMethod = () => {
       ]}
       onPress={() => setSelectedPayment(item)}
     >
-      <Ionicons 
-        name="card-outline" 
-        size={24} 
-        color="#0C5E52" 
-        style={styles.cardIcon} 
-      />
+    <View style={styles.leftContainer}>
+      <Ionicons name={selectedPayment === item ? "radio-button-on" : "radio-button-off"} size={24} color="#0C5E52" style={styles.radioIcon} />
+      <Ionicons name="card-outline" size={24} color="#0C5E52" style={styles.cardIcon}/>
       <View style={styles.cardDetails}>
-        <Text style={styles.cardType}>Card ending in {item}</Text>
+        <Text style={styles.cardType}> •••• •••• •••• {item.slice(-4)}</Text>
       </View>
+    </View>
+    <TouchableOpacity 
+        onPress={() => handleDeleteCard(item)}
+        style={styles.deleteButton}
+      >
+        <Ionicons 
+          name="trash-outline" 
+          size={24} 
+          color="#0C5E52" 
+        />
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (userUid) {
+        loadPaymentMethods(userUid);
+      }
+    });
     if (userUid) {
       loadPaymentMethods(userUid);
     }
-  }, [userUid]);
+    return unsubscribe;
+  }, [navigation, userUid]);
 
   return (
     <View style={styles.container}>
@@ -79,7 +98,7 @@ const PaymentMethod = () => {
             renderItem={({ item }) => <Item item={item} />}
             keyExtractor={item => item}
             ListEmptyComponent={() => (
-              <Text style={[styles.cardNumber, { padding: 16, textAlign: 'center' }]}>
+              <Text style={styles.cardNumber}>
                 No payment methods found
               </Text>
             )}
@@ -91,10 +110,6 @@ const PaymentMethod = () => {
           <Text style={styles.addCardText}>Add Card</Text>
         </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.addButton} onPress={handleAddCard}>
-        <Text style={styles.addButtonText}>Add</Text>
-        <Ionicons name="arrow-forward" size={24} color="white" />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -132,16 +147,26 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
   },
-  cardItem: {
+  loadingText:{
+    fontSize: 14,
+    color: '#666',
+    padding: 16, 
+    textAlign: 'center' 
+  },
+  item:{
+    flexDirection: 'row',
+    padding: '5%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+  },
+  leftContainer:{
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'white',
-    padding: 16,
-    marginHorizontal: 16,
-    borderRadius: 8,
+    flex: 1,
   },
   cardIcon: {
-    marginRight: 16,
+    marginLeft: '3%',
   },
   cardDetails: {
     flex: 1,
@@ -151,37 +176,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0C5E52',
   },
-  cardNumber: {
-    fontSize: 14,
-    color: '#666',
-  },
   addCardButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
-    padding: 16,
-    marginHorizontal: 16,
+    padding: '5%',
     borderRadius: 8,
   },
   addCardText: {
     marginLeft: 16,
     fontSize: 16,
     color: '#0C5E52',
-  },
-  addButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#0C5E52',
-    padding: 16,
-    margin: 16,
-    borderRadius: 10,
-  },
-  addButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    marginRight: 8,
   },
 });
 

@@ -43,7 +43,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             String uen = Objects.requireNonNull(document.get("uen")).toString();
             double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
             Map<String,Object> products = (Map<String,Object>) document.get("products");
-            Map<String,Object> products = (Map<String,Object>) document.get("products");
             return new TransactionsDTO(products, status, total_price, uen, uid);
         }
         return null;
