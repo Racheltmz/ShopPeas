@@ -179,7 +179,6 @@ const styles = StyleSheet.create({
     marginBottom: "5%",
     justifyContent: "space-between",
   },
-
   productItemLeft: {
     flexDirection: "row",
   },

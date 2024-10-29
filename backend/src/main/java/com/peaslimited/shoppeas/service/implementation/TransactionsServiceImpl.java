@@ -105,46 +105,4 @@ public class TransactionsServiceImpl implements TransactionsService {
         String cid = cartRepository.findCIDByUID(uid);
         cartRepository.deleteCartOnCheckout(cid);
     }
-
-
-
-
-//    @Override
-//    public TransactionsDTO getTransactionByUID(String uid, String status) throws ExecutionException, InterruptedException {
-//        return transactionsRepo.getTransactionByUID(uid, status);
-//    }
-//
-//    @Override
-//    public DocumentSnapshot findDocByUIDandStatus(String UID, String status) throws ExecutionException, InterruptedException {
-//        return transactionsRepo.findDocByUIDandStatus(UID, status);
-//    }
-//
-
-//
-
-//
-//    @Override
-//    public DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException {
-//        return transactionsRepo.getDocByUENAndWName(uen, uid);
-//    }
-//
-
-//
-//    @Override
-//    public void createTransaction(TransactionsDTO transactionsDTO) {
-//        transactionsRepo.createTransaction(transactionsDTO);
-//    }
-//
-//    @Override
-//    public void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException {
-//        transactionsRepo.updateTransactionProduct(data, uid, status);
-//    }
-//
-
-//
-//    @Override
-//    public void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException {
-//        transactionsRepo.updateTransaction(tid, data);
-//    }
-
 }

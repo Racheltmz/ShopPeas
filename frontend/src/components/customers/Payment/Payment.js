@@ -4,21 +4,21 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../../lib/userStore';
 import { useCart } from '../../../lib/userCart';
-import paymentService from '../../../service/PaymentService';
 
 const Payment = () => {
   const navigation = useNavigation();
-  const { userUid, currentUser, paymentDetails } = useUserStore();
+  const { userUid, currentUser, setRerender } = useUserStore();
   const { cart, checkout, getTotal } = useCart();
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
   };
 
-  const handleMakePayment = () => {
+  const handleMakePayment = async () => {
     checkout(userUid);
+    setRerender();
     // Implement payment logic here
-    console.log('Processing payment...');
+    navigation.navigate('History');
   };
 
   const handleWholesalerPress = (wholesalerName) => {

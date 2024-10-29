@@ -4,7 +4,6 @@ import Order from './Order';
 
 const PendingOrders = ({ orders, onAccept, onComplete }) => {
   const [selectedStatus, setSelectedStatus] = useState('PENDING-ACCEPTANCE');
-  console.log('Raw orders data:', orders);
 
   const { groupedOrders, orderCounts } = useMemo(() => {
     if (!orders) {
@@ -25,6 +24,7 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
       status: order.status,
       items: Array.isArray(order.items) ? order.items : [],
       totalAmount: order.total_price || order.totalAmount,
+      currency: order.currency,
       uid: order.uid
     }));
 

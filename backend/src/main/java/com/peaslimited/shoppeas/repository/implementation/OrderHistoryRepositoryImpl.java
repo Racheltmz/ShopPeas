@@ -109,8 +109,6 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
     public void addOrderHistory(String uid, ArrayList<Object> cartList) throws ExecutionException, InterruptedException, IOException, URISyntaxException {
         // ACTION: get transaction IDs (tid)
         ArrayList<String> transactionList = new ArrayList<>();
-        ArrayList<String> uenList = new ArrayList<>();
-        ArrayList<Double> priceList = new ArrayList<>();
         double checkoutPrice = 0;
 
         Date date = new Date();
@@ -135,11 +133,13 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
             statusMap.put("tid", tid);
             statusMap.put("status", "PENDING-ACCEPTANCE");
             transactionsRepository.updateTransactionStatus(statusMap);
+
+            String preferred_currency = wholesalerRepository.findByUEN(uen).getCurrency();
+            if (Objects.equals(preferred_currency, "MYR")) {
+                price = currencyService.exchangeRate(price, "MYR");
+            }
+            transactionsRepository.updateTransactionPrice(tid, price);
         }
-        System.out.println("order hist");
-        System.out.println(currentDate);
-        System.out.println(transactionList);
-        System.out.println(checkoutPrice);
 
         OrderHistoryByUserDTO order_history = new OrderHistoryByUserDTO(currentDate, transactionList, checkoutPrice, uid);
         firestore.collection(COLLECTION).add(order_history);

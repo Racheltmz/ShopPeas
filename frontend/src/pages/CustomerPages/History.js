@@ -9,7 +9,7 @@ import transactionService from '../../service/TransactionService';
 
 const History = () => {
   const navigation = useNavigation();
-  const { userUid } = useUserStore();
+  const { userUid, rerender, setRerender } = useUserStore();
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
   const [rated, setRated] = useState(false);
@@ -17,7 +17,8 @@ const History = () => {
   const fetchData = async (userUid) => {
     await transactionService.viewOrderHistory(userUid)
       .then((res) => {
-        setHistory(res);
+        data = res.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setHistory(data);
         setLoading(false);
       })
       .catch((err) => {

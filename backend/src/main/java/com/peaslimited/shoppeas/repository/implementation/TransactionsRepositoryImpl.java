@@ -91,8 +91,7 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     }
 
     @Override
-    public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status)
-            throws ExecutionException, InterruptedException {
+    public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", uen)
                 .whereEqualTo("status", status).get();
 
@@ -285,6 +284,12 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Only accepts transaction statuses: IN-CART, PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED");
         }
+    }
+
+    @Override
+    public void updateTransactionPrice(String tid, double updatedPrice) {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
+        docRef.update("converted_price", Double.parseDouble(String.format("%.2f", updatedPrice)));
     }
 
     private void deleteTransaction(String tid) {

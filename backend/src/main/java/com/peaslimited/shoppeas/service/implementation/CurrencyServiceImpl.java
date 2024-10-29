@@ -51,7 +51,7 @@ public class CurrencyServiceImpl implements CurrencyService {
             exchangeRate = Double.parseDouble(jsonNode.get("data").get("MYR").get("value").toString());
         }
 
-        return exchangeRate;
+        return exchangeRate * price;
     }
 }
 

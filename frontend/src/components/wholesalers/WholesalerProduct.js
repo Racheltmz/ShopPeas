@@ -29,7 +29,7 @@ const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemov
             <View style={styles.productActions}>
                 <Text style={styles.stockText}>{stock} left in stock</Text>
                 <View style={styles.actionIcons}>
-                    <TouchableOpacity  onPress={()=>setRemoveVisible(true)}>
+                    <TouchableOpacity onPress={()=>setRemoveVisible(true)}>
                         <Ionicons name="trash-outline" size={28} color="#0C5E52" />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={()=>setEditVisible(true)}>
