@@ -26,11 +26,11 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     WholesalerProductRepository wholesalerProductRepository;
 
     @Autowired
-    ConsumerAddressRepository connsumerAddressRepository;
+    ConsumerAddressRepository consumerAddressRepository;
 
     @Override
     public List<WholesalerProductDetailsDTO> findByPid(String pid, String uid) throws ExecutionException, InterruptedException, IOException {
-        String userPostalCode =connsumerAddressRepository.findByUID(uid).getPostal_code();
+        String userPostalCode =consumerAddressRepository.findByUID(uid).getPostal_code();
         return wholesalerProductRepository.findByPid(pid, userPostalCode);
     }
 
@@ -71,8 +71,7 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
     }
 
     @Override
-    public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException
-    {
+    public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException {
         return wholesalerProductRepository.getWProductByPIDandUEN(pid,uen);
     }
 

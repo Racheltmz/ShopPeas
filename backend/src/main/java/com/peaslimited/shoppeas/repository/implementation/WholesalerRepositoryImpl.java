@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Repository
 public class WholesalerRepositoryImpl implements WholesalerRepository {
@@ -101,8 +102,18 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         CollectionReference wholesalerCollection = firestore.collection(COLLECTION);
         Query wholesalerQuery = wholesalerCollection.whereIn("uen", uen_list);
         QuerySnapshot productSnapshot = wholesalerQuery.get().get();
-        return productSnapshot.getDocuments().stream()
-                .map(doc -> doc.toObject(WholesalerDTO.class))  // Replace Product.class with your actual Product class
+    
+        // Map documents by UEN
+        Map<String, WholesalerDTO> wholesalerMap = productSnapshot.getDocuments().stream()
+                .collect(Collectors.toMap(
+                    doc -> doc.getString("uen"),
+                    doc -> doc.toObject(WholesalerDTO.class)
+                ));
+    
+        // Return the result in the order of uen_list
+        return uen_list.stream()
+                .map(wholesalerMap::get)
+                .filter(Objects::nonNull) // in case a UEN didn't match any document
                 .toList();
     }
 

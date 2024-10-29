@@ -109,4 +109,5 @@ public class WholesalerController {
         Integer new_rating = Integer.valueOf(data.get("rating").toString());
         wholesalerService.addRating(uen, tid, new_rating);
     }
+
 }

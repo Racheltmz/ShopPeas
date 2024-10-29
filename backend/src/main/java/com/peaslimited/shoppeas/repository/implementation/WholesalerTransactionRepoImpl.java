@@ -7,6 +7,7 @@ import com.google.cloud.firestore.Firestore;
 import com.peaslimited.shoppeas.dto.WholesalerTransactionsDTO;
 import com.peaslimited.shoppeas.repository.WholesalerTransactionRepo;
 
+// TODO: WAT IS THIS FOR
 @Repository
 public class WholesalerTransactionRepoImpl implements WholesalerTransactionRepo{
 

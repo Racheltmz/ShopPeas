@@ -2,39 +2,40 @@ package com.peaslimited.shoppeas.service.implementation;
 
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
-import com.peaslimited.shoppeas.dto.OrderHistoryDTO;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
+import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
+import com.peaslimited.shoppeas.model.ShoppingCart;
+import com.peaslimited.shoppeas.model.Transactions;
+import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
+import com.peaslimited.shoppeas.service.CartService;
+import com.peaslimited.shoppeas.service.OrderHistoryService;
 import com.peaslimited.shoppeas.service.TransactionsService;
+import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.Document;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @Service
+
 public class TransactionsServiceImpl implements TransactionsService {
 
     @Autowired
     private TransactionsRepository transactionsRepo;
 
-    @Override
-    public TransactionsDTO getTransactionByUID(String uid, String status) throws ExecutionException, InterruptedException {
-        return transactionsRepo.getTransactionByUID(uid, status);
-    }
+    @Autowired
+    private CartRepository cartRepository;
 
-    @Override
-    public DocumentSnapshot findDocByUIDandStatus(String UID, String status) throws ExecutionException, InterruptedException {
-        return transactionsRepo.findDocByUIDandStatus(UID, status);
-    }
-
-    @Override
-    public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException {
-        return  transactionsRepo.getDocByUENAndStatus(uen, status);
-    }
+    @Autowired
+    private OrderHistoryService orderHistoryService;
 
     @Override
     public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
@@ -42,8 +43,8 @@ public class TransactionsServiceImpl implements TransactionsService {
     }
 
     @Override
-    public DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException {
-        return transactionsRepo.getDocByUENAndWName(uen, uid);
+    public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException {
+        return transactionsRepo.getDocByUENAndStatus(uen, status);
     }
 
     @Override
@@ -52,29 +53,98 @@ public class TransactionsServiceImpl implements TransactionsService {
     }
 
     @Override
-    public void createTransaction(TransactionsDTO transactionsDTO) {
-        transactionsRepo.createTransaction(transactionsDTO);
+    public String updateTransactionProduct(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+        String uen = data.get("uen").toString();
+        Transactions transaction = transactionsRepo.findCartTransaction(uid, uen);
+
+        // ACTION: transaction record exists and product is from the same wholesaler
+        if (transaction != null) {
+            // update existing transaction record
+            transactionsRepo.updateTransactionProduct(transaction, uid, data);
+            return transaction.getTid();
+        } else { // ACTION: transaction record exists and product is from different wholesaler or transaction record DNE
+            // input: Single "item": swp_id, quantity, uen
+            String swp_id = data.get("swp_id").toString();
+            double price = Double.parseDouble(data.get("price").toString());
+            int quantity = Integer.parseInt(data.get("quantity").toString());
+            double total_price = Double.parseDouble(data.get("total_price").toString());
+            Map<String, Object> productMap = new HashMap<>();
+            productMap.put("quantity", quantity);
+            productMap.put("price", price);
+            productMap.put("swp_id", swp_id);
+
+            Map<String, Object> productsMapNew = new HashMap<>();
+            productsMapNew.put(String.valueOf(0), productMap);
+
+            return transactionsRepo.addTransaction(new TransactionsDTO(
+                    productsMapNew,
+                    false,
+                    "IN-CART",
+                    total_price,
+                    uen,
+                    uid
+            ));
+        }
     }
 
     @Override
-    public void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException {
-        transactionsRepo.updateTransactionProduct(data, uid, status);
-    }
-
-    @Override
-    public void updateTransactionStatus(Map<String, Object> data)
-    {
+    public void updateTransactionStatus(Map<String, Object> data) {
         transactionsRepo.updateTransactionStatus(data);
     }
 
     @Override
-    public void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException {
-        transactionsRepo.updateTransaction(tid, data);
+    public void updateToCheckout(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException, IOException, URISyntaxException {
+        //ACTION: GET TRANSACTION DATA
+        //convert order data to array
+        ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
+
+        // ACTION: add order history
+        orderHistoryService.addOrderHistory(uid, cartList);
+
+        // ACTION: delete cart
+        String cid = cartRepository.findCIDByUID(uid);
+        cartRepository.deleteCartOnCheckout(cid);
     }
 
-    @Override
-    public List<QueryDocumentSnapshot> findDocListByUID(String UID) throws ExecutionException, InterruptedException {
-        return transactionsRepo.findDocListByUID(UID);
-    }
+
+
+
+//    @Override
+//    public TransactionsDTO getTransactionByUID(String uid, String status) throws ExecutionException, InterruptedException {
+//        return transactionsRepo.getTransactionByUID(uid, status);
+//    }
+//
+//    @Override
+//    public DocumentSnapshot findDocByUIDandStatus(String UID, String status) throws ExecutionException, InterruptedException {
+//        return transactionsRepo.findDocByUIDandStatus(UID, status);
+//    }
+//
+
+//
+
+//
+//    @Override
+//    public DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException {
+//        return transactionsRepo.getDocByUENAndWName(uen, uid);
+//    }
+//
+
+//
+//    @Override
+//    public void createTransaction(TransactionsDTO transactionsDTO) {
+//        transactionsRepo.createTransaction(transactionsDTO);
+//    }
+//
+//    @Override
+//    public void updateTransactionProduct(Map<String, Object> data, String uid, String status)throws ExecutionException, InterruptedException {
+//        transactionsRepo.updateTransactionProduct(data, uid, status);
+//    }
+//
+
+//
+//    @Override
+//    public void updateTransaction(String tid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+//        transactionsRepo.updateTransaction(tid, data);
+//    }
 
 }

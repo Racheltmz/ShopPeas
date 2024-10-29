@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 @Data
@@ -13,6 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class TransactionsDTO {
     private Map<String, Object> products;
+    private boolean rated;
     // IN-CART, PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED
     private String status;
     private double total_price;

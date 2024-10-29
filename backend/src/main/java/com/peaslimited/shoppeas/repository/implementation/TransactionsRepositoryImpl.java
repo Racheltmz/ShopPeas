@@ -4,7 +4,7 @@ import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.peaslimited.shoppeas.dto.TransactionsDTO;
 import com.peaslimited.shoppeas.dto.TransactionsOrderedDTO;
-import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
+import com.peaslimited.shoppeas.model.Transactions;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,46 +27,67 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     private WholesalerProductService wholesalerProductService;
 
     @Override
-    public TransactionsDTO getTransactionByUID(String uid, String status)
-            throws ExecutionException, InterruptedException {
-        DocumentSnapshot document = findDocByUIDandStatus(uid, status);
+    public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
 
-        if (document != null) {
-            String uen = Objects.requireNonNull(document.get("uen")).toString();
-            double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
-            Map<String,Object> products = (Map<String,Object>) document.get("products");
-            return new TransactionsDTO(products, status, total_price, uen, uid);
-        }
-        return null;
+        // Asynchronously retrieve the document
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+        // Convert document to Consumer object
+        TransactionsDTO transactionsDTO = new TransactionsDTO();
+        if (document.exists()) {
+            transactionsDTO.setStatus(Objects.requireNonNull(document.get("status")).toString());
+            transactionsDTO.setUen(Objects.requireNonNull(document.get("uen")).toString());
+            transactionsDTO.setUid(Objects.requireNonNull(document.get("uid")).toString());
+            transactionsDTO.setTotal_price(Float.parseFloat(Objects.requireNonNull(document.get("total_price")).toString()));
+
+            Map<String, Object> productMap = (Map<String, Object>) document.get("products");
+            Map<String, Object> products = new HashMap<>();
+            for (int i = 0; i < Objects.requireNonNull(productMap).size(); i++) {
+                String key = String.valueOf(i);
+                Map<String, Object> newProduct = (Map<String, Object>) productMap.get(key);
+                String index = Integer.toString(i);
+                products.put(index, newProduct);
+            }
+            transactionsDTO.setProducts(products);
+
+            return transactionsDTO;
+        } else
+            return null;
     }
 
     @Override
-    public DocumentSnapshot findDocByUIDandStatus(String UID, String status)
-            throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uid", UID).get();
+    public Transactions findCartTransaction(String uid, String uen) throws ExecutionException, InterruptedException {
+        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION)
+                .whereEqualTo("uid", uid)
+                .whereEqualTo("uen", uen)
+                .whereEqualTo("status", "IN-CART")
+                .get();
 
         // Asynchronously retrieve the document
         QuerySnapshot querySnapshot = query.get();
 
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
         DocumentSnapshot document = null;
-        // Check if any documents match
-        for (QueryDocumentSnapshot queryDocumentSnapshot : documents) {
-            document = queryDocumentSnapshot;
-            if (Objects.equals(document.get("status"), status)) {
-                return document;
-            } else
-                document = null;
-        }
-        /*
-         * DocumentSnapshot document = null;
-         * if (!documents.isEmpty()) {
-         * // Get the first matching document and return its ID
-         * document = documents.getFirst();
-         * }
-         */
 
-        return document;
+        if (!documents.isEmpty()) {
+            document = documents.getFirst();
+            double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
+            Map<String, Object> products = (Map<String,Object>) document.get("products");
+            boolean rated = Boolean.parseBoolean(Objects.requireNonNull(document.get("rated")).toString());
+            String status = Objects.requireNonNull(document.get("status")).toString();
+
+            return new Transactions(
+                    document.getId(),
+                    products,
+                    rated,
+                    status,
+                    total_price,
+                    uen,
+                    uid
+            );
+        }
+        return null;
     }
 
     @Override
@@ -76,31 +97,151 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
                 .whereEqualTo("status", status).get();
 
         QuerySnapshot querySnapshot = query.get();
-        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
 
-        return documents;
+        return querySnapshot.getDocuments();
     }
 
     @Override
-    public DocumentSnapshot getDocByUENAndWName(String uen, String uid)
-            throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", uen)
-                .whereEqualTo("uid", uid).whereEqualTo("status", "IN-CART").get();
+    public ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException {
+        Map<String,Object> productList = (Map<String,Object>) document.get("products");
+        ArrayList<Object> returnProdList = new ArrayList<>();
 
-        QuerySnapshot querySnapshot = query.get();
-        List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
+        for (int i = 0; i< productList.size(); i++) {
+            String index = Integer.toString(i);
+            Map<String, Object> docProduct = (Map<String, Object>) productList.get(index);
+            Map<String, Object> product = new HashMap<>();
+            String swpid = docProduct.get("swp_id").toString();
+            int quantity = Integer.parseInt(docProduct.get("quantity").toString());
 
-        DocumentSnapshot document = null;
-        if (!documents.isEmpty()) {
-            // Get the first matching document and return its ID
-            document = documents.getFirst();
+            String productName = wholesalerProductService.getWholesalerProductName(swpid);
+            product.put("name", productName);
+            product.put("quantity", quantity);
+
+            returnProdList.add(product);
         }
-        return document;
+        return returnProdList;
     }
 
     @Override
-    public TransactionsOrderedDTO getHistoryDetails(String orderId)
-            throws ExecutionException, InterruptedException {
+    public String addTransaction(TransactionsDTO transactionsDTO) {
+        DocumentReference docRef = firestore.collection(COLLECTION).document();
+        String tid = docRef.getId();
+        docRef.set(transactionsDTO);
+        return tid;
+    }
+
+    @Override
+    public void updateTransactionProduct(Transactions transaction, String uid, Map<String, Object> data) {
+        String swp_id = data.get("swp_id").toString();
+        double price = Double.parseDouble(data.get("price").toString());
+        int quantity = Integer.parseInt(data.get("quantity").toString());
+        double total_price = Double.parseDouble(data.get("total_price").toString());
+        Map<String, Object> productMap = new HashMap<>();
+        productMap.put("quantity", quantity);
+        productMap.put("price", price);
+        productMap.put("swp_id", swp_id);
+
+        // Get current price
+        double curTotalPrice = transaction.getTotal_price();
+
+        // Get current products
+        Map<String, Object> curProductsMap = transaction.getProducts();
+        curProductsMap.put(String.valueOf(curProductsMap.size()), productMap);
+
+        DocumentReference docRef = firestore.collection(COLLECTION).document(transaction.getTid());
+        docRef.update("total_price", Double.parseDouble(String.format("%.2f", curTotalPrice + total_price)));
+        docRef.update("products", curProductsMap);
+    }
+
+    @Override
+    public void updateProductQuantity(String uid, String uen, String swp_id, int newQuantity, double price) throws ExecutionException, InterruptedException {
+        QuerySnapshot querySnapshot = firestore.collection(COLLECTION)
+                .whereEqualTo("uen", uen)
+                .whereEqualTo("uid", uid)
+                .whereEqualTo("status", "IN-CART")
+                .get().get();
+
+        // Get document
+        QueryDocumentSnapshot document = querySnapshot.getDocuments().getFirst();
+
+        // Retrieve the products list
+        Map<String, Object> products = document.toObject(Transactions.class).getProducts();
+
+        for (Map.Entry<String, Object> entry : products.entrySet()) {
+            Map<String, Object> productDetails = (Map<String, Object>) entry.getValue();
+
+            String record_swp_id = productDetails.get("swp_id").toString();
+
+            // Update quantity in map
+            if (record_swp_id.equals(swp_id)) {
+                productDetails.put("quantity", newQuantity);
+            }
+        }
+
+        // Update record's quantity and price
+        document.getReference().update("products", products);
+        document.getReference().update("total_price", Double.parseDouble(String.format("%.2f", document.toObject(Transactions.class).getTotal_price() + price)));
+    }
+
+    @Override
+    public Map<String, Object> updateProductList(String uid, String uen, String swp_id) throws ExecutionException, InterruptedException {
+        QuerySnapshot querySnapshot = firestore.collection(COLLECTION)
+                .whereEqualTo("uen", uen)
+                .whereEqualTo("uid", uid)
+                .whereEqualTo("status", "IN-CART")
+                .get().get();
+
+        // Get document
+        QueryDocumentSnapshot document = querySnapshot.getDocuments().getFirst();
+
+        // Retrieve the products list
+        Transactions transaction = document.toObject(Transactions.class);
+        Map<String, Object> products = transaction.getProducts();
+
+        // Update total price
+        double price_to_deduct = 0.0;
+
+        for (Map.Entry<String, Object> entry : products.entrySet()) {
+            Map<String, Object> productDetails = (Map<String, Object>) entry.getValue();
+
+            String record_swp_id = productDetails.get("swp_id").toString();
+            double product_price = Double.parseDouble(productDetails.get("price").toString());
+            int product_quantity = Integer.parseInt(productDetails.get("quantity").toString());
+            price_to_deduct = product_price * product_quantity;
+
+            // Remove product from map
+            if (record_swp_id.equals(swp_id)) {
+                products.remove(entry.getKey());
+                break;
+            }
+        }
+
+        if (!products.isEmpty()) {
+            // Reorder products
+            Map<String, Object> updatedProducts = new HashMap<>();
+            int newIndex = 0;
+
+            for (Map.Entry<String, Object> entry : products.entrySet()) {
+                updatedProducts.put(String.valueOf(newIndex++), entry.getValue());
+            }
+
+            // Update record's quantity and price
+            document.getReference().update("products", updatedProducts);
+            document.getReference().update("total_price", Double.parseDouble(String.format("%.2f", transaction.getTotal_price() - price_to_deduct)));
+        } else {
+            // If no products by the wholesaler, delete transaction record and remove transaction id from cart record
+            deleteTransaction(document.getId());
+        }
+
+        Map<String, Object> outputMap = new HashMap<>();
+        outputMap.put("num_products", products.size());
+        outputMap.put("tid", document.getId());
+        outputMap.put("deduct", price_to_deduct);
+        return outputMap;
+    }
+
+    @Override
+    public TransactionsOrderedDTO getHistoryDetails(String orderId) throws ExecutionException, InterruptedException {
         DocumentReference transactionRef = firestore.collection(COLLECTION).document(orderId);
         ApiFuture<DocumentSnapshot> future = transactionRef.get();
         DocumentSnapshot document = future.get();
@@ -126,46 +267,9 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     }
 
     @Override
-    public void createTransaction(TransactionsDTO transactionsDTO) {
-        firestore.collection(COLLECTION).document().set(transactionsDTO);
-    }
-
-    @Override
-    public void updateTransaction(String tid, Map<String, Object> data)
-            throws ExecutionException, InterruptedException {
-        // Update an existing document
+    public void updateTransactionRated(String tid) {
         DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
-
-        // Update fields
-        for (String key : data.keySet()) {
-            docRef.update(key, data.get(key));
-        }
-    }
-
-    @Override
-    public void updateTransactionProduct(Map<String, Object> data, String uid, String status)
-            throws ExecutionException, InterruptedException {
-        String swp_id = data.get("swp_id").toString();
-        int quantity = Integer.parseInt(data.get("quantity").toString());
-        String uen = data.get("uen").toString();
-        DocumentSnapshot transaction = findDocByUIDandStatus(uid, status);
-
-        double price = getProductPrice(swp_id, uen);
-        double total_price = (double) transaction.get("total_price");
-        double oldprice = (double) total_price;
-
-        Map<String, Object> productMap = new HashMap<>();
-        productMap.put("quantity", quantity);
-        productMap.put("swp_id", swp_id);
-
-        ArrayList<Object> productsList = (ArrayList<Object>) transaction.get("products");
-        productsList.add(productMap);
-
-        String id = transaction.getId();
-        DocumentReference docRef = firestore.collection(COLLECTION).document(id);
-        docRef.update("total_price", price + oldprice);
-        docRef.update("products", productsList);
-
+        docRef.update("rated", true);
     }
 
     @Override
@@ -183,80 +287,9 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         }
     }
 
-    @Override
-    public void updateTransactionRated(String tid) {
-        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
-        docRef.update("rated", true);
+    private void deleteTransaction(String tid) {
+        firestore.collection(COLLECTION).document(tid).delete();
     }
 
-    @Override
-    public List<QueryDocumentSnapshot> findDocListByUID(String UID) throws ExecutionException, InterruptedException {
-        ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uid", UID).get();
 
-        // Asynchronously retrieve the document
-        QuerySnapshot querySnapshot = query.get();
-
-        return querySnapshot.getDocuments();
-    }
-
-    public double getProductPrice(String swp_id, String uen) throws ExecutionException, InterruptedException {
-        WholesalerProductDTO wholesalerProd = wholesalerProductService.getBySwp_id(swp_id);
-        return wholesalerProd.getPrice();
-    }
-
-    @Override
-    public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
-        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
-
-        // Asynchronously retrieve the document
-        ApiFuture<DocumentSnapshot> future = docRef.get();
-        DocumentSnapshot document = future.get();
-        // Convert document to Consumer object
-        TransactionsDTO transactionsDTO = new TransactionsDTO();
-        if (document.exists()) {
-            transactionsDTO.setStatus(Objects.requireNonNull(document.get("status")).toString());
-            transactionsDTO.setUen(Objects.requireNonNull(document.get("uen")).toString());
-            transactionsDTO.setUid(Objects.requireNonNull(document.get("uid")).toString());
-            transactionsDTO.setTotal_price(Float.parseFloat(Objects.requireNonNull(document.get("total_price")).toString()));
-
-            Map<String, Object> productMap = (Map<String, Object>) document.get("products");
-            Map<String, Object> products = new HashMap<>();
-            for (int i = 0; i < productMap.size(); i++) {
-                String key = String.valueOf(i);
-                Map<String, Object> newProduct = (Map<String, Object>) productMap.get(key);
-                String index = Integer.toString(i);
-                products.put(index, newProduct);
-            }
-            transactionsDTO.setProducts(products);
-
-            return transactionsDTO;
-        } else
-            return null;
-
-    }
-
-    @Override
-    public ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart)
-            throws ExecutionException, InterruptedException {
-        Map<String,Object> productList = (Map<String,Object>) document.get("products");
-        ArrayList<Object> returnProdList = new ArrayList<>();
-
-        for (int i = 0; i< productList.size(); i++) {
-            String index = Integer.toString(i);
-            Map<String, Object> docProduct = (Map<String, Object>) productList.get(index);
-            Map<String, Object> product = new HashMap<>();
-            String swpid = docProduct.get("swp_id").toString();
-            int quantity = Integer.parseInt(docProduct.get("quantity").toString());
-
-            String productName = wholesalerProductService.getWholesalerProductName(swpid);
-            product.put("name", productName);
-            product.put("quantity", quantity);
-
-            if (cart) {
-                // ACTION: get wholesaler name, unit price
-            }
-            returnProdList.add(product);
-        }
-        return returnProdList;
-    }
 }
