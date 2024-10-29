@@ -8,7 +8,7 @@ import paymentService from '../../../service/PaymentService';
 
 const AddCard = () => {
   const navigation = useNavigation();
-  const { currentUser } = useUserStore();
+  const { userUid, currentUser } = useUserStore();
 
   const [formData, setFormData] = useState({
     card_no: '',
@@ -48,9 +48,6 @@ const AddCard = () => {
     }
 
     try{
-       // setIsLoading(true);
-        
-        // Prepare data in format backend expects
         const paymentDetails = {
             card_no: formData.card_no.replace(/\s/g, ''),
             cvv: formData.cvv,
@@ -58,36 +55,14 @@ const AddCard = () => {
             name: formData.name.trim()
         };
 
-        paymentService.addCard(currentUser.uid, paymentDetails)
-        .catch((err) => {
-          console.log(err); // TODO: replace with show error alert
-        })
+        paymentService.addCard(userUid, paymentDetails)
+        //TODO: add alert on successful addition of payment method
+        navigation.goBack();
     } catch(err){
       alert("Addition of card failed: " + err.message);
     }
-
-    // Navigate back to the Payment Method page
-    navigation.goBack();
-
-    {/*
-    // Here you would typically send the new card details to your backend
-    console.log('Submitting new card:', { cardNumber, expiryDate, cvv, nameOnCard });
-    
-    // Simulating an API call to update payment details
-    setTimeout(() => {
-      // Update the user's payment details in the store
-      fetchUserInfo(currentUser.uid);
-      
-      // Navigate back to the Payment Method page
-      navigation.goBack();
-    
-      
-      // Show a success message
-    Alert.alert('Success', 'Your new card has been added successfully.'); 
-    }, 1000); */}
   };
 
-  //TODO: Show payment methods
   return (
     <View style={styles.container}>
       <View style={styles.header}>

@@ -21,6 +21,7 @@ public class PaymentController {
     private ConsumerAccountService consumerAccService;
 
     //get payment methods
+    @SuppressWarnings("unchecked")
     @GetMapping("/get")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
@@ -42,7 +43,7 @@ public class PaymentController {
             card = (Map<String, Object>) paymentMethodsMap.get(index);
             String cardNum = card.get("card_no").toString();
             // get first four digits from card number
-            cardNum = cardNum.substring(0, Math.min(cardNum.length(), 4));
+            // cardNum = cardNum.substring(cardNum.length()-4);
             cardNumList.add(cardNum);
         }
         payments.put("card_numbers", cardNumList);
@@ -58,9 +59,9 @@ public class PaymentController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
-        Long card_no = Long.parseLong(data.get("card_no").toString());
+        String card_no = data.get("card_no").toString();
         String expiry = data.get("expiry_date").toString();
-        Integer cvv = Integer.parseInt(data.get("cvv").toString());
+        String cvv = data.get("cvv").toString();
         String name = data.get("name").toString();
 
         //ACTION: ADD CARD TO CONSUMER ACCOUNT PAYMENT METHOD LIST AND FIREBASE
@@ -86,7 +87,7 @@ public class PaymentController {
         {
             //ACTION: UPDATE PAYMENT METHOD LIST IN EXISTING CONSUMER ACC
             Map<String, Object> currPaymentMethodMap = consumerAcc.getPaymentMtds();
-            int newIndex = currPaymentMethodMap.size() - 1;
+            int newIndex = currPaymentMethodMap.size();
             String index= Integer.toString(newIndex);
             currPaymentMethodMap.put(index, paymentMap);
             Map<String, Object> newData = new HashMap<String, Object>();
@@ -108,21 +109,22 @@ public class PaymentController {
         // ACTION: GET PAYMENTS
         ConsumerAccountDTO conAcc = consumerAccService.getConsumerAccount(uid);
         Map<String, Object> paymentMethodsMap = conAcc.getPaymentMtds();
+        Map<String, Object> newPaymentMethodsMap = new HashMap<>();
 
+        int newIndex = 0;
         for(int i = 0; i < paymentMethodsMap.size(); i++) {
-            Map<String, Object> card = new HashMap<>();
             String index = Integer.toString(i);
-            card = (Map<String, Object>) paymentMethodsMap.get(index);
+            Map<String, Object> card = (Map<String, Object>) paymentMethodsMap.get(index);
             String cardNum = card.get("card_no").toString();
-            if(cardNum.equals(card_no)) //ACTION: REMOVE MAP
-            {
-                paymentMethodsMap.remove(i);
-                break;
+
+            if(!cardNum.equals(card_no)) {
+                newPaymentMethodsMap.put(Integer.toString(newIndex), card);
+                newIndex++;
             }
         }
-        //ACTION: UPDATE CONSUMER ACC
+
         Map<String, Object> newData = new HashMap<String, Object>();
-        newData.put("paymentMtds", paymentMethodsMap);
+        newData.put("paymentMtds", newPaymentMethodsMap);
         consumerAccService.updateConsumerAccount(uid, newData);
     }
 

@@ -1,117 +1,156 @@
 import { SafeAreaView, StyleSheet, Text, View, TextInput, TouchableOpacity, Image, FlatList} from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUserStore } from '../../lib/userStore';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import OrderDropdown from '../../components/wholesalers/OrderDropdown';
 import PendingOrders from '../../components/wholesalers/PendingOrders';
 import CompletedOrders from '../../components/wholesalers/CompletedOrders';
+import transactionService from '../../service/TransactionService';
 
 const Transactions = ({ defaultValue }) => {
   const [selectedOption, setSelectedOption] = useState('pending');
-  const { currentUser } = useUserStore();
-  // const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
+  const { currentUser, userUid } = useUserStore();
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const [orders, setOrders] = useState([
-    {
-      id: '1029842',
-      productName: 'Bok Choy',
-      quantity: 7,
-      imageUrl: 'https://example.com/bok-choy.jpg',
-      date: '31-08-2024 13:01',
-      buyerName: 'Christopher K.',
-      pickupMethod: 'Self Pick-Up',
-      total: 12.99,
-      paid: 'PAID',
-      status: 'to_be_accepted'
-    },
-    {
-      id: '1029843',
-      productName: 'Bok Choy',
-      quantity: 7,
-      imageUrl: 'https://example.com/bok-choy.jpg',
-      date: '31-08-2024 13:01',
-      buyerName: 'Christopher K.',
-      pickupMethod: 'Self Pick-Up',
-      total: 12.99,
-      paid: 'PAID',
-      status: 'to_be_accepted'
-    },
-    {
-      id: '1029844',
-      productName: 'Tomatoes',
-      quantity: 3,
-      imageUrl: 'https://example.com/tomatoes.jpg',
-      date: '31-08-2024 13:45',
-      buyerName: 'Ray Shyuan',
-      pickupMethod: 'Self Pick-Up',
-      total: 15.78,
-      paid: 'PAID',
-      status: 'to_be_completed'
-    },
-  ]);
+  const loadTransactions = async () => {
+    if (!currentUser?.uen || !userUid) {
+      console.log('Missing uen or userUid:', { uen: currentUser?.uen, userUid });
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      // load both statuses at once as they are on the same 'pending orders' page
+      const [pendingAcceptanceRes, pendingCompletionRes, completedRes] = await Promise.all([
+        transactionService.getTransactions(userUid, currentUser.uen, 'PENDING-ACCEPTANCE'),
+        transactionService.getTransactions(userUid, currentUser.uen, 'PENDING-COMPLETION'),
+        transactionService.getTransactions(userUid, currentUser.uen, 'COMPLETED')
+      ]);
+      
+      console.log('API Responses:', {
+        pendingAcceptance: pendingAcceptanceRes,
+        pendingCompletion: pendingCompletionRes,
+        pendingCompletion: completedRes
+      });
+      
+      const getOrders = (res, status) => {
+        if (!res) return [];
+        const orders = Array.isArray(res) ? res : [res];
+        return orders.map(order => ({
+          id: order.tid || order.id,
+          status: status,
+          items: Array.isArray(order.items) ? order.items : [],
+          total_price: order.total_price,
+          uid: userUid
+        })).filter(order => order.items.length > 0);
+      };
+
+      const pendingAcceptanceOrders = getOrders(pendingAcceptanceRes, 'PENDING-ACCEPTANCE');
+      const pendingCompletionOrders = getOrders(pendingCompletionRes, 'PENDING-COMPLETION');
+      const completedOrders = getOrders(completedRes, 'COMPLETED');
+      
+      // combine orders from both statuses
+      const allOrders = [...pendingAcceptanceOrders, ...pendingCompletionOrders, ...completedOrders];
+      
+      console.log('Processed orders:', allOrders);
+      setTransactions(allOrders);
+      
+    } catch (err) {
+      console.error('Load transactions error:', err);
+      setTransactions([]); 
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: err?.status?.code || 'Error',
+        textBody: "Failed to load Transactions, please try again later.",
+        button: 'close',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadTransactions();
+  }, [currentUser?.uen, userUid]);
+
+  const handleAccept = async (orderId) => {
+    try {
+      await transactionService.updateStatus(userUid, orderId, 'PENDING-COMPLETION');
+      await loadTransactions();
+    } catch (error) {
+      console.error('Accept order error:', error);
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: "Failed to accept order. Please try again.",
+        button: 'close',
+      });
+    }
+  };
+
+  const handleComplete = async (orderId) => {
+    try {
+      await transactionService.updateStatus(userUid, orderId, 'COMPLETED');
+      await loadTransactions();
+    } catch (error) {
+      console.error('Complete order error:', error);
+      Dialog.show({
+        type: ALERT_TYPE.DANGER,
+        title: 'Error',
+        textBody: "Failed to complete order. Please try again.",
+        button: 'close',
+      });
+    }
+  };
 
   const options = [
     { label: 'Pending Orders', value: 'pending' },
     { label: 'Completed Orders', value: 'completed' },
   ];
 
-  const handleAccept = (orderId) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId
-          ? { ...order, status: 'to_be_completed' }
-          : order
-      )
-    );
-  };
-
-  const handleComplete = (orderId) => {
-    setOrders(prevOrders =>
-      prevOrders.map(order =>
-        order.id === orderId
-          ? { ...order, status: 'completed' }
-          : order
-      )
-    );
-  };
 
   return (
     <SafeAreaView style = {styles.container}>
-        <View style={styles.searchBar}>
-            <Ionicons name="search" size={24} color="#0C5E52" />
-            <TextInput 
-            style={styles.searchInput}
-            placeholder="Search Orders"
-            placeholderTextColor="#0C5E52"
-            />
-        </View>
-        <View style={styles.header}>
-          <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>{currentUser.name}</Text>
-              <Text style={styles.subHeaderTitle}>Transactions</Text>
-          </View>
-          <Image
-              source={require('../../../assets/imgs/pea.png')}
-              style={styles.headerImage}
+      <View style={styles.searchBar}>
+          <Ionicons name="search" size={24} color="#0C5E52" />
+          <TextInput 
+          style={styles.searchInput}
+          placeholder="Search Orders"
+          placeholderTextColor="#0C5E52"
           />
+      </View>
+      <View style={styles.header}>
+        <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>{currentUser.name}</Text>
+            <Text style={styles.subHeaderTitle}>Transactions</Text>
         </View>
+        <Image
+            source={require('../../../assets/imgs/pea.png')}
+            style={styles.headerImage}
+        />
+      </View>
       <OrderDropdown 
         options={options}
         defaultValue="pending"
-        onSelect={setSelectedOption}
+        onSelect={(value) => {
+          setSelectedOption(value);
+          loadTransactions(value);
+        }}
       />
       {selectedOption === 'pending' && (
         <PendingOrders
-          orders={orders}
+          orders={transactions}
           onAccept={handleAccept}
           onComplete={handleComplete}
+          loading={loading}
         />
       )}
       {selectedOption === 'completed' && (
         <CompletedOrders
-          orders={orders}
-          onAccept={handleAccept}
-          onComplete={handleComplete}
+          orders={transactions}
+          loading={loading}
         />
       )}
     </SafeAreaView>

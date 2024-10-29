@@ -1,52 +1,102 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, FlatList } from 'react-native';
 import Order from './Order';
 
 const PendingOrders = ({ orders, onAccept, onComplete }) => {
-  const [selectedStatus, setSelectedStatus] = useState('to_be_accepted');
+  const [selectedStatus, setSelectedStatus] = useState('PENDING-ACCEPTANCE');
+  console.log('Raw orders data:', orders);
 
-  const { filteredOrders, orderCounts } = useMemo(() => {
-    const pendingOrders = orders.filter(order => 
-      order.status === 'to_be_accepted' || order.status === 'to_be_completed'
+  const { groupedOrders, orderCounts } = useMemo(() => {
+    if (!orders) {
+      return {
+        groupedOrders: [],
+        orderCounts: {
+          'PENDING-ACCEPTANCE': 0,
+          'PENDING-COMPLETION': 0
+        }
+      };
+    }
+
+    // convert orders into an array
+    const ordersList = Array.isArray(orders) ? orders : [orders];
+    
+    const orderGroups = ordersList.map(order => ({
+      orderId: order.id || order.tid,
+      status: order.status,
+      items: Array.isArray(order.items) ? order.items : [],
+      totalAmount: order.total_price || order.totalAmount,
+      uid: order.uid
+    }));
+
+    // filter orders based on status
+    const filtered = orderGroups.filter(group => 
+      group.status === selectedStatus && group.items.length > 0
     );
-    const filtered = pendingOrders.filter(order => order.status === selectedStatus);
+
+    // counting for header
     const counts = {
-      to_be_accepted: pendingOrders.filter(order => order.status === 'to_be_accepted').length,
-      to_be_completed: pendingOrders.filter(order => order.status === 'to_be_completed').length,
+      'PENDING-ACCEPTANCE': orderGroups.filter(group => group.status === 'PENDING-ACCEPTANCE').length,
+      'PENDING-COMPLETION': orderGroups.filter(group => group.status === 'PENDING-COMPLETION').length,
     };
 
-    return { filteredOrders: filtered, orderCounts: counts };
-  }, [selectedStatus, orders]);
+    return { groupedOrders: filtered, orderCounts: counts };
+  }, [orders, selectedStatus]); 
+
+  const handleStatusChange = (newStatus) => {
+    setSelectedStatus(newStatus);
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.statusTabs}>
         <TouchableOpacity 
-          style={[styles.statusTab, selectedStatus === 'to_be_accepted' && styles.activeTab]}
-          onPress={() => setSelectedStatus('to_be_accepted')}
+          style={[
+            styles.statusTab, 
+            selectedStatus === 'PENDING-ACCEPTANCE' && styles.activeTab
+          ]}
+          onPress={() => handleStatusChange('PENDING-ACCEPTANCE')}
         >
           <Text style={styles.statusTabText}>To be accepted</Text>
           <View style={styles.statusCount}>
-            <Text style={styles.statusCountText}>{orderCounts.to_be_accepted}</Text>
+            <Text style={styles.statusCountText}>
+              {orderCounts['PENDING-ACCEPTANCE']}
+            </Text>
           </View>
         </TouchableOpacity>
+        
         <TouchableOpacity 
-          style={[styles.statusTab, selectedStatus === 'to_be_completed' && styles.activeTab]}
-          onPress={() => setSelectedStatus('to_be_completed')}
+          style={[
+            styles.statusTab, 
+            selectedStatus === 'PENDING-COMPLETION' && styles.activeTab
+          ]}
+          onPress={() => handleStatusChange('PENDING-COMPLETION')}
         >
           <Text style={styles.statusTabText}>To be completed</Text>
           <View style={styles.statusCount}>
-            <Text style={styles.statusCountText}>{orderCounts.to_be_completed}</Text>
+            <Text style={styles.statusCountText}>
+              {orderCounts['PENDING-COMPLETION']}
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
       
       <FlatList
-        data={filteredOrders}
-        renderItem={({ item }) => <Order order={item} onAccept={onAccept} onComplete={onComplete}/>}
-        keyExtractor={item => item.id}
+        data={groupedOrders}
+        renderItem={({ item }) => (
+          <Order 
+            orderGroup={item}
+            onAccept={onAccept}
+            onComplete={onComplete}
+          />
+        )}
+        keyExtractor={item => item.orderId?.toString()}
         contentContainerStyle={styles.orderList}
         style={styles.flatList}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No orders found</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -90,6 +140,16 @@ const styles = StyleSheet.create({
   },
   flatList: {
     flex: 1,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 20,
+  },
+  emptyText: {
+    color: '#666',
+    fontSize: 16,
   },
 });
 

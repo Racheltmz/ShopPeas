@@ -291,5 +291,4 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         firestore.collection(COLLECTION).document(tid).delete();
     }
 
-
 }
