@@ -18,7 +18,7 @@ const ProfileDetails = ({ userData, navigation }) => {
         <View style={styles.profileCard}>
           <View style={styles.profileCardLeft}>
             <Image source={require('../../../assets/imgs/profile.png')} style={styles.profilePicture} />
-            <Text style={styles.name}>{userData.name}</Text>
+            <Text style={styles.name}>{userData.firstName + " " + userData.lastName}</Text>
           </View>
           <View style={styles.profileCardRight}>
             <View style={{marginVertical: 10}}>

@@ -6,51 +6,25 @@ import ProfileEdit from "../../components/customers/ProfileEdit";
 import consumerService from "../../service/ConsumerService";
 
 const Profile = ({ navigation }) => {
-  const { currentUser, userUid, userAddress, paymentDetails} = useUserStore();
+  const { currentUser, userUid, userAddress, paymentDetails, fetchUserInfo } = useUserStore();
   const Stack = createStackNavigator();
-  const [userData, setUserData] = useState([{
-    name: currentUser.first_name + " " + currentUser.last_name,
+  const [userData, setUserData] = useState({
+    firstName: currentUser.first_name,
+    lastName: currentUser.last_name,
     email: currentUser.email,
     contact: currentUser.phone_number,
     dateJoined: currentUser.signupDate,
-    streetName: '',
-    unitNo: '',
-    buildingName: '',
-    city: '',
-    postalCode: '',
-  }]);
+    streetName: userAddress["street_name"],
+    unitNo: userAddress["unit_no"],
+    buildingName: userAddress["building_name"],
+    city: userAddress["city"],
+    postalCode: userAddress["postal_code"],
+  });
 
-  // todo: update this in line with user store
-  const fetchData = async (userUid) => {
-    await consumerService.viewProfile(userUid)
-      .then((res) => {
-        if (res.consumerAddress.buildingName === null) {
-          res.consumerAddress.buildingName = '';
-        }
-        const profile = {
-          name: currentUser.first_name + " " + currentUser.last_name,
-          email: currentUser.email,
-          contact: currentUser.phone_number,
-          dateJoined: currentUser.signupDate,
-          streetName: res.consumerAddress.street_name,
-          unitNo: res.consumerAddress.unit_no,
-          buildingName: res.consumerAddress.building_name,
-          city: res.consumerAddress.city,
-          postalCode: res.consumerAddress.postal_code,
-        }
-        setUserData(profile);
-      })
-  }
-
-  useEffect(() => {
-    fetchData(userUid);
-  }, [userUid]);
-
-  const handleSaveProfile = (updatedUserData) => {
-    // This is where you would typically make an API call to update the user's profile
+  const handleSaveProfile = async (updatedUserData) => {
     console.log("Saving updated user data:", updatedUserData);
-    // setUserData({ ...userData, ...updatedUserData });
-    // Here you would handle the response from the API, update local state, etc.
+    await consumerService.editProfile(userUid, updatedUserData);
+    await fetchUserInfo(userUid)
   };
 
   return (
