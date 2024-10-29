@@ -6,7 +6,7 @@ import { useUserStore } from '../../lib/userStore';
 import { useNavigation } from '@react-navigation/native';
 
 const Profile = () => {
-  const { resetUser, paymentDetails } = useUserStore();
+  const { resetUser, paymentDetails, userAddress, currentUser } = useUserStore();
   const navigation = useNavigation();
 
   return (
@@ -29,8 +29,7 @@ const Profile = () => {
               style={styles.profilePic}
             />
             <View style={styles.nameContainer}>
-              <Text style={styles.wholesalerName}>Happy</Text>
-              <Text style={styles.wholesalerName}>Wholesaler</Text>
+              <Text style={styles.wholesalerName}>{currentUser.name}</Text>
             </View>
           </View>
           <View style={styles.profileRight}>
@@ -89,26 +88,6 @@ const Profile = () => {
             </View>
           </View>
         </View>
-
-        {/* My Products Button */}
-        <TouchableOpacity 
-          style={styles.myProductsButton}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.myProductsText}>My Products</Text>
-          <Ionicons name="chevron-forward" size={24} color="#0C5E52" />
-        </TouchableOpacity>
-
-        {/* Log Out Panel 
-        <TouchableOpacity
-          style={styles.logOutButton}
-          onPress={() => {
-            navigation.navigate('Login');
-          }}
-        >
-          <Text style={styles.logOutButtonText}>Log Out</Text>
-        </TouchableOpacity> */}
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -140,7 +119,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#EBF3D1',
+    backgroundColor: '#0C5E5240',
   },
   headerLeft: {
     flexDirection: 'row',
@@ -161,12 +140,14 @@ const styles = StyleSheet.create({
   },
   profileCard: {
     flexDirection: 'row',
-    backgroundColor: '#EBF3D1',
+    backgroundColor: '#0C5E5240',
     padding: 16,
+    paddingBottom: 23,
   },
   profileLeft: {
     flex: 1,
     alignItems: 'center',
+    marginLeft: "10%",
   },
   profilePic: {
     width: 100,
@@ -185,6 +166,7 @@ const styles = StyleSheet.create({
   profileRight: {
     flex: 1,
     justifyContent: 'center',
+    marginLeft: "15%",
   },
   infoRow: {
     marginBottom: 8,

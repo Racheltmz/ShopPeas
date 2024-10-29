@@ -46,8 +46,15 @@ export const useUserStore = create((set, get) => ({
           set({ currentUser: null, isLoading: false });
         }
 
-        // get address
-        const addressDocRef = doc(db, userRole + "_address", uid);
+        let params = ""
+
+        if (userRole == "consumer") {
+          params = uid;
+        }
+        else {
+          params = get().currentUser["uen"];
+        }
+        const addressDocRef = doc(db, userRole + "_address", params);
         const addressDocSnap = await getDoc(addressDocRef);
 
         if (docSnap.exists()) {
@@ -57,7 +64,7 @@ export const useUserStore = create((set, get) => ({
         }
 
         // get bank account details
-        const paymentDetailsDocRef = doc(db, userRole + "_account", uid);
+        const paymentDetailsDocRef = doc(db, userRole + "_account", params);
         const paymentDetailsDocSnap = await getDoc(paymentDetailsDocRef);
 
         if (docSnap.exists()) {
