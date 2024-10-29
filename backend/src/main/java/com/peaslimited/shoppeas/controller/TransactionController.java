@@ -35,7 +35,6 @@ public class TransactionController {
     @ResponseStatus(code = HttpStatus.OK)
     public Map<String,Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status) throws ExecutionException, InterruptedException {
         List<QueryDocumentSnapshot>  docList = transactionService.getDocByUENAndStatus(uen, status);
-        System.out.println(docList);
 
         ArrayList<Object> transactionList = new ArrayList<>();
         Map<String, Object> dataMap = new HashMap<>();

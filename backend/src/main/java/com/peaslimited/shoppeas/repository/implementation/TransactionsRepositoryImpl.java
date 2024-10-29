@@ -287,6 +287,12 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         }
     }
 
+    @Override
+    public void updateTransactionPrice(String tid, double updatedPrice) {
+        DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
+        docRef.update("converted_price", updatedPrice);
+    }
+
     private void deleteTransaction(String tid) {
         firestore.collection(COLLECTION).document(tid).delete();
     }

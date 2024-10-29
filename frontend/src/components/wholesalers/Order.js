@@ -23,7 +23,7 @@ const Order = ({ orderGroup, onAccept, onComplete }) => {
   return (
     <View style={styles.orderItem}>
       <View style={styles.orderHeader}>
-        <Text style={styles.orderId}>Order ID: {orderGroup.orderId}</Text>
+        <Text style={styles.orderId}>Order ID: {orderGroup.orderId.slice(0, 8)}</Text>
         {isToBeAccepted && (
           <TouchableOpacity style={styles.acceptButton} onPress={handleAccept}>
             <Text style={styles.buttonText}>Accept</Text>
@@ -80,27 +80,29 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   orderId: {
+    color: '#0C5E52',
     fontWeight: 'bold',
+    fontSize: 16,
   },
   acceptButton: {
-    backgroundColor: '#FFA07A',
-    padding: 8,
+    backgroundColor: '#FF7B5F',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 5,
-    minWidth: 80,
     alignItems: 'center',
   },
   completeButton: {
     backgroundColor: '#FFA07A',
-    padding: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 5,
-    minWidth: 80,
     alignItems: 'center',
   },
   completedButton: {
     backgroundColor: '#15b33f',
-    padding: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 5,
-    minWidth: 80,
     alignItems: 'center',
   },
   buttonText: {
@@ -117,6 +119,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   productName: {
+    color: '#0C5E52',
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 4,
@@ -140,6 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   totalAmount: {
+    color: '#0C5E52',
     fontWeight: 'bold',
     fontSize: 16,
   },

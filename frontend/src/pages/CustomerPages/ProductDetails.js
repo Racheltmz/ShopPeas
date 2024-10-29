@@ -31,7 +31,7 @@ const ProductDetails = ({ route }) => {
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [location, setLocation] = useState([1.290270, 103.851959]); // by default, set to Singapore's coordinates
-  const { addItem, fetchCart } = useCart();
+  const { cart, addItem, fetchCart } = useCart();
   const navigation = useNavigation();
 
   const fetchProductData = (userUid, pid) => {
@@ -155,7 +155,7 @@ const ProductDetails = ({ route }) => {
     </TouchableOpacity>
   );
 
-  const handleAddCartItem = () => {
+  const handleAddCartItem = async () => {
     const productSubmitData = {
       "swp_id": selectedWholesaler.swp_id,
       "price": selectedWholesaler.price,
@@ -163,8 +163,15 @@ const ProductDetails = ({ route }) => {
       "total_price": (selectedWholesaler.price * quantity).toFixed(2),
       "uen": selectedWholesaler.uen,
     };
-    let success = addItem(userUid, productSubmitData, product.name, quantity);
-    fetchCart(userUid);
+    const newItem = {
+      "image_url": product.image_url,
+      "name": product.name,
+      "price": selectedWholesaler.price,
+      "quantity": quantity,
+      "swp_id": selectedWholesaler.swp_id,
+    }
+    let success = addItem(userUid, productSubmitData, product.name, quantity, newItem, selectedWholesaler);
+    await fetchCart(userUid);
     // TODO: ADD AN ALERT HERE to notify user that the item was added to cart
     setQuantity(1);
   };
