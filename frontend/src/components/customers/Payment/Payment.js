@@ -8,14 +8,15 @@ import paymentService from '../../../service/PaymentService';
 
 const Payment = () => {
   const navigation = useNavigation();
-  const { currentUser, paymentDetails } = useUserStore();
-  const { cart, getTotal } = useCart();
+  const { userUid, currentUser, paymentDetails } = useUserStore();
+  const { cart, checkout, getTotal } = useCart();
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
   };
 
   const handleMakePayment = () => {
+    checkout(userUid);
     // Implement payment logic here
     console.log('Processing payment...');
   };

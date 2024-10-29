@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -13,7 +14,8 @@ import java.util.ArrayList;
 public class Transactions {
     @Id
     private String tid;
-    private ArrayList<Object> products;
+    private Map<String, Object> products;
+    private boolean rated;
     // IN-CART, PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED
     private String status;
     private double total_price;
