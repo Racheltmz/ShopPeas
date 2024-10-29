@@ -35,6 +35,7 @@ public interface TransactionsRepository {
 
     void updateTransactionStatus(Map<String, Object> data);
 
+    void updateTransactionPrice(String tid, double updatedPrice);
 
 //
 //    DocumentSnapshot getDocByUENAndWName(String uen, String uid) throws ExecutionException, InterruptedException;

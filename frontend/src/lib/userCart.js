@@ -8,7 +8,6 @@ export const useCart = create((set, get) => ({
   isLoading: false,
   error: null,
 
-  // TODO: might remove this
   // Helper function to format cart data for backend
   formatCartForBackend: (cartData) => ({
     "cart_items": cartData.map((group) => ({
@@ -55,32 +54,55 @@ export const useCart = create((set, get) => ({
       })
   },
 
-  addItem: async (uid, data, productName, newQuantity) => {
+  addItem: async (uid, data, productName, newQuantity, newItem, selectedWholesaler) => {
     set({ isLoading: true, error: null });
-
     // Send update to backend
     await cartService.addToCart(uid, data)
       .then(() => {
         const currentState = get();
-        const updatedCart = currentState.cart
-          .map((wholesaler) => {
-            if (wholesaler.uen === data.uen) {
-              return {
-                ...wholesaler,
-                items: wholesaler.items
-                  .map((item) => {
-                    if (item.name === productName) {
-                      // TODO: POTENTIALLY CAN TRY UPDATE QUANTITY by calling the fn
-                      return { ...item, quantity: Math.max(0, newQuantity) };
-                    }
-                    return item;
-                  })
-                  .filter((item) => item.quantity > 0),
+        let wholesalerExists = false;
+        const updatedCart = currentState.cart.map((wholesaler) => {
+          if (wholesaler.uen === data.uen) {
+            wholesalerExists = true;
+    
+            // Find existing item by name, if any
+            const existingItemIndex = wholesaler.items.findIndex((item) => item.name === productName);
+    
+            if (existingItemIndex >= 0) {
+              // Update the quantity of the existing item
+              wholesaler.items[existingItemIndex] = {
+                ...wholesaler.items[existingItemIndex],
+                quantity: Math.max(0, newQuantity),
               };
+            } else {
+              // Add new item if it doesn't exist
+              wholesaler.items.push(newItem);
             }
-            return wholesaler;
-          })
-          .filter((wholesaler) => wholesaler.items.length > 0);
+            // Filter out items with zero quantity
+            return {
+              ...wholesaler,
+              items: wholesaler.items.filter((item) => item.quantity > 0),
+            };
+          }
+          return wholesaler;
+        });
+    
+        // If the wholesaler does not exist, add a new one
+        if (!wholesalerExists) {
+          updatedCart.push({
+            uen: data.uen,
+            wholesaler: selectedWholesaler.name,
+            location: {
+              "building_name": null,
+              "city": "Singapore", 
+              "postal_code": null, 
+              "street_name": selectedWholesaler.location, 
+              "unit_no": null
+            },
+            items: [newItem],
+          });
+        }
+    
         // Update local state if backend update successful
         set({
           cart: updatedCart,
@@ -144,7 +166,7 @@ export const useCart = create((set, get) => ({
         const currentState = get();
         const updatedCart = currentState.cart
           .map((wholesaler) => {
-            if (wholesaler.uen === uen) {
+            if (wholesaler.uen === deleteData.uen) {
               return {
                 ...wholesaler,
                 items: wholesaler.items.filter((item) => item.name !== productName),
@@ -152,8 +174,8 @@ export const useCart = create((set, get) => ({
             }
             return wholesaler;
           })
+          // Filter out wholesalers with no items left
           .filter((wholesaler) => wholesaler.items.length > 0);
-        console.log(updatedCart)
         // Update local state if backend update successful
         set({
           cart: updatedCart,
@@ -203,10 +225,9 @@ export const useCart = create((set, get) => ({
     const currentState = get();
 
     const checkoutData = currentState.formatCartForBackend(currentState.cart);
-    console.log(uid, checkoutData);
     await transactionService.checkout(uid, checkoutData)
       .catch((err) => {
-        console.log("Checkout failed: ", err)
+        console.error("Checkout failed: ", err)
         set({
           isLoading: false,
           error: err.message || "Failed to checkout",

@@ -3,6 +3,15 @@ import { REACT_APP_BACKEND_TRANSACTION } from '@env';
 import { REACT_APP_BACKEND_HISTORY } from '@env';
 
 const transactionService = {
+    viewOrderHistory: async (uid) => {
+        const response = await apiClient.get(`${REACT_APP_BACKEND_HISTORY}/view`, {
+            headers: {
+                Authorization: `Bearer ${uid}`,
+                Accept: "application/json",
+            },
+        });
+        return response.data;
+    },
     getTransactions: async (uid, uen, status) => {
         console.log('Calling API with:', { uid, uen, status });
         const response = await apiClient.get(`${REACT_APP_BACKEND_TRANSACTION}/gettransactionsbyuen?uen=${uen}&status=${status}`, {

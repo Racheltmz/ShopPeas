@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import ProfileDetails from "../../components/customers/ProfileDetails";
 import { createStackNavigator } from '@react-navigation/stack';
 import { useUserStore } from "../../lib/userStore";
 import ProfileEdit from "../../components/customers/ProfileEdit";
-import consumerService from "../../service/ConsumerService";
 
 const Profile = ({ navigation }) => {
   const { currentUser, userUid, userAddress, paymentDetails, fetchUserInfo } = useUserStore();

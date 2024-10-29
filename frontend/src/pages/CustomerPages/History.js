@@ -17,7 +17,8 @@ const History = () => {
   const fetchData = async (userUid) => {
     await transactionService.viewOrderHistory(userUid)
       .then((res) => {
-        setHistory(res);
+        data = res.sort((a, b) => new Date(b.date) - new Date(a.date));
+        setHistory(data);
         setLoading(false);
       })
       .catch((err) => {

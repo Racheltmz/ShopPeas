@@ -64,11 +64,9 @@ public class ConsumerController {
         String uid = (String) authentication.getPrincipal();
 
         Map<String, Object> profileDetails = data.get("consumer");
-        Map<String, Object> accountDetails = data.get("consumerAccount");
         Map<String, Object> addressDetails = data.get("consumerAddress");
         authService.updateConsumer(uid, profileDetails);
         consumerService.updateConsumer(uid, profileDetails);
-        consumerAccountService.updateConsumerAccount(uid, accountDetails);
         consumerAddressService.updateConsumerAddress(uid, addressDetails);
     }
 }
