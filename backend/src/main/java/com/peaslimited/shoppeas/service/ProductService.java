@@ -20,4 +20,6 @@ public interface ProductService {
     void updateProduct(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
     Product findByProductName(String name) throws ExecutionException, InterruptedException;
+
+    String getImageURLByProductName(String productName) throws ExecutionException, InterruptedException;
 }

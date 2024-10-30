@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.repository;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.model.Product;
@@ -22,5 +23,7 @@ public interface ProductRepository {
     void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
     Product findByProductName(String name) throws ExecutionException, InterruptedException;
+
+    DocumentSnapshot getUrlByName(String ProductName) throws ExecutionException, InterruptedException;
 
 }
