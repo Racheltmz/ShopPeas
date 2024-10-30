@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from '../../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Divider } from 'react-native-paper';
 import paymentService from '../../../service/PaymentService';
+import Alert from '../../utils/Alert';
 
 const AddCard = () => {
   const navigation = useNavigation();
-  const { userUid, currentUser } = useUserStore();
+  const { userUid } = useUserStore();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
+  const showAlert = (title, message, onConfirm) => {
+      setCustomAlert({ title, message, onConfirm });
+      setAlertVisible(true);
+  };
 
   const [formData, setFormData] = useState({
     card_no: '',
@@ -31,19 +39,19 @@ const AddCard = () => {
 
   const handleSubmit = () => {
     if (!validateCardNumber(formData.card_no)) {
-      Alert.alert('Invalid Card Number', 'Please enter a valid 16-digit card number.');
+      showAlert("Invalid Card Number", "Please enter a valid 16-digit card number.", () => setAlertVisible(false));
       return;
     }
     if (!validateExpiryDate(formData.expiry_date)) {
-      Alert.alert('Invalid Expiry Date', 'Please enter a valid expiry date (MM/YY).');
+      showAlert("Invalid Expiry Date", "Please enter a valid expiry date (MM/YY).", () => setAlertVisible(false));
       return;
     }
     if (!validateCVV(formData.cvv)) {
-      Alert.alert('Invalid CVV', 'Please enter a valid CVV (3 or 4 digits).');
+      showAlert("Invalid CVV", "Please enter a valid CVV (3 or 4 digits).", () => setAlertVisible(false));
       return;
     }
     if (formData.name.trim().length === 0) {
-      Alert.alert('Invalid Name', 'Please enter the name on the card.');
+      showAlert("Invalid Name", "Please enter the name on the card.", () => setAlertVisible(false));
       return;
     }
 
@@ -132,6 +140,16 @@ const AddCard = () => {
         <Ionicons name="arrow-forward" size={24} color="white" />
       </TouchableOpacity>
       </ScrollView>
+      <Alert
+          visible={alertVisible}
+          title={customAlert.title}
+          message={customAlert.message}
+          onConfirm={() => {
+          setAlertVisible(false);
+          customAlert.onConfirm();
+          }}
+          onCancel={() => setAlertVisible(false)}
+      />
     </View>
   );
 };

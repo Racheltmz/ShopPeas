@@ -11,7 +11,6 @@ export const useUserStore = create((set, get) => ({
   paymentDetails: null,
   isLoading: true,
   userUid: "",
-  rerender: false,
   fetchUserInfo: async (uid) => {
     if (!uid) return set({ currentUser: null, userRole: "", isLoading: false });
 

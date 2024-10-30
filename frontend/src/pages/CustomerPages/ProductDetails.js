@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Modal,
-  SafeAreaView
-} from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, SafeAreaView } from "react-native";
 import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
@@ -19,6 +11,7 @@ import MapView, { Marker } from 'react-native-maps';
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
 import productService from "../../service/ProductService";
 import locationService from "../../service/LocationService";
+import Alert from '../../components/utils/Alert';
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
@@ -33,6 +26,13 @@ const ProductDetails = ({ route }) => {
   const [location, setLocation] = useState([1.290270, 103.851959]); // by default, set to Singapore's coordinates
   const { cart, addItem, fetchCart } = useCart();
   const navigation = useNavigation();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
+  const showAlert = (title, message, onConfirm) => {
+      setCustomAlert({ title, message, onConfirm });
+      setAlertVisible(true);
+  };
 
   const fetchProductData = (userUid, pid) => {
     productService.getDetailsByPID(userUid, pid)
@@ -163,6 +163,7 @@ const ProductDetails = ({ route }) => {
       "total_price": (selectedWholesaler.price * quantity).toFixed(2),
       "uen": selectedWholesaler.uen,
     };
+
     const newItem = {
       "image_url": product.image_url,
       "name": product.name,
@@ -172,7 +173,7 @@ const ProductDetails = ({ route }) => {
     }
     let success = addItem(userUid, productSubmitData, product.name, quantity, newItem, selectedWholesaler);
     await fetchCart(userUid);
-    // TODO: ADD AN ALERT HERE to notify user that the item was added to cart
+    showAlert("Successful!", "Item has been added to cart!", () => setAlertVisible(false));
     setQuantity(1);
   };
 
@@ -269,6 +270,16 @@ const ProductDetails = ({ route }) => {
           </View>
         </Modal>
       </View>
+      <Alert
+          visible={alertVisible}
+          title={customAlert.title}
+          message={customAlert.message}
+          onConfirm={() => {
+          setAlertVisible(false);
+          customAlert.onConfirm();
+          }}
+          onCancel={() => setAlertVisible(false)}
+      />
     </View>
   );
 };

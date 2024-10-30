@@ -14,6 +14,7 @@ const RegisterCustomer = ({ onBackPress }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',

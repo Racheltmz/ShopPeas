@@ -21,6 +21,7 @@ const CompletedOrders = ({ orders }) => {
       status: order.status,
       items: Array.isArray(order.items) ? order.items : [],
       totalAmount: order.total_price || order.totalAmount,
+      currency: order.currency,
       uid: order.uid
     }));
 

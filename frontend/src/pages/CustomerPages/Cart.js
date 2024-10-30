@@ -13,8 +13,7 @@ import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
 
 const Cart = ({ navigation }) => {
-  const { userUid } = useUserStore();
-  const { cart, clearCart, checkout, getTotal } = useCart();
+  const { cart, clearCart, getTotal } = useCart();
 
   const handleClearCart = () => {
     clearCart();

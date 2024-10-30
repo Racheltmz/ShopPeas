@@ -30,31 +30,38 @@ public class TransactionController {
     @Autowired
     private TransactionsService transactionService;
 
-    @GetMapping("/gettransactionsbyuen")
+    @GetMapping("/get")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public Map<String,Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status) throws ExecutionException, InterruptedException {
-        List<QueryDocumentSnapshot>  docList = transactionService.getDocByUENAndStatus(uen, status);
+    public ArrayList<Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status) throws ExecutionException, InterruptedException {
+        List<QueryDocumentSnapshot> docList = transactionService.getDocByUENAndStatus(uen, status);
 
         ArrayList<Object> transactionList = new ArrayList<>();
-        Map<String, Object> dataMap = new HashMap<>();
 
         DocumentSnapshot document = null;
         for (QueryDocumentSnapshot queryDocumentSnapshot : docList) {
             if (queryDocumentSnapshot != null) {
+                Map<String, Object> dataMap = new HashMap<>();
+
                 document = queryDocumentSnapshot;
 
-                String uid = document.get("uid").toString();
-                double total_price = (double) document.get("total_price");
-                double price = (double) total_price;
+                String uid = Objects.requireNonNull(document.get("uid")).toString();
+                double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
                 dataMap.put("tid", document.getId());
                 dataMap.put("uid", uid);
-                dataMap.put("total_price", price);
+
+                if (document.contains("converted_price")) {
+                    dataMap.put("total_price", Double.parseDouble(Objects.requireNonNull(document.get("converted_price")).toString()));
+                    dataMap.put("currency", "MYR");
+                } else {
+                    dataMap.put("total_price", total_price);
+                    dataMap.put("currency", "SGD");
+                }
                 dataMap.put("items", transactionService.getProductListfromTransaction(document, false));
                 transactionList.add(dataMap);
             }
         }
-        return dataMap;
+        return transactionList;
     }
 
     @PatchMapping("/updatetransactionstatus")

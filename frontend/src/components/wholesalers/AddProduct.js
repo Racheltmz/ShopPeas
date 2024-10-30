@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import Alert from '../utils/Alert';
 
 const AddProductModal = ({ visible, onClose, onAddProduct }) => {
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
+  const showAlert = (title, message, onConfirm) => {
+      setCustomAlert({ title, message, onConfirm });
+      setAlertVisible(true);
+  };
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
@@ -11,26 +19,26 @@ const AddProductModal = ({ visible, onClose, onAddProduct }) => {
     minimumOrder: 0,
   });
 
-    const handleAddProduct = () => {
-        const price = parseFloat(newProduct.price);
-        const stock = parseInt(newProduct.stock);
-        
-        if (isNaN(price) || newProduct.name.trim() === '') {
-        alert('Please enter a valid name and price');
-        return;
-        }
-    
-        const productToAdd = {
-        ...newProduct,
-        name: newProduct.name.trim(),
-        price: price,
-        stock: isNaN(stock) ? 0 : stock,
-        description: newProduct.description.trim(),
-        };
-        onAddProduct(productToAdd);
-        setNewProduct({ name: '', price: '', description: '', stock: 0, minimumOrder: 0 });
-        onClose();
-    };
+  const handleAddProduct = () => {
+      const price = parseFloat(newProduct.price);
+      const stock = parseInt(newProduct.stock);
+      
+      if (isNaN(price) || newProduct.name.trim() === '') {
+        showAlert("Missing Input", "Please enter a valid name and price", () => setAlertVisible(false));
+      return;
+      }
+  
+      const productToAdd = {
+      ...newProduct,
+      name: newProduct.name.trim(),
+      price: price,
+      stock: isNaN(stock) ? 0 : stock,
+      description: newProduct.description.trim(),
+      };
+      onAddProduct(productToAdd);
+      setNewProduct({ name: '', price: '', description: '', stock: 0, minimumOrder: 0 });
+      onClose();
+  };
 
   return (
     <Modal
@@ -103,6 +111,17 @@ const AddProductModal = ({ visible, onClose, onAddProduct }) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <Alert
+          visible={alertVisible}
+          title={customAlert.title}
+          message={customAlert.message}
+          onConfirm={() => {
+          setAlertVisible(false);
+          customAlert.onConfirm();
+          }}
+          onCancel={() => setAlertVisible(false)}
+      />
     </Modal>
   );
 };
