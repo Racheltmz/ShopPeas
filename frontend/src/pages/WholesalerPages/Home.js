@@ -84,9 +84,9 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
+      <Text style={styles.headerTitle}>{currentUser.name}</Text>
       <View style={styles.header}>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>{currentUser.name}</Text> 
           <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
         <Image
@@ -100,9 +100,6 @@ const Home = () => {
           <Ionicons name="add-circle-outline" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.addButtonText}>Add New Product</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
-        </TouchableOpacity>
       </View>
       <ScrollView style={styles.productList}>
         {filteredProducts.map((product, index) => (
@@ -159,7 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'normal',
     color: '#0C5E52',
-    marginLeft: '2%',
+    marginLeft: '5%',
   },
   subHeaderTitle: {
     fontFamily: "Amiko, Noto Sans",
@@ -170,8 +167,8 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: '18%',
-    height: '65%',
-    marginRight: "29.2%",
+    height: '100%',
+    marginRight: "30%",
   },
   addProductContainer: {
     flexDirection: 'row',
