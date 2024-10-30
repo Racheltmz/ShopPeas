@@ -20,7 +20,12 @@ public class PaymentController {
     @Autowired
     private ConsumerAccountService consumerAccService;
 
-    //get payment methods
+    /**
+     * Gets the card numbers of all the cards belonging to a single consumer.
+     * @return A Map containing a list of the consumer's card numbers.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @SuppressWarnings("unchecked")
     @GetMapping("/get")
     @PreAuthorize("hasRole('CONSUMER')")
@@ -51,6 +56,12 @@ public class PaymentController {
         return payments;
     }
 
+    /**
+     * Adds a new payment method for the consumer.
+     * @param data A Map containing the consumer's name, card number, card expiry date, and cvv
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     //add payment
     @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
@@ -96,6 +107,12 @@ public class PaymentController {
         }
     }
 
+    /**
+     * Deletes a payment method.
+     * @param data A map containing the card number of the card that is to be deleted.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     //delete payment
     @PatchMapping("/delete")
     @PreAuthorize("hasRole('CONSUMER')")
