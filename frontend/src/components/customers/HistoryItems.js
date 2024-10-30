@@ -52,7 +52,7 @@ const HistoryItems = ({ navigation, historyList, onRatedItem }) => {
                   source={{ uri: product.image_url }}
                   style={styles.productItemImage}
                 />
-                <View>
+                <View style={styles.productItemDetails}>
                   <Text style={{ color: "#0C5E52", fontWeight: "700" }}>{product.name}</Text>
                   <Text style={{ color: "#0C5E52" }}>{product.description}</Text>
                   <Text style={{ color: "#0C5E52" }}>Quantity: {product.quantity}</Text>
@@ -74,14 +74,14 @@ const HistoryItems = ({ navigation, historyList, onRatedItem }) => {
               </View>
               <TouchableOpacity
                 disabled={wholesaler.rated}
-                style={wholesaler.rated ? styles.ratingDisabled : styles.ratingButton }
+                style={wholesaler.rated ? styles.ratingDisabled : styles.ratingButton}
                 onPress={() => {
                   setSelectedWholesaler(wholesaler.uen);
                   setModalVisible(true);
                   setTid(wholesaler.tid);
                 }}
               >
-                <Text style={wholesaler.rated ? styles.ratingDisabledText : styles.ratingButtonText }>{wholesaler.rated === false ? "Give Rating" : "Rated"}</Text>
+                <Text style={wholesaler.rated ? styles.ratingDisabledText : styles.ratingButtonText}>{wholesaler.rated === false ? "Give Rating" : "Rated"}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -171,7 +171,9 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontWeight: "600",
   },
-
+  productItemDetails: {
+    width: "75%",
+  },
   productItem: {
     fontSize: 14,
     marginLeft: 10,

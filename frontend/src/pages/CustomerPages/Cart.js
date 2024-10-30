@@ -10,33 +10,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
-import transactionService from '../../service/TransactionService';
 
 const Cart = ({ navigation }) => {
   const { cart, clearCart, getTotal } = useCart();
-
-  const updateOrderHistory = async (userUid) => {
-    await transactionService.viewOrderHistory(userUid)
-      .then((res) => {
-        data = res.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setHistory(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        if (err.status === 404) {
-          setHistory([]);
-        } else {
-          console.error(err);
-        }
-      });
-  }
 
   const handleClearCart = () => {
     clearCart();
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     navigation.navigate("Payment");
   };
 
