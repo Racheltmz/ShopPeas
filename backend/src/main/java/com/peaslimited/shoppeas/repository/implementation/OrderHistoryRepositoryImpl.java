@@ -180,8 +180,6 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
             Map<String, Object> cartMap = (Map<String, Object>) cart;
 
             String uen = (String) cartMap.get("uen");
-            System.out.println(uid);
-            System.out.println(uen);
             Transactions transaction = transactionsRepository.findCartTransaction(uid, uen);
 
             // update stock quantity in wholesaler product records
