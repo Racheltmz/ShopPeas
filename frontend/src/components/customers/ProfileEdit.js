@@ -9,9 +9,11 @@ import {
   ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useUserStore } from "../../lib/userStore";
 
 
 const ProfileEdit = ({ route, navigation }) => {
+  const { currentUser } = useUserStore();
   const { userData, onSave } = route.params;
   const [formData, setFormData] = useState({ ...userData });
 
@@ -19,8 +21,23 @@ const ProfileEdit = ({ route, navigation }) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = () => {
-    onSave(formData);
+  const handleSave = () => {  
+    const data = {
+      consumer: {
+        "first_name": formData.firstName,
+        "last_name": formData.lastName,
+        "phone_number": formData.contact,
+        "email": currentUser.email,
+      },
+      consumerAddress: {
+        "street_name": formData.streetName,
+        "unit_no": formData.unitNo,
+        "building_name": formData.buildingName,
+        "postal_code": formData.postalCode,
+        "city": formData.city,
+      },
+    };  
+    onSave(data);
     navigation.goBack();
   };
 
@@ -38,7 +55,8 @@ const ProfileEdit = ({ route, navigation }) => {
             source={require('../../../assets/imgs/profile.png')}
             style={styles.profilePicture}
           />
-          <Text style={styles.name}>{userData.name}</Text>
+          <Text style={styles.name}>{userData.firstName}</Text>
+          <Text style={styles.name}>{userData.lastName}</Text>
           <Text style={styles.dateJoined}>
             Date Joined: {userData.dateJoined}
           </Text>
@@ -56,13 +74,13 @@ const ProfileEdit = ({ route, navigation }) => {
           placeholder="Phone No."
           keyboardType="phone-pad"
         />
-        <TextInput
+        {/* <TextInput
           style={styles.input}
           value={formData.email}
           onChangeText={(text) => handleChange("email", text)}
           placeholder="Email"
           keyboardType="email-address"
-        />
+        /> */}
 
         <Text style={styles.label}>Address:</Text>
         <TextInput

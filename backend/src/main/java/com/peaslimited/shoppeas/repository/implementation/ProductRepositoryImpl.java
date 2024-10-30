@@ -59,7 +59,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<ProductDetailedDTO> findProductDetails(List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException {
+    public List<ProductDetailedDTO> findProductDetails(List<String> swpid_list, List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException {
         List<DocumentReference> docRefs = productid_list.stream()
                 .map(pid -> firestore.collection(COLLECTION).document(pid))
                 .toList();
@@ -71,6 +71,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             Product product = productDocs.get(i).toObject(Product.class);
             assert product != null;
             productDetailedList.add(new ProductDetailedDTO(
+                    swpid_list.get(i),
                     productid_list.get(i),
                     product.getName(),
                     product.getPackage_size(),

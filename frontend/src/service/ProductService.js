@@ -27,6 +27,31 @@ const productService = {
             }
         });
         return response.data;
+    },
+    addWholesalerProduct: async (token, requestBody) => {
+        const response = await apiClient.post(`${REACT_APP_BACKEND_PRODUCT}/add`, requestBody, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+    editWholesalerProduct: async (token, swp_id, requestBody) => {
+        const response = await apiClient.patch(`${REACT_APP_BACKEND_PRODUCT}/update/${swp_id}`, requestBody, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+    deleteWholesalerProduct: async (token, swp_id) => {
+        console.log(`${REACT_APP_BACKEND_PRODUCT}/delete/${swp_id}`, token);
+        const response = await apiClient.delete(`${REACT_APP_BACKEND_PRODUCT}/delete/${swp_id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
     }
 };
 

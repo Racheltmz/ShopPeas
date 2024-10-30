@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../lib/userStore';
 
 const ProfileDetails = ({ userData, navigation }) => {
-  const { resetUser, paymentDetails } = useUserStore()
+  const { resetUser } = useUserStore()
 
   return (
     <View style={styles.container}>
@@ -18,7 +18,7 @@ const ProfileDetails = ({ userData, navigation }) => {
         <View style={styles.profileCard}>
           <View style={styles.profileCardLeft}>
             <Image source={require('../../../assets/imgs/profile.png')} style={styles.profilePicture} />
-            <Text style={styles.name}>{userData.name}</Text>
+            <Text style={styles.name}>{userData.firstName + "\n" + userData.lastName}</Text>
           </View>
           <View style={styles.profileCardRight}>
             <View style={{marginVertical: 10}}>
@@ -97,10 +97,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   profileCardLeft: {
+    width: "50%",
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingLeft: '7%',
-    paddingRight: '20%',
   },
   profilePicture: {
     width: 80,
@@ -111,12 +110,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 22,
     fontWeight: 'bold',
+    textAlign: 'center',
     color: '#0C5E52',
   },
   profileCardRight: {
+    width: "50%",
     borderRadius: 10,
-    paddingHorizontal: '5%',
     justifyContent: 'center',
+    paddingLeft: 10,
   },
   infoTitle: {
     fontSize: 18,

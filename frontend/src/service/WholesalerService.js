@@ -18,6 +18,14 @@ const wholesalerService = {
         });
         return response.data;
     },
+    getRating: async (token, uen) => {
+        const response = await apiClient.get(`${REACT_APP_BACKEND_WHOLESALER}/rating/${uen}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
     rateWholesaler: async (token, uen, tid, rating) => {
         const requestBody = {
             "uen": uen,
@@ -25,6 +33,14 @@ const wholesalerService = {
             "rating": rating
         }
         const response = await apiClient.patch(`${REACT_APP_BACKEND_WHOLESALER}/rate`, requestBody, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
+    },
+    editProfile: async (token, requestBody) => {
+        const response = await apiClient.patch(`${REACT_APP_BACKEND_WHOLESALER}/profile/update`, requestBody, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }

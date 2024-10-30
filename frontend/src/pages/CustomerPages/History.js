@@ -9,7 +9,7 @@ import transactionService from '../../service/TransactionService';
 
 const History = () => {
   const navigation = useNavigation();
-  const { userUid, rerender, setRerender } = useUserStore();
+  const { userUid } = useUserStore();
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
   const [rated, setRated] = useState(false);
