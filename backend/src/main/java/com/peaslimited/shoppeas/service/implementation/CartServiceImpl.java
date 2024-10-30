@@ -1,9 +1,6 @@
 package com.peaslimited.shoppeas.service.implementation;
 
-import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.*;
-import com.peaslimited.shoppeas.model.ShoppingCart;
-import com.peaslimited.shoppeas.model.Transactions;
 import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
@@ -21,8 +18,6 @@ public class CartServiceImpl implements CartService {
     @Autowired
     private CartRepository cartRepository;
 
-    @Autowired
-    private OrderHistoryService orderService;
     @Autowired
     private TransactionsService transactionsService;
     @Autowired
@@ -149,31 +144,5 @@ public class CartServiceImpl implements CartService {
             cartRepository.deleteTransaction(cid, outputMap.get("tid").toString());
         }
     }
-
-
-//    @Override
-//    public void createCart(ShoppingCartDTO cartDTO) {
-//        cartRepository.addByCID(cartDTO);
-//    }
-//
-//    @Override
-//    public ShoppingCart getCartByUID_NonDTO(String UID) throws ExecutionException, InterruptedException {
-//        return cartRepository.findByUID_NonDTO(UID);
-//    }
-//
-//
-//    @Override
-//    public void updateCart(String cid, Map<String, Object> data) throws ExecutionException, InterruptedException {
-//        cartRepository.updateCart(cid, data);
-//    }
-//
-//    @Override
-//    public void deleteWholeCart(String cid) throws ExecutionException, InterruptedException {
-//        cartRepository.deleteWholeCart(cid);
-//    }
-//
-//    public void deleteItemByOID(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
-//        cartRepository.deleteCartItem(uid, data);
-//    }
 
 }
