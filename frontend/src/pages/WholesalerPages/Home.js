@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from "../../lib/userStore";
@@ -22,38 +22,70 @@ const Home = () => {
         setProducts(res);
         setFilteredProducts(res);
       })
+      .catch((err) => {
+        console.error(err);
+      })
   }
 
   useEffect(() => {
     fetchProducts(userUid);
-  }, [userUid])
+  }, [userUid]);
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
 
-  const removeProduct = (index) => {
-    setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
+  // Use useCallback for handleAddProduct to prevent re-renders
+  const handleAddProduct = async (newProduct) => {
+    await productService.addWholesalerProduct(userUid, newProduct)
+      .then(() => {
+        setProducts((currentProducts) => [...currentProducts, newProduct]);
+        fetchProducts(userUid);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
   };
 
-  const editProduct = (index, updatedProduct) => {
-    setProducts(currentProducts =>
-      currentProducts.map((product, i) =>
-        i === index ? { ...product, ...updatedProduct } : product
-      )
-    );
+  const editProduct = async (index, updatedProduct) => {
+    await productService.editWholesalerProduct(userUid, products[index].swp_id, updatedProduct)
+      .then(() => {
+        setProducts(currentProducts =>
+          currentProducts.map((product, i) =>
+            i === index ? {
+              ...product,
+              price: updatedProduct.price,
+              stock: updatedProduct.stock
+            } : product
+          )
+        );
+        fetchProducts(userUid);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+
   };
 
-  const handleAddProduct = (newProduct) => {
-    setProducts(currentProducts => [...currentProducts, newProduct]);
+  const removeProduct = async (index) => {
+    await productService.deleteWholesalerProduct(userUid, products[index].swp_id)
+      .then(() => {
+        setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
+        fetchProducts(userUid);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
   };
 
-  const fuse = useMemo(() => new Fuse(products, {
-    // fields to search
-    keys: ['name'], 
-    threshold: 0.3, // Adjust this value to make the search more or less strict
-    includeScore: true
-  }), [products]);
+  const fuse = useMemo(() => {
+    return new Fuse(products, {
+      // fields to search
+      keys: ['name'],
+      threshold: 0.3, // Adjust this value to make the search more or less strict
+      includeScore: true,
+    });
+  }, [products]);
 
   const handleSearch = (query) => {
     setSearchText(query);
@@ -64,8 +96,6 @@ const Home = () => {
       setFilteredProducts(results.map(result => result.item));
     }
   };
-
-  console.log('CurrentUser: ', currentUser.name)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -84,9 +114,9 @@ const Home = () => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.headerTitle}>{currentUser.name}</Text>
       <View style={styles.header}>
         <View style={styles.headerTextContainer}>
+          <Text style={styles.headerTitle}>{currentUser.name}</Text>
           <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
         <Image
@@ -100,6 +130,9 @@ const Home = () => {
           <Ionicons name="add-circle-outline" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.addButtonText}>Add New Product</Text>
+        <TouchableOpacity style={styles.filterButton}>
+          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.productList}>
         {filteredProducts.map((product, index) => (
@@ -121,6 +154,8 @@ const Home = () => {
         visible={showAddProduct}
         onClose={() => setShowAddProduct(false)}
         onAddProduct={handleAddProduct}
+        products={products}
+        uen={currentUser.uen}
       />
     </SafeAreaView>
   );
@@ -156,7 +191,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'normal',
     color: '#0C5E52',
-    marginLeft: '5%',
+    marginLeft: '2%',
   },
   subHeaderTitle: {
     fontFamily: "Amiko, Noto Sans",
@@ -167,8 +202,8 @@ const styles = StyleSheet.create({
   },
   headerImage: {
     width: '18%',
-    height: '100%',
-    marginRight: "30%",
+    height: '65%',
+    marginRight: "29.2%",
   },
   addProductContainer: {
     flexDirection: 'row',

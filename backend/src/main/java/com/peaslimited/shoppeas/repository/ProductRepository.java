@@ -15,7 +15,7 @@ public interface ProductRepository {
 
     List<Product> findAll() throws ExecutionException, InterruptedException;
 
-    List<ProductDetailedDTO> findProductDetails(List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException;
+    List<ProductDetailedDTO> findProductDetails(List<String> swpid_list, List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException;
 
     void addByPID(String pid, ProductDTO product);
 

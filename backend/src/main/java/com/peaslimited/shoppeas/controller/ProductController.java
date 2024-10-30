@@ -44,7 +44,7 @@ public class ProductController {
      * @return product details
      */
     @GetMapping("/all")
-    @PreAuthorize("hasRole('CONSUMER')")
+    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Product> getAllProducts() throws ExecutionException, InterruptedException {
         return productService.getAllProducts();
@@ -104,7 +104,7 @@ public class ProductController {
      * Delete a wholesaler product by Pid
      * @return void
      */
-    @PatchMapping("/delete/{swpid}")
+    @DeleteMapping("/delete/{swpid}")
     @PreAuthorize(("hasRole('WHOLESALER')"))
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {

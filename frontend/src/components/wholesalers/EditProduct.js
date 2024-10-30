@@ -2,17 +2,13 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Modal, TextInput } from "react-native"
 import { Ionicons } from '@expo/vector-icons';
 
-const EditProduct = ({visible, onClose, onEdit, initialName, initialPrice, initialDescription, initialStock}) => {
-    const [editedName, setEditedName] = useState(initialName);
+const EditProduct = ({visible, onClose, onEdit, initialPrice, initialStock}) => {
     const [editedPrice, setEditedPrice] = useState(initialPrice.toString());
-    const [editedDescription, setEditedDescription] = useState(initialDescription);
     const [editedStock, setEditedStock] = useState(initialStock.toString());
 
     const handleEdit = () => {
         onEdit({
-            name: editedName,
             price: parseFloat(editedPrice),
-            description: editedDescription,
             stock: parseInt(editedStock),
         });
         onClose();
@@ -33,13 +29,6 @@ const EditProduct = ({visible, onClose, onEdit, initialName, initialPrice, initi
                         </TouchableOpacity>
                     </View>
                     <View style = {styles.editContainer}>
-                        <Text style={styles.editInputLabel}>Product Name:</Text>
-                        <TextInput
-                            style={styles.editInput}
-                            value={editedName}
-                            onChangeText={setEditedName}
-                            placeholder="Product Name"
-                        />
                         <Text style={styles.editInputLabel}>Price:</Text>
                         <TextInput
                             style={styles.editInput}
@@ -47,13 +36,6 @@ const EditProduct = ({visible, onClose, onEdit, initialName, initialPrice, initi
                             onChangeText={setEditedPrice}
                             placeholder="Price"
                             keyboardType="numeric"
-                        />
-                        <Text style={styles.editInputLabel}>Description:</Text>
-                        <TextInput
-                            style={styles.editInput}
-                            value={editedDescription}
-                            onChangeText={setEditedDescription}
-                            placeholder="Description"
                         />
                         <Text style={styles.editStockLabel}>Stock:</Text>
                         <View style={styles.stockControl}>
@@ -122,8 +104,7 @@ const styles = StyleSheet.create({
         marginBottom: "5%",
     },
     editClose:{
-        left: "100%",
-        bottom: "3%",
+        left: "60%",
     },
     editInputLabel: {
         fontSize: 16,
@@ -180,9 +161,15 @@ const styles = StyleSheet.create({
     },
     editButton:{
         marginTop: '5%',
+        backgroundColor: '#EBF3D1',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#B8C99B',
     },
     editButtonText:{
         color: '#0C5E52',
         fontSize: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
     },
 })

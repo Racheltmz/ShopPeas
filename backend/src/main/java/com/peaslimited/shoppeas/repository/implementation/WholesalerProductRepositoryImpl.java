@@ -58,7 +58,11 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                 .map(WholesalerProducts::getPid)
                 .toList();
 
-        return productRepository.findProductDetails(productid_list, products);
+        List<String> swpid_list = snapshot.getDocuments().stream()
+                .map(DocumentSnapshot::getId)
+                .toList();
+
+        return productRepository.findProductDetails(swpid_list, productid_list, products);
     }
 
     // Fetch products by their PID
