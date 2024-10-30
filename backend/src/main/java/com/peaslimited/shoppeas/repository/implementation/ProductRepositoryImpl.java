@@ -120,4 +120,13 @@ public class ProductRepositoryImpl implements ProductRepository {
         return product;
     }
 
+    @Override
+    public DocumentSnapshot getUrlByName(String productName) throws ExecutionException, InterruptedException {
+        CollectionReference products = firestore.collection("products");
+        ApiFuture<QuerySnapshot> query = products.whereEqualTo("name", productName).get();
+
+        QuerySnapshot querySnapshot = query.get();
+        return querySnapshot.isEmpty() ? null : querySnapshot.getDocuments().getFirst();
+    }
+
 }

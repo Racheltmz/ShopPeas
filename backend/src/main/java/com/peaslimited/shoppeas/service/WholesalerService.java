@@ -22,4 +22,8 @@ public interface WholesalerService {
     void addRating(String UEN, String tid, Integer rating) throws ExecutionException, InterruptedException;
 
     DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException;
+
+    boolean UENExists(String uen) throws ExecutionException, InterruptedException;
+
+    boolean isValidStatus(String status) throws ExecutionException, InterruptedException;
 }

@@ -10,6 +10,7 @@ import com.peaslimited.shoppeas.service.OneMapService;
 import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -109,5 +110,22 @@ public class ProductController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {
         wholesalerProductService.deleteWholesalerProduct(swpid); // Call service to delete the product by PID
+    }
+
+    /**
+     * Returns the image of a product via its name.
+     * @param name The name of the product.
+     * @return ResponseEntity containing the image URL or an error message.
+     */
+    @GetMapping("/image")
+    @PreAuthorize("hasRole('CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<String> getProductImage(@RequestParam String name) throws ExecutionException, InterruptedException {
+        String imageUrl = productService.getImageURLByProductName(name);
+        if (imageUrl != null) {
+            return ResponseEntity.ok(imageUrl);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No image available");
+        }
     }
 }

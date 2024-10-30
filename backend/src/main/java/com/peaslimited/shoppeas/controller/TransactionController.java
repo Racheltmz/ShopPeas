@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -30,10 +31,21 @@ public class TransactionController {
     @Autowired
     private TransactionsService transactionService;
 
+    @Autowired
+    private WholesalerService wholesalerService;
+
     @GetMapping("/get")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public ArrayList<Object> getTransactionsByWholesaler(@RequestParam String uen, @RequestParam String status) throws ExecutionException, InterruptedException {
+        // check if UEN is valid
+        if(!wholesalerService.UENExists(uen)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid UEN Format");
+        }
+        // Check if status is valid
+        if (!wholesalerService.isValidStatus(status)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status");
+        }
         List<QueryDocumentSnapshot> docList = transactionService.getDocByUENAndStatus(uen, status);
 
         ArrayList<Object> transactionList = new ArrayList<>();
