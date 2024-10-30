@@ -36,16 +36,13 @@ const Home = () => {
     setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
   };
 
-  const editProduct = (index, updatedProduct) => {
-    setProducts(currentProducts =>
-      currentProducts.map((product, i) =>
-        i === index ? { ...product, ...updatedProduct } : product
-      )
-    );
+  const editProduct = async (updatedProduct) => {
+    await productService.updateProductByUen(userUid, currentUser.uen, updatedProduct);
   };
 
-  const handleAddProduct = (newProduct) => {
-    setProducts(currentProducts => [...currentProducts, newProduct]);
+  const handleAddProduct = async (newProduct) => {
+    await productService.addProduct(userUid, { ...newProduct, "uen": currentUser.uen });
+    await fetchProducts(userUid);
   };
 
   const fuse = useMemo(() => new Fuse(products, {
@@ -64,8 +61,6 @@ const Home = () => {
       setFilteredProducts(results.map(result => result.item));
     }
   };
-
-  console.log('CurrentUser: ', currentUser.name)
 
   return (
     <SafeAreaView style={styles.container}>
@@ -124,6 +119,7 @@ const Home = () => {
         visible={showAddProduct}
         onClose={() => setShowAddProduct(false)}
         onAddProduct={handleAddProduct}
+        wholesalerProducts={products}
       />
     </SafeAreaView>
   );

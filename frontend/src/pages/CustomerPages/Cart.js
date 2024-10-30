@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   StyleSheet,
   Text,
@@ -13,7 +13,8 @@ import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
 
 const Cart = ({ navigation }) => {
-  const { cart, clearCart, getTotal } = useCart();
+  const { cart, clearCart, getTotal, fetchCart } = useCart();
+  const { userUid } = useUserStore();
 
   const handleClearCart = () => {
     clearCart();
@@ -28,7 +29,7 @@ const Cart = ({ navigation }) => {
   };
 
   const totalPrice = getTotal();
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>

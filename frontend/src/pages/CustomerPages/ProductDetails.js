@@ -171,9 +171,10 @@ const ProductDetails = ({ route }) => {
       "quantity": quantity,
       "swp_id": selectedWholesaler.swp_id,
     }
-    let success = addItem(userUid, productSubmitData, product.name, quantity, newItem, selectedWholesaler);
+    let success = await addItem(userUid, productSubmitData, product.name, quantity, newItem, selectedWholesaler);
     await fetchCart(userUid);
     showAlert("Successful!", "Item has been added to cart!", () => setAlertVisible(false));
+    navigation.goBack();
     setQuantity(1);
   };
 

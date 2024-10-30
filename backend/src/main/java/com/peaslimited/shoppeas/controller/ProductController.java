@@ -4,6 +4,7 @@ import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
+import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
 import com.peaslimited.shoppeas.service.OneMapService;
@@ -14,11 +15,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.HashMap;
 import java.util.List;
 
 @CrossOrigin
@@ -44,7 +45,7 @@ public class ProductController {
      * @return product details
      */
     @GetMapping("/all")
-    @PreAuthorize("hasRole('CONSUMER')")
+    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Product> getAllProducts() throws ExecutionException, InterruptedException {
         return productService.getAllProducts();
@@ -109,5 +110,35 @@ public class ProductController {
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {
         wholesalerProductService.deleteWholesalerProduct(swpid); // Call service to delete the product by PID
+    }
+
+    @GetMapping("/getswpid")
+    @PreAuthorize("hasAnyRole('WHOLESALER', 'CONSUMER')")
+    @ResponseStatus(code = HttpStatus.OK)
+    public Map<String, Object> getSWP_IDbyProductName(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String uid = (String) authentication.getPrincipal();
+        Map<String, Object> returnMap = new HashMap<>();
+        //ACTION: parse input data
+        String name = data.get("product_name").toString();
+        String uen = data.get("uen").toString();
+        //ACTION: get PID
+        Product product = productService.findByProductName(name);
+        if(product == null)
+        {
+            returnMap.put("swp_id", "null");
+            return returnMap;
+        }
+        String pid = product.getPid();
+        //ACTION: get SWPID
+        WholesalerProducts wholesalerProducts = wholesalerProductService.getWProductByPIDandUEN(pid, uen);
+        if(wholesalerProducts == null)
+        {
+            returnMap.put("swp_id", "null");
+            return returnMap;
+        }
+        String swpid = wholesalerProducts.getSwpid();
+        returnMap.put("swp_id", swpid);
+        return returnMap;
     }
 }

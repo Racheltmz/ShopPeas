@@ -27,6 +27,32 @@ const productService = {
             }
         });
         return response.data;
+    },
+
+    addProduct: async (token, newProductData) => {
+        const response = await apiClient.post(`${REACT_APP_BACKEND_PRODUCT}/add`, newProductData, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+        });
+        return response.data;
+    },
+
+    updateProductByUen: async (token, uen, updatedProduct) => {
+        const getSwpidBodyData = {
+            "product_name": updatedProduct.name,
+            "uen": uen,
+        }
+        console.log(getSwpidBodyData);
+        // get swpid
+        const swpid = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/getswpid`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            data: getSwpidBodyData
+        });
+
+        console.log(getSwpidBodyData);
     }
 };
 

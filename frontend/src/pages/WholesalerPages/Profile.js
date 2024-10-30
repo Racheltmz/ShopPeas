@@ -61,7 +61,6 @@ const Profile = () => {
             <RatingBar label="1" value="2%" />
           </View>
         </View>
-
         {/* Account Details */}
         <View style={styles.accountDetails}>
           <View style={styles.accountHeader}>

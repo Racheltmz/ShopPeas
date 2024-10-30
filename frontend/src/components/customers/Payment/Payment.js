@@ -8,16 +8,16 @@ import { useCart } from '../../../lib/userCart';
 const Payment = () => {
   const navigation = useNavigation();
   const { userUid, currentUser, setRerender } = useUserStore();
-  const { cart, checkout, getTotal } = useCart();
+  const { cart, checkout, getTotal, fetchCart } = useCart();
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
   };
 
   const handleMakePayment = async () => {
-    checkout(userUid);
-    setRerender();
-    // Implement payment logic here
+    await checkout(userUid);
+    await fetchCart(userUid);
+
     navigation.navigate('History');
   };
 

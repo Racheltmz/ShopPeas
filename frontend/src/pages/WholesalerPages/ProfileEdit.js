@@ -48,7 +48,6 @@ const ProfileEdit = ({ navigation }) => {
         "city": city,
       },
     };  
-    console.log(data);
     await wholesalerService.editProfile(userUid, data)
     .then((res) => {
 

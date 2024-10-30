@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Modal, TextInput } from "react-native"
+import { View, StyleSheet, Text, TouchableOpacity, Modal, TextInput, Image } from "react-native"
 import { Ionicons } from '@expo/vector-icons';
 
-const EditProduct = ({visible, onClose, onEdit, initialName, initialPrice, initialDescription, initialStock}) => {
-    const [editedName, setEditedName] = useState(initialName);
+const EditProduct = ({visible, onClose, onEdit, name, initialPrice, initialStock, imageUrl}) => {
     const [editedPrice, setEditedPrice] = useState(initialPrice.toString());
-    const [editedDescription, setEditedDescription] = useState(initialDescription);
     const [editedStock, setEditedStock] = useState(initialStock.toString());
 
     const handleEdit = () => {
-        onEdit({
-            name: editedName,
+        const updatedProductData = {
+            name: name,
             price: parseFloat(editedPrice),
-            description: editedDescription,
             stock: parseInt(editedStock),
-        });
+        }
+        onEdit(updatedProductData);
         onClose();
     };
 
@@ -33,13 +31,8 @@ const EditProduct = ({visible, onClose, onEdit, initialName, initialPrice, initi
                         </TouchableOpacity>
                     </View>
                     <View style = {styles.editContainer}>
-                        <Text style={styles.editInputLabel}>Product Name:</Text>
-                        <TextInput
-                            style={styles.editInput}
-                            value={editedName}
-                            onChangeText={setEditedName}
-                            placeholder="Product Name"
-                        />
+                        <Text style={styles.productName}>{name}</Text>
+                        <Image source={{ uri: imageUrl }} style={styles.productImage} />
                         <Text style={styles.editInputLabel}>Price:</Text>
                         <TextInput
                             style={styles.editInput}
@@ -47,13 +40,6 @@ const EditProduct = ({visible, onClose, onEdit, initialName, initialPrice, initi
                             onChangeText={setEditedPrice}
                             placeholder="Price"
                             keyboardType="numeric"
-                        />
-                        <Text style={styles.editInputLabel}>Description:</Text>
-                        <TextInput
-                            style={styles.editInput}
-                            value={editedDescription}
-                            onChangeText={setEditedDescription}
-                            placeholder="Description"
                         />
                         <Text style={styles.editStockLabel}>Stock:</Text>
                         <View style={styles.stockControl}>
@@ -102,8 +88,8 @@ const styles = StyleSheet.create({
         borderColor: '#EBF3D1',
         alignItems: 'center',
         alignSelf: 'center',
-        marginTop: '70%',
-        width: '80%',
+        marginTop: '37%',
+        width: '90%',
         shadowColor: "#000",
         shadowOffset: {
             width: 0,
@@ -120,6 +106,20 @@ const styles = StyleSheet.create({
         fontSize: 23,
         left:"30%",
         marginBottom: "5%",
+        fontWeight: "600",
+    },
+    productName: {
+        fontSize: 20,
+        fontWeight: "500",
+        color: "#0C5E52",
+        textAlign: "center",
+        marginBottom: 10,
+    },
+    productImage: {
+        width: 150,
+        height: 150,
+        borderRadius: 5,
+        margin: "auto",
     },
     editClose:{
         left: "100%",
