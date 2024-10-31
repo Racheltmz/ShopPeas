@@ -8,32 +8,46 @@ import paymentService from '../../../service/PaymentService';
 
 const PaymentMethod = () => {
   const navigation = useNavigation();
-  const { userUid, paymentDetails } = useUserStore(); 
+  const { userUid, updateCardNumbers, cardNumbers } = useUserStore(); 
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [payments, setPayments] = useState([]); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const handleAddCard = () => {
-    navigation.navigate('AddCard');
-  };
 
   const handleDeleteCard = async (card_number) => {
     await paymentService.deletePayment(userUid, card_number);
     await loadPaymentMethods(userUid);
   };
-
+  
   const loadPaymentMethods = async (userUid) => {
     try {
       setLoading(true);
       setError(null);
       const paymentsList = await paymentService.getPayment(userUid);
-      setPayments(paymentsList.card_numbers);
+      updateCardNumbers(paymentsList.card_numbers);
+      if (paymentsList.card_numbers && paymentsList.card_numbers.length > 0) {
+        setSelectedPayment(paymentsList.card_numbers[0]);
+      }
     } catch (err) {
       setError('Failed to load existing payment methods. Please try again later.');
     } finally {
       setLoading(false);
     }
+  };
+  
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      if (userUid) {
+        loadPaymentMethods(userUid);
+      }
+    });
+    if (userUid) {
+      loadPaymentMethods(userUid);
+    }
+    return unsubscribe;
+  }, [navigation, userUid]);
+
+  const handleAddCard = () => {
+    navigation.navigate('AddCard');
   };
 
   const Item = ({item}) => (
@@ -64,19 +78,6 @@ const PaymentMethod = () => {
     </TouchableOpacity>
   );
 
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      if (userUid) {
-        loadPaymentMethods(userUid);
-      }
-    });
-    if (userUid) {
-      loadPaymentMethods(userUid);
-    }
-    return unsubscribe;
-  }, [navigation, userUid]);
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -94,7 +95,7 @@ const PaymentMethod = () => {
           <Text style={styles.loadingText}>Loading payment methods...</Text>
         ) : (
           <FlatList
-            data={payments}
+            data={cardNumbers}
             renderItem={({ item }) => <Item item={item} />}
             keyExtractor={item => item}
             ListEmptyComponent={() => (
@@ -188,6 +189,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0C5E52',
   },
+  cardNumber: {
+    textAlign: 'center',
+  }
 });
 
 export default PaymentMethod;

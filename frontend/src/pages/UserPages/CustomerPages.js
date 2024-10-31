@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Explore from '../CustomerPages/Explore';
@@ -12,9 +12,9 @@ import Payment from '../../components/customers/Payment/Payment';
 import PaymentMethod from '../../components/customers/Payment/PaymentMethod';
 import AddCard from '../../components/customers/Payment/AddCard';
 import ViewWholesaler from '../../components/customers/ViewWholesaler';
-import cartService from '../../service/CartService';
 import { useUserStore } from '../../lib/userStore';
 import { useCart } from '../../lib/userCart';
+import transactionService from '../../service/TransactionService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,15 +27,16 @@ const ExploreStack = () => (
   </Stack.Navigator>
 );
 
+
 const CustomerPages = () => {
   const { userUid } = useUserStore();
   const { fetchCart } = useCart();
   
+  // fetch cart and history
   useEffect(() => {
     fetchCart(userUid);
   }, [userUid]);
-
-
+  
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs">

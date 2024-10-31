@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,16 +10,27 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
+import { useUserStore } from "../../lib/userStore";
+import CustomAlert from "../../components/utils/Alert";
 
 const Cart = ({ navigation }) => {
-  const { cart, clearCart, getTotal } = useCart();
+  const { cart, clearCart, getTotal, fetchCart } = useCart();
+  const { userUid } = useUserStore();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
 
-  const handleClearCart = () => {
-    clearCart();
+  const showAlert = (title, message, onConfirm) => {
+      setCustomAlert({ title, message, onConfirm });
+      setAlertVisible(true);
   };
 
   const handleCheckout = async () => {
-    navigation.navigate("Payment");
+    if (cart.length == 0) {
+      showAlert("Error", "Cart is empty!");
+    }
+    else {
+      navigation.navigate("Payment");
+    }
   };
 
   const handleWholesalerPress = (uen) => {
@@ -27,7 +38,7 @@ const Cart = ({ navigation }) => {
   };
 
   const totalPrice = getTotal();
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -83,6 +94,15 @@ const Cart = ({ navigation }) => {
           <Text style={styles.checkoutButtonText}>Check Out</Text>
         </TouchableOpacity>
       </View>
+      <CustomAlert
+          visible={alertVisible}
+          title={customAlert.title}
+          message={customAlert.message}
+          onConfirm={() => {
+          setAlertVisible(false);
+          customAlert.onConfirm;
+          }}
+      />
     </View >
   );
 };

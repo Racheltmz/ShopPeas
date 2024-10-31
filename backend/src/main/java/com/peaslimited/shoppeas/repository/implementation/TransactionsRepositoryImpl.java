@@ -161,6 +161,8 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
                 .get().get();
 
         // Get document
+        List<QueryDocumentSnapshot> documentSnapshots = querySnapshot.getDocuments();
+        System.out.println(documentSnapshots);
         QueryDocumentSnapshot document = querySnapshot.getDocuments().getFirst();
 
         // Retrieve the products list
@@ -168,18 +170,25 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
 
         for (Map.Entry<String, Object> entry : products.entrySet()) {
             Map<String, Object> productDetails = (Map<String, Object>) entry.getValue();
-
+            System.out.println(productDetails);
             String record_swp_id = productDetails.get("swp_id").toString();
 
             // Update quantity in map
             if (record_swp_id.equals(swp_id)) {
-                productDetails.put("quantity", newQuantity);
+                long quant = (long) productDetails.get("quantity");
+                int oldQuant = Math.toIntExact(quant);
+                System.out.print(newQuantity+oldQuant);
+                productDetails.put("quantity", newQuantity+oldQuant);
+                System.out.println(productDetails);
+                // Update record's price
+                document.getReference().update("total_price", Double.parseDouble(String.format("%.2f", document.toObject(Transactions.class).getTotal_price() + price)));
             }
-        }
 
+        }
+        System.out.println(products);
         // Update record's quantity and price
         document.getReference().update("products", products);
-        document.getReference().update("total_price", Double.parseDouble(String.format("%.2f", document.toObject(Transactions.class).getTotal_price() + price)));
+
     }
 
     @Override

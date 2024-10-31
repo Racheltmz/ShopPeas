@@ -112,7 +112,6 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                 setAlertVisible(false);
                 customAlert.onConfirm();
                 }}
-                onCancel={() => setAlertVisible(false)}
             />
         </SafeAreaView>
     );

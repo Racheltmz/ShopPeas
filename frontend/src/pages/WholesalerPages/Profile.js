@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import wholesalerService from '../../service/WholesalerService';
 
 const Profile = () => {
-  const { resetUser, currentUser, userUid } = useUserStore();
+  const { resetUser, currentUser, userUid, userAddress } = useUserStore();
   const navigation = useNavigation();
   const [rating, setRatings] = useState(0);
   const [numRatings, setNumRatings] = useState([]);
@@ -24,6 +24,7 @@ const Profile = () => {
         console.error(err);
       })
   }, [userUid]);
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -49,10 +50,10 @@ const Profile = () => {
             </View>
           </View>
           <View style={styles.profileRight}>
-            <InfoRow label="Date Joined:" value="25-07-2024" />
-            <InfoRow label="Location:" value="Singapore" />
-            <InfoRow label="Currency:" value="SGD" />
-            <InfoRow label="UEN:" value="123456789" />
+            <InfoRow label="Date Joined:" value={currentUser.signupDate} />
+            <InfoRow label="Location:" value={userAddress.city} />
+            <InfoRow label="Currency:" value={currentUser.currency} />
+            <InfoRow label="UEN:" value={currentUser.uen} />
             <View style={styles.verifiedBadge}>
               <Text style={styles.verifiedText}>Verified</Text>
             </View>
@@ -92,7 +93,7 @@ const Profile = () => {
             <View style={styles.accountColumn}>
               <InfoRow 
                 label="Address:" 
-                value="123 Bishan Street 10&#x0A;#01-45&#x0A;Happy Building&#x0A;S23491"
+                value={`${userAddress.street_name}\n${userAddress.unit_no}\n${userAddress.building_name}\n${userAddress.postal_code}`}
                 multiline
               />
             </View>
@@ -279,6 +280,7 @@ const styles = StyleSheet.create({
   accountInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: "50%",
   },
   accountColumn: {
     flex: 1,

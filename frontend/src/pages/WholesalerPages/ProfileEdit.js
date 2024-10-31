@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import RNPickerSelect from "react-native-picker-select";
 import { useUserStore } from "../../lib/userStore";
 import wholesalerService from "../../service/WholesalerService";
+import CustomAlert from "../../components/utils/Alert";
 
 const ProfileEdit = ({ navigation }) => {
   const { currentUser, userAddress, paymentDetails, fetchUserInfo, userUid } = useUserStore();
@@ -27,6 +28,14 @@ const ProfileEdit = ({ navigation }) => {
   const [bank, setBank] = useState(paymentDetails.bank);
   const [bankNumber, setBankNumber] = useState(paymentDetails["bank_account_no"]);
   const [city, setCity] = useState(userAddress.city);
+
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+
+  const showAlert = (title, message, onConfirm) => {
+      setCustomAlert({ title, message, onConfirm });
+      setAlertVisible(true);
+  };
 
   const handleSave = async () => {
     const data = {
@@ -49,11 +58,7 @@ const ProfileEdit = ({ navigation }) => {
       },
     };  
     await wholesalerService.editProfile(userUid, data)
-    .then((res) => {
-
-    })
-    await fetchUserInfo(userUid);
-    navigation.goBack();
+    showAlert("Success!", "Profile Updated!");
   };
 
   return (
@@ -181,6 +186,17 @@ const ProfileEdit = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      <CustomAlert
+          visible={alertVisible}
+          title={customAlert.title}
+          message={customAlert.message}
+          onConfirm={async () => {
+          setAlertVisible(false);
+          customAlert.onConfirm;
+          await fetchUserInfo(userUid);
+          navigation.goBack();
+          }}
+      />
     </SafeAreaView>
   );
 };
