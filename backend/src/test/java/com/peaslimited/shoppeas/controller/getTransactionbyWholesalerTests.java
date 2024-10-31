@@ -2,6 +2,7 @@ package com.peaslimited.shoppeas.controller;
 
 import com.peaslimited.shoppeas.service.*;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.peaslimited.shoppeas.service.implementation.TransactionCacheServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class getTransactionbyWholesalerTests {
     private CurrencyService currencyService;
 
     @MockBean
-    private WholesalerTransactionsService wholesalerTransactionService;
+    private TransactionCacheServiceImpl transactionCacheService;
 
     @MockBean
     private WholesalerService wholesalerService;

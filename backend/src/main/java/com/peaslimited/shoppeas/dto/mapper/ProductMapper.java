@@ -1,9 +1,7 @@
 package com.peaslimited.shoppeas.dto.mapper;
 
 import com.peaslimited.shoppeas.dto.ProductDTO;
-import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.Product;
-
 
 public class ProductMapper {
     // convert the product entity to a ProductDTO

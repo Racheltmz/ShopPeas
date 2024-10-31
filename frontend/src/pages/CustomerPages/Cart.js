@@ -18,7 +18,7 @@ const Cart = ({ navigation }) => {
     clearCart();
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     navigation.navigate("Payment");
   };
 

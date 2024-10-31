@@ -19,14 +19,6 @@ public class CartController {
 
     @Autowired
     private CartService cartService;
-    @Autowired
-    private TransactionController transactionController;
-    @Autowired
-    private TransactionsService transactionsService;
-    @Autowired
-    private WholesalerProductService wholesalerProductService;
-    @Autowired
-    private ProductService productService;
 
     @GetMapping("/view")
     @PreAuthorize("hasRole('CONSUMER')")

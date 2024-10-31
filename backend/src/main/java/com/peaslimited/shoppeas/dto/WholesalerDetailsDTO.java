@@ -1,6 +1,5 @@
 package com.peaslimited.shoppeas.dto;
 
-import com.peaslimited.shoppeas.model.Product;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

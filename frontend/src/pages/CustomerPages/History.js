@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
-import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 import { useUserStore } from '../../lib/userStore';
 import Loader from '../../components/utils/Loader';
 import HistoryItems from '../../components/customers/HistoryItems';
@@ -26,12 +25,7 @@ const History = () => {
         if (err.status === 404) {
           setHistory([]);
         } else {
-          Dialog.show({
-            type: ALERT_TYPE.DANGER,
-            title: err.status.code,
-            textBody: err.message,
-            button: 'close',
-          })
+          console.error(err);
         }
       });
   }

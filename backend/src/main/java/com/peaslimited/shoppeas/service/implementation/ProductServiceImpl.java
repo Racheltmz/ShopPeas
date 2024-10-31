@@ -7,13 +7,10 @@ import com.peaslimited.shoppeas.repository.ProductRepository;
 import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.peaslimited.shoppeas.dto.mapper.ProductMapper;
 
 import java.util.Map;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {

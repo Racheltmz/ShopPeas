@@ -4,11 +4,19 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../../lib/userStore';
 import { useCart } from '../../../lib/userCart';
+import transactionService from '../../../service/TransactionService';
 
 const Payment = () => {
   const navigation = useNavigation();
   const { userUid, currentUser } = useUserStore();
   const { cart, checkout, getTotal } = useCart();
+
+  const updateOrderHistory = async () => {
+    await transactionService.viewOrderHistory(userUid)
+      .catch((err) => {
+        console.error(err);
+      });
+  }
 
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
@@ -16,6 +24,7 @@ const Payment = () => {
 
   const handleMakePayment = async () => {
     checkout(userUid);
+    await updateOrderHistory();
     // Implement payment logic here
     navigation.navigate('History');
   };

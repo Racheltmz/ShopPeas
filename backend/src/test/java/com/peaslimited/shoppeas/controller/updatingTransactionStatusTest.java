@@ -2,7 +2,6 @@ package com.peaslimited.shoppeas.controller;
 
 import com.peaslimited.shoppeas.service.TransactionsService;
 import com.peaslimited.shoppeas.service.WholesalerService;
-import com.peaslimited.shoppeas.service.WholesalerTransactionsService;
 import com.peaslimited.shoppeas.service.implementation.TransactionCacheServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -31,8 +30,7 @@ public class updatingTransactionStatusTest {
     @MockBean
     private WholesalerService wholesalerService;
 
-    @MockBean
-    private WholesalerTransactionsService wholesalerTransactionsService;
+
 
     @MockBean
     private TransactionCacheServiceImpl transactionCacheService;

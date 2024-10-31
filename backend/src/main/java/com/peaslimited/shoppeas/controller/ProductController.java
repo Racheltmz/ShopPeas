@@ -6,8 +6,6 @@ import com.peaslimited.shoppeas.dto.WholesalerProductDetailsDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
-import com.peaslimited.shoppeas.service.OneMapService;
-import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,13 +30,6 @@ public class ProductController {
 
     @Autowired
     private WholesalerProductService wholesalerProductService;
-
-    @Autowired
-    private OneMapService oneMapService;
-
-    @Autowired
-    private WholesalerAddressService wholesalerAddressService;
-
 
     /**
      * Get all products for consumers
