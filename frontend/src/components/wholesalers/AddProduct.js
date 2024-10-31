@@ -1,43 +1,56 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
+import { useUserStore } from "../../lib/userStore";
 import { Ionicons } from '@expo/vector-icons';
 import Alert from '../utils/Alert';
+import productService from '../../service/ProductService';
 
-const AddProductModal = ({ visible, onClose, onAddProduct }) => {
+const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
+  const { userUid } = useUserStore();
   const [alertVisible, setAlertVisible] = useState(false);
   const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [newProduct, setNewProduct] = useState("");
+  const [newPrice, setNewPrice] = useState(0);
+  const [newStock, setNewStock] = useState(1);
+  const [data, setData] = useState([]);
 
-  const showAlert = (title, message, onConfirm) => {
-      setCustomAlert({ title, message, onConfirm });
-      setAlertVisible(true);
-  };
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    price: '',
-    description: '',
-    stock: 0,
-    minimumOrder: 0,
+  const getOtherProducts = async () => {
+    await productService.fetchProductData(userUid)
+      .then((res) => {
+        setData(res.filter(product => !products.some(p => p.pid === product.pid)));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }
+
+  useEffect(() => {
+    // Get products wholesaler isn't selling
+    getOtherProducts();
   });
 
+  const showAlert = (title, message, onConfirm) => {
+    setCustomAlert({ title, message, onConfirm });
+    setAlertVisible(true);
+  };
+
   const handleAddProduct = () => {
-      const price = parseFloat(newProduct.price);
-      const stock = parseInt(newProduct.stock);
-      
-      if (isNaN(price) || newProduct.name.trim() === '') {
-        showAlert("Missing Input", "Please enter a valid name and price", () => setAlertVisible(false));
-      return;
-      }
-  
-      const productToAdd = {
-      ...newProduct,
-      name: newProduct.name.trim(),
-      price: price,
-      stock: isNaN(stock) ? 0 : stock,
-      description: newProduct.description.trim(),
-      };
-      onAddProduct(productToAdd);
-      setNewProduct({ name: '', price: '', description: '', stock: 0, minimumOrder: 0 });
-      onClose();
+    if (isNaN(newPrice) || newPrice <= 0 || newProduct.pid === undefined) {
+      showAlert("Missing Input", "Please select a product", () => setAlertVisible(false));
+    } else {
+      onAddProduct({
+        uen: uen,
+        pid: newProduct.pid,
+        price: parseFloat(newPrice),
+        stock: parseInt(newStock),
+        active: "true",
+      });
+      setNewProduct("");
+      setNewPrice(0);
+      setNewStock(1);
+    }
+    onClose();
   };
 
   return (
@@ -57,50 +70,34 @@ const AddProductModal = ({ visible, onClose, onAddProduct }) => {
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Add New Product</Text>
 
-          <Text>Product Name</Text>
-          <TextInput
+          <Text style={styles.inputLabel}>Product Name</Text>
+          <Dropdown
             style={styles.input}
+            data={data}
             placeholder="Product Name"
-            value={newProduct.name}
-            onChangeText={(text) => setNewProduct({ ...newProduct, name: text })}
+            value={newProduct}
+            onChange={setNewProduct}
+            labelField="name"
+            valueField="pid"
           />
-          <Text>Price</Text>
+
+          <Text style={styles.inputLabel}>Price</Text>
           <TextInput
             style={styles.input}
             placeholder="Price"
-            value={newProduct.price}
+            value={newPrice}
             keyboardType="numeric"
-            onChangeText={(text) => setNewProduct({ ...newProduct, price: text })}
-          />
-          <Text>Description</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Description"
-            value={newProduct.description}
-            onChangeText={(text) => setNewProduct({ ...newProduct, description: text })}
+            onChangeText={setNewPrice}
           />
 
           <View style={styles.quantityContainer}>
-            <Text>Current Stock</Text>
+            <Text style={styles.inputLabel}>Current Stock</Text>
             <View style={styles.quantityControls}>
-              <TouchableOpacity onPress={() => setNewProduct({ ...newProduct, stock: Math.max(newProduct.stock - 1, 0) })}>
+              <TouchableOpacity onPress={() => setNewStock((prev) => (parseInt(prev) - 1).toString())}>
                 <Ionicons name="remove-circle-outline" size={24} color="#0C5E52" />
               </TouchableOpacity>
-              <Text style={styles.quantityText}>{newProduct.stock}</Text>
-              <TouchableOpacity onPress={() => setNewProduct({ ...newProduct, stock: newProduct.stock + 1 })}>
-                <Ionicons name="add-circle-outline" size={24} color="#0C5E52" />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.quantityContainer}>
-            <Text>Minimum Order Quantity</Text>
-            <View style={styles.quantityControls}>
-              <TouchableOpacity onPress={() => setNewProduct({ ...newProduct, minimumOrder: Math.max(newProduct.minimumOrder - 1, 0) })}>
-                <Ionicons name="remove-circle-outline" size={24} color="#0C5E52" />
-              </TouchableOpacity>
-              <Text style={styles.quantityText}>{newProduct.minimumOrder}</Text>
-              <TouchableOpacity onPress={() => setNewProduct({ ...newProduct, minimumOrder: newProduct.minimumOrder + 1 })}>
+              <Text style={styles.quantityText}>{newStock}</Text>
+              <TouchableOpacity onPress={() => setNewStock((prev) => (parseInt(prev) + 1).toString())}>
                 <Ionicons name="add-circle-outline" size={24} color="#0C5E52" />
               </TouchableOpacity>
             </View>
@@ -113,14 +110,14 @@ const AddProductModal = ({ visible, onClose, onAddProduct }) => {
       </View>
 
       <Alert
-          visible={alertVisible}
-          title={customAlert.title}
-          message={customAlert.message}
-          onConfirm={() => {
+        visible={alertVisible}
+        title={customAlert.title}
+        message={customAlert.message}
+        onConfirm={() => {
           setAlertVisible(false);
           customAlert.onConfirm();
-          }}
-          onCancel={() => setAlertVisible(false)}
+        }}
+        onCancel={() => setAlertVisible(false)}
       />
     </Modal>
   );
@@ -151,8 +148,11 @@ const styles = StyleSheet.create({
     borderColor: '#0C5E52',
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 12,
     color: '#0C5E52',
+  },
+  inputLabel: {
+    marginBottom: 6,
   },
   modalAddButton: {
     backgroundColor: '#0C5E52',

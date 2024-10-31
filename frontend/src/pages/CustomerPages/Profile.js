@@ -1,31 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import ProfileDetails from "../../components/customers/ProfileDetails";
 import { createStackNavigator } from '@react-navigation/stack';
 import { useUserStore } from "../../lib/userStore";
 import ProfileEdit from "../../components/customers/ProfileEdit";
+import consumerService from "../../service/ConsumerService";
 
 const Profile = ({ navigation }) => {
-  const { currentUser, userAddress, paymentDetails} = useUserStore();
+  const { currentUser, userUid, userAddress, paymentDetails, fetchUserInfo } = useUserStore();
   const Stack = createStackNavigator();
-
-  const [userData, setUserData] = [{
-    name: currentUser.first_name + " " + currentUser.last_name,
-    following: 19,
+  const [userData, setUserData] = useState({
+    firstName: currentUser.first_name,
+    lastName: currentUser.last_name,
     email: currentUser.email,
     contact: currentUser.phone_number,
     dateJoined: currentUser.signupDate,
-    streetName: userAddress.street_name,
-    unitNo: userAddress.unit_no,
-    buildingName: userAddress.building_name,
-    city: userAddress.city,
-    postalCode: userAddress.postal_code,
-  }];
+    streetName: userAddress["street_name"],
+    unitNo: userAddress["unit_no"],
+    buildingName: userAddress["building_name"],
+    city: userAddress["city"],
+    postalCode: userAddress["postal_code"],
+  });
 
-  const handleSaveProfile = (updatedUserData) => {
-    // This is where you would typically make an API call to update the user's profile
+  const handleSaveProfile = async (updatedUserData) => {
     console.log("Saving updated user data:", updatedUserData);
-    // setUserData({ ...userData, ...updatedUserData });
-    // Here you would handle the response from the API, update local state, etc.
+    await consumerService.editProfile(userUid, updatedUserData);
+    await fetchUserInfo(userUid)
   };
 
   return (

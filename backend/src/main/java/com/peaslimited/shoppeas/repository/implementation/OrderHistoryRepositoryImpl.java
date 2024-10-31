@@ -9,6 +9,7 @@ import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.repository.WholesalerProductRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.CurrencyService;
+import com.peaslimited.shoppeas.service.WholesalerProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +44,55 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
     @Autowired
     private WholesalerProductRepository wholesalerProductRepository;
 
+    @Autowired
+    private WholesalerProductService wholesalerProductService;
+
+    /**
+     * Calls updateWProductQuant() to update the product stock for each item in each transaction checked out by
+     * the consumer.
+     * @param productsListMap The map of products in one transaction record
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public void updateStockAfterCheckout(Map<String, Object> productsListMap) throws ExecutionException, InterruptedException {
+
+        //get each product in one transaction record
+        for(int i = 0; i < productsListMap.size(); i++)
+        {
+            Map<String, Object> orderMap = (Map<String, Object>) productsListMap.get(String.valueOf(i));
+            String swpid = orderMap.get("swp_id").toString();
+            int quantity = Integer.parseInt(orderMap.get("quantity").toString());
+
+            //update wholesaler product "quantity" field for respective product
+            updateWProductQuant(swpid,quantity);
+        }
+    }
+
+    /**
+     * Updates the stock quantity in a wholesaler product record by subtracting the amount ordered by a consumer from the original
+     * stock quantity.
+     * @param swp_id The wholesaler product ID of the product ordered by a consumer.
+     * @param quantity The quantity of a product ordered by a consumer.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    public void updateWProductQuant(String swp_id, int quantity) throws ExecutionException, InterruptedException {
+        WholesalerProductDTO wholesalerProductDTO = wholesalerProductService.getBySwp_id(swp_id);
+        float oldQuantity = wholesalerProductDTO.getStock();
+
+        Map<String, Object> wholeSalerProductMap = new HashMap<>();
+        wholeSalerProductMap.put("stock", oldQuantity - quantity);
+
+        wholesalerProductService.updateWholesalerProduct(swp_id, wholeSalerProductMap);
+    }
+
+    /**
+     * Gets a list of the consumer's order history.
+     * @param uid Consumer's user ID.
+     * @return A list of OrderHistoryDTO objects.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public List<OrderHistoryDTO> getOrderHistoryByUID(String uid) throws ExecutionException, InterruptedException {
         QuerySnapshot snapshot = firestore.collection(COLLECTION).whereEqualTo("uid", uid).get().get();
@@ -105,6 +155,18 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Adds an order history record based on the items checked out from the consumer's shopping cart, updates the stock quantity in
+     * wholesaler product records, updates the transaction status from IN-CART to PENDING-ACCEPTANCE, and updates the transaction price
+     * for the transaction (i.e., currency conversion).
+     * @param uid Consumer's user ID.
+     * @param cartList List of contents of the cart (for each transaction in the cart: wholesaler name, list of items
+     *                 (containing item name and quantity) and the wholesaler uen.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     @Override
     public void addOrderHistory(String uid, ArrayList<Object> cartList) throws ExecutionException, InterruptedException, IOException, URISyntaxException {
         // ACTION: get transaction IDs (tid)
@@ -119,6 +181,10 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
 
             String uen = (String) cartMap.get("uen");
             Transactions transaction = transactionsRepository.findCartTransaction(uid, uen);
+
+            // update stock quantity in wholesaler product records
+            Map<String, Object> productsListMap = transaction.getProducts();
+            updateStockAfterCheckout(productsListMap);
 
             // Get tid
             String tid = transaction.getTid();
@@ -145,3 +211,5 @@ public class OrderHistoryRepositoryImpl implements OrderHistoryRepository {
         firestore.collection(COLLECTION).add(order_history);
     }
 }
+
+
