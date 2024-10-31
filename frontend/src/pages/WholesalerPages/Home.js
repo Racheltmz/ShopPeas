@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image} from 'react-native';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useUserStore } from "../../lib/userStore";
@@ -22,35 +22,70 @@ const Home = () => {
         setProducts(res);
         setFilteredProducts(res);
       })
+      .catch((err) => {
+        console.error(err);
+      })
   }
 
   useEffect(() => {
     fetchProducts(userUid);
-  }, [userUid])
+  }, [userUid]);
 
   const navigateToProfile = () => {
     navigation.navigate('Profile');
   };
 
-  const removeProduct = (index) => {
-    setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
-  };
-
-  const editProduct = async (updatedProduct) => {
-    await productService.updateProductByUen(userUid, currentUser.uen, updatedProduct);
-  };
-
+  // Use useCallback for handleAddProduct to prevent re-renders
   const handleAddProduct = async (newProduct) => {
-    await productService.addProduct(userUid, { ...newProduct, "uen": currentUser.uen });
-    await fetchProducts(userUid);
+    await productService.addWholesalerProduct(userUid, newProduct)
+      .then(() => {
+        setProducts((currentProducts) => [...currentProducts, newProduct]);
+        fetchProducts(userUid);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
   };
 
-  const fuse = useMemo(() => new Fuse(products, {
-    // fields to search
-    keys: ['name'], 
-    threshold: 0.3, // Adjust this value to make the search more or less strict
-    includeScore: true
-  }), [products]);
+  const editProduct = async (index, updatedProduct) => {
+    await productService.editWholesalerProduct(userUid, products[index].swp_id, updatedProduct)
+      .then(() => {
+        setProducts(currentProducts =>
+          currentProducts.map((product, i) =>
+            i === index ? {
+              ...product,
+              price: updatedProduct.price,
+              stock: updatedProduct.stock
+            } : product
+          )
+        );
+        fetchProducts(userUid);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+
+  };
+
+  const removeProduct = async (index) => {
+    await productService.deleteWholesalerProduct(userUid, products[index].swp_id)
+      .then(() => {
+        setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
+        fetchProducts(userUid);
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  };
+
+  const fuse = useMemo(() => {
+    return new Fuse(products, {
+      // fields to search
+      keys: ['name'],
+      threshold: 0.3, // Adjust this value to make the search more or less strict
+      includeScore: true,
+    });
+  }, [products]);
 
   const handleSearch = (query) => {
     setSearchText(query);
@@ -81,7 +116,7 @@ const Home = () => {
 
       <View style={styles.header}>
         <View style={styles.headerTextContainer}>
-          <Text style={styles.headerTitle}>{currentUser.name}</Text> 
+          <Text style={styles.headerTitle}>{currentUser.name}</Text>
           <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
         <Image
@@ -119,7 +154,8 @@ const Home = () => {
         visible={showAddProduct}
         onClose={() => setShowAddProduct(false)}
         onAddProduct={handleAddProduct}
-        wholesalerProducts={products}
+        products={products}
+        uen={currentUser.uen}
       />
     </SafeAreaView>
   );

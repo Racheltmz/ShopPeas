@@ -20,7 +20,9 @@ const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemov
 
     return (
         <View style={styles.productItem}>
-            <Image source={{ uri: image_url }} style={styles.productImage} />
+            <View style={styles.imageContainer}>
+                <Image source={{ uri: image_url }} style={styles.productImage} />
+            </View>
             <View style={styles.productInfo}>
                 <Text style={styles.productName}>{name}</Text>
                 <Text style={styles.productPrice}>${price.toFixed(2)}</Text>
@@ -29,10 +31,10 @@ const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemov
             <View style={styles.productActions}>
                 <Text style={styles.stockText}>{stock} left in stock</Text>
                 <View style={styles.actionIcons}>
-                    <TouchableOpacity onPress={()=>setRemoveVisible(true)}>
+                    <TouchableOpacity style={styles.actionIcon} onPress={()=>setRemoveVisible(true)}>
                         <Ionicons name="trash-outline" size={28} color="#0C5E52" />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={()=>setEditVisible(true)}>
+                    <TouchableOpacity style={styles.actionIcon} onPress={()=>setEditVisible(true)}>
                         <Ionicons name="create-outline" size={28} color="#0C5E52" />
                     </TouchableOpacity>
                 </View>
@@ -48,11 +50,8 @@ const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemov
                 visible={editVisible}
                 onClose={() => setEditVisible(false)}
                 onEdit={handleEdit}
-                name={name}
                 initialPrice={price}
                 initialStock={stock}
-                initialUnit={unit}
-                imageUrl={image_url}
             />
         </View>
     )
@@ -66,6 +65,11 @@ const styles = StyleSheet.create({
         padding: 20,
         borderRadius: 10,
     },
+    imageContainer: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     productImage: {
         width: 75,
         height: 75,
@@ -73,7 +77,7 @@ const styles = StyleSheet.create({
     },
     productInfo: {
         flex: 1,
-        marginLeft: 15,
+        marginHorizontal: 16,
     },
     productName: {
         fontSize: 18,
@@ -96,8 +100,11 @@ const styles = StyleSheet.create({
     },
     actionIcons: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         marginTop: 10,
+    },
+    actionIcon: {
+        marginLeft: 15,
     },
     footer: {
         flexDirection: 'row',

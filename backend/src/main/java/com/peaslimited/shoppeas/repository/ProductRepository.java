@@ -1,5 +1,6 @@
 package com.peaslimited.shoppeas.repository;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.dto.ProductDetailedDTO;
 import com.peaslimited.shoppeas.model.Product;
@@ -15,12 +16,14 @@ public interface ProductRepository {
 
     List<Product> findAll() throws ExecutionException, InterruptedException;
 
-    List<ProductDetailedDTO> findProductDetails(List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException;
+    List<ProductDetailedDTO> findProductDetails(List<String> swpid_list, List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException;
 
     void addByPID(String pid, ProductDTO product);
 
     void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException;
 
     Product findByProductName(String name) throws ExecutionException, InterruptedException;
+
+    DocumentSnapshot getUrlByName(String ProductName) throws ExecutionException, InterruptedException;
 
 }

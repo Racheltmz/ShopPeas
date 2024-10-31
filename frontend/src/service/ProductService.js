@@ -28,31 +28,30 @@ const productService = {
         });
         return response.data;
     },
-
-    addProduct: async (token, newProductData) => {
-        const response = await apiClient.post(`${REACT_APP_BACKEND_PRODUCT}/add`, newProductData, {
+    addWholesalerProduct: async (token, requestBody) => {
+        const response = await apiClient.post(`${REACT_APP_BACKEND_PRODUCT}/add`, requestBody, {
             headers: {
                 'Authorization': `Bearer ${token}`
-            },
+            }
         });
         return response.data;
     },
-
-    updateProductByUen: async (token, uen, updatedProduct) => {
-        const getSwpidBodyData = {
-            "product_name": updatedProduct.name,
-            "uen": uen,
-        }
-        console.log(getSwpidBodyData);
-        // get swpid
-        const swpid = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/getswpid`, {
+    editWholesalerProduct: async (token, swp_id, requestBody) => {
+        const response = await apiClient.patch(`${REACT_APP_BACKEND_PRODUCT}/update/${swp_id}`, requestBody, {
             headers: {
                 'Authorization': `Bearer ${token}`
-            },
-            data: getSwpidBodyData
+            }
         });
-
-        console.log(getSwpidBodyData);
+        return response.data;
+    },
+    deleteWholesalerProduct: async (token, swp_id) => {
+        console.log(`${REACT_APP_BACKEND_PRODUCT}/delete/${swp_id}`, token);
+        const response = await apiClient.delete(`${REACT_APP_BACKEND_PRODUCT}/delete/${swp_id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        return response.data;
     }
 };
 

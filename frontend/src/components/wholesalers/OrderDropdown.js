@@ -35,9 +35,6 @@ const OrderDropdown = ({ options, defaultValue, onSelect }) => {
           />
         )}
       />
-      <TouchableOpacity style={styles.filterButton}>
-        <Ionicons name="funnel-outline" size={24} color="#0C5E52" />
-      </TouchableOpacity>
     </View>
   );
 };

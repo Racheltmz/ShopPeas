@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDetailedDTO {
+    private String swp_id;
     private String pid;
     private String name;
     private String package_size;

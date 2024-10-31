@@ -1,107 +1,55 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  TextInput,
-  Modal,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import Alert from "../utils/Alert";
-import productService from "../../service/ProductService";
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
 import { useUserStore } from "../../lib/userStore";
-import { Picker } from "@react-native-picker/picker";
+import { Ionicons } from '@expo/vector-icons';
+import Alert from '../utils/Alert';
+import productService from '../../service/ProductService';
 
-const AddProductModal = ({
-  visible,
-  onClose,
-  onAddProduct,
-  wholesalerProducts,
-}) => {
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [customAlert, setCustomAlert] = useState({
-    title: "",
-    message: "",
-    onConfirm: () => {},
-  });
-  const [availableProducts, setAvailableProducts] = useState([]);
+const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
   const { userUid } = useUserStore();
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [newProduct, setNewProduct] = useState("");
+  const [newPrice, setNewPrice] = useState(0);
+  const [newStock, setNewStock] = useState(1);
+  const [data, setData] = useState([]);
 
-  const fetchAllProducts = useCallback(async () => {
-    try {
-      const productsFetched = await productService.fetchProductData(userUid);
-
-      if (
-        !Array.isArray(productsFetched) ||
-        !Array.isArray(wholesalerProducts)
-      ) {
-        console.error("Invalid data format received");
-        return;
-      }
-
-      const filteredProducts = productsFetched.filter((product) => {
-        return !wholesalerProducts.some(
-          (wholeProd) => wholeProd.pid === product.pid
-        );
-      });
-
-      setAvailableProducts(filteredProducts);
-    } catch (error) {
-      console.error("Error fetching or filtering products:", error);
-    }
-  }, [availableProducts]);
+  const getOtherProducts = async () => {
+    await productService.fetchProductData(userUid)
+      .then((res) => {
+        setData(res.filter(product => !products.some(p => p.pid === product.pid)));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }
 
   useEffect(() => {
-    fetchAllProducts();
-  }, [fetchAllProducts]);
+    // Get products wholesaler isn't selling
+    getOtherProducts();
+  });
 
   const showAlert = (title, message, onConfirm) => {
     setCustomAlert({ title, message, onConfirm });
     setAlertVisible(true);
   };
-  const [newProduct, setNewProduct] = useState({
-    "pid": "",
-    "price": "",
-    "stock": 0,
-    "active": true,
-  });
-
-  const [newProductName, setNewProductName] = useState("");
-
-  const handleProductChange = (itemValue) => {
-    const selected = availableProducts.find(product => product.name === itemValue);
-    setNewProductName(itemValue);
-    setNewProduct({
-        ...newProduct,
-        pid: selected.pid
-    });
-  };
 
   const handleAddProduct = () => {
-    const price = parseFloat(newProduct.price);
-    const stock = parseInt(newProduct.stock);
-    
-    if (isNaN(price) || newProductName.trim() === "") {
-      showAlert("Missing Input", "Please enter a valid name and price", () =>
-        setAlertVisible(false)
-      );
-      return;
+    if (isNaN(newPrice) || newPrice <= 0 || newProduct.pid === undefined) {
+      showAlert("Missing Input", "Please select a product", () => setAlertVisible(false));
+    } else {
+      onAddProduct({
+        uen: uen,
+        pid: newProduct.pid,
+        price: parseFloat(newPrice),
+        stock: parseInt(newStock),
+        active: "true",
+      });
+      setNewProduct("");
+      setNewPrice(0);
+      setNewStock(1);
     }
-
-    const productToAdd = {
-      ...newProduct,
-      price: price,
-      stock: isNaN(stock) ? 0 : stock,
-    };
-
-    onAddProduct(productToAdd);
-    setNewProduct({
-      "pid": "",
-      "price": "",
-      "stock": 0,
-      "active": true,
-    });
     onClose();
   };
 
@@ -119,63 +67,40 @@ const AddProductModal = ({
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Add New Product</Text>
 
-          <Text>Product Name</Text>
-          <Picker
-            selectedValue={newProductName}
-            onValueChange={handleProductChange}
-            style={styles.picker}
-          >
-            <Picker.Item label="Select a product..." value="" />
-            {availableProducts.map((product) => (
-              <Picker.Item
-                key={product.pid}
-                label={product.name}
-                value={product.name}
-              />
-            ))}
-          </Picker>
-          <Text>Price</Text>
+          <Text style={styles.inputLabel}>Product Name</Text>
+          <Dropdown
+            style={styles.input}
+            data={data}
+            placeholder="Product Name"
+            value={newProduct}
+            onChange={setNewProduct}
+            labelField="name"
+            valueField="pid"
+          />
+
+          <Text style={styles.inputLabel}>Price</Text>
           <TextInput
             style={styles.input}
             placeholder="Price"
-            value={newProduct.price}
+            value={newPrice}
             keyboardType="numeric"
-            onChangeText={(text) =>
-              setNewProduct({ ...newProduct, price: text })
-            }
+            onChangeText={setNewPrice}
           />
 
           <View style={styles.quantityContainer}>
-            <Text>Current Stock</Text>
+            <Text style={styles.inputLabel}>Current Stock</Text>
             <View style={styles.quantityControls}>
-              <TouchableOpacity
-                onPress={() =>
-                  setNewProduct({
-                    ...newProduct,
-                    stock: Math.max(newProduct.stock - 1, 0),
-                  })
-                }
-              >
-                <Ionicons
-                  name="remove-circle-outline"
-                  size={24}
-                  color="#0C5E52"
-                />
+              <TouchableOpacity onPress={() => setNewStock((prev) => (parseInt(prev) - 1).toString())}>
+                <Ionicons name="remove-circle-outline" size={24} color="#0C5E52" />
               </TouchableOpacity>
-              <Text style={styles.quantityText}>{newProduct.stock}</Text>
-              <TouchableOpacity
-                onPress={() =>
-                  setNewProduct({ ...newProduct, stock: newProduct.stock + 1 })
-                }
-              >
+              <Text style={styles.quantityText}>{newStock}</Text>
+              <TouchableOpacity onPress={() => setNewStock((prev) => (parseInt(prev) + 1).toString())}>
                 <Ionicons name="add-circle-outline" size={24} color="#0C5E52" />
               </TouchableOpacity>
             </View>
           </View>
-          <TouchableOpacity
-            style={styles.modalAddButton}
-            onPress={handleAddProduct}
-          >
+
+          <TouchableOpacity style={styles.modalAddButton} onPress={handleAddProduct}>
             <Text style={styles.modalAddButtonText}>Add New Product</Text>
           </TouchableOpacity>
         </View>
@@ -220,8 +145,11 @@ const styles = StyleSheet.create({
     borderColor: "#0C5E52",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 10,
-    color: "#0C5E52",
+    marginBottom: 12,
+    color: '#0C5E52',
+  },
+  inputLabel: {
+    marginBottom: 6,
   },
   modalAddButton: {
     backgroundColor: "#0C5E52",

@@ -1,18 +1,16 @@
 package com.peaslimited.shoppeas.service.implementation;
 
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.peaslimited.shoppeas.dto.ProductDTO;
 import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.repository.ProductRepository;
 import com.peaslimited.shoppeas.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.peaslimited.shoppeas.dto.mapper.ProductMapper;
 
 import java.util.Map;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -47,5 +45,10 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByProductName(name);
     }
 
+    @Override
+    public String getImageURLByProductName(String productName) throws ExecutionException, InterruptedException {
+        DocumentSnapshot document = productRepository.getUrlByName(productName);
+        return (document != null && document.contains("image_url")) ? document.getString("image_url") : null;
+    }
 
 }

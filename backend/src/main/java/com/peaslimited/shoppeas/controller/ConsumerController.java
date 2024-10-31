@@ -6,7 +6,6 @@ import com.peaslimited.shoppeas.dto.ConsumerDTO;
 import com.peaslimited.shoppeas.dto.ConsumerProfileDTO;
 import com.peaslimited.shoppeas.dto.mapper.ConsumerProfileMapper;
 import com.peaslimited.shoppeas.service.AuthService;
-import com.peaslimited.shoppeas.service.ConsumerAccountService;
 import com.peaslimited.shoppeas.service.ConsumerAddressService;
 import com.peaslimited.shoppeas.service.ConsumerService;
 import org.springframework.beans.factory.annotation.Autowired;

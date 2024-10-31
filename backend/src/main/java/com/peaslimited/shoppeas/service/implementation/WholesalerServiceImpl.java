@@ -1,6 +1,8 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QuerySnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
@@ -9,6 +11,8 @@ import com.peaslimited.shoppeas.service.WholesalerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -20,6 +24,8 @@ public class WholesalerServiceImpl implements WholesalerService {
 
     @Autowired
     private TransactionsRepository transactionsRepository;
+    @Autowired
+    private Firestore firestore;
 
     // Get wholesaler details
     @Override
@@ -56,6 +62,27 @@ public class WholesalerServiceImpl implements WholesalerService {
     @Override
     public DocumentSnapshot getDocByWholesalerName(String name) throws ExecutionException, InterruptedException {
         return wholesalerRepository.findDocByWholesalerName(name);
+    }
+
+    @Override
+    public boolean UENExists(String uen) throws ExecutionException, InterruptedException {
+        System.out.println("Checking existence of UEN: " + uen);
+
+        QuerySnapshot querySnapshot = firestore.collection("wholesaler")
+                .whereEqualTo("uen", uen)
+                .get()
+                .get();
+
+        // Print each document retrieved from the query
+        System.out.println("Total documents retrieved: " + querySnapshot.size());
+
+         return !querySnapshot.isEmpty();
+    }
+
+    // helper function to ensure status validity
+    public boolean isValidStatus(String status){
+        List<String> validStatus = Arrays.asList("IN-CART","COMPLETED","PENDING-ACCEPTANCE","PENDING-COMPLETION");
+        return validStatus.contains(status);
     }
 
 }

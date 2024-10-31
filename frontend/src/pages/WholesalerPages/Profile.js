@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useUserStore } from '../../lib/userStore';
 import { useNavigation } from '@react-navigation/native';
+import wholesalerService from '../../service/WholesalerService';
 
 const Profile = () => {
-  const { resetUser, paymentDetails, userAddress, currentUser } = useUserStore();
+  const { resetUser, currentUser, userUid } = useUserStore();
   const navigation = useNavigation();
+  const [rating, setRatings] = useState(0);
+  const [numRatings, setNumRatings] = useState([]);
+  const [totalRatings, setTotalRatings] = useState(0);
+
+  useEffect(() => {
+    wholesalerService.getRating(userUid, currentUser.uen)
+      .then((res) => {
+        setRatings(res.rating);
+        setNumRatings(res.num_ratings);
+        setTotalRatings(res.num_ratings.reduce((a, b) => a + b, 0));
+      })
+      .catch((err) => {
+        console.error(err);
+      })
+  }, [userUid]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,15 +66,14 @@ const Profile = () => {
             <Image source={require('../../../assets/imgs/pea.png')} style={styles.peaIcon} />
           </View>
           <View style={styles.ratingsDetails}>
-            <Text style={styles.ratingsAverage}>4.9 Average Rating</Text>
-            <Text style={styles.reviewsCount}>13 Ratings</Text>
+            <Text style={styles.ratingsAverage}>{rating.toFixed(2)} Average Rating</Text>
           </View>
           <View style={styles.ratingBreakdown}>
-            <RatingBar label="5" value="70%" />
-            <RatingBar label="4" value="20%" />
-            <RatingBar label="3" value="5%" />
-            <RatingBar label="2" value="3%" />
-            <RatingBar label="1" value="2%" />
+            <RatingBar label="5" value={`${(numRatings[4]/totalRatings)*100}%`} />
+            <RatingBar label="4" value={`${(numRatings[3]/totalRatings)*100}%`} />
+            <RatingBar label="3" value={`${(numRatings[2]/totalRatings)*100}%`} />
+            <RatingBar label="2" value={`${(numRatings[1]/totalRatings)*100}%`} />
+            <RatingBar label="1" value={`${(numRatings[0]/totalRatings)*100}%`} />
           </View>
         </View>
         {/* Account Details */}
@@ -69,14 +84,10 @@ const Profile = () => {
               <Ionicons name="create-outline" size={24} color="#0C5E52" />
             </TouchableOpacity>
           </View>
-          <InfoRow label="Email:" value="contact@happywholesaler.com" />
           <View style={styles.accountInfo}>
             <View style={styles.accountColumn}>
-              <InfoRow label="Contact:" value="+65 9863 3472" />
-              <View style={styles.cardInfo}>
-                <Image source={require('../../../assets/imgs/MasterCardIcon.png')} style={styles.cardIcon} />
-                <Text style={styles.cardText}>Card *1234</Text>
-              </View>
+              <InfoRow label="Email:" value={currentUser.email} />
+              <InfoRow label="Contact:" value={currentUser.phone_number} />
             </View>
             <View style={styles.accountColumn}>
               <InfoRow 

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -59,7 +58,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public List<ProductDetailedDTO> findProductDetails(List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException {
+    public List<ProductDetailedDTO> findProductDetails(List<String> swpid_list, List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException {
         List<DocumentReference> docRefs = productid_list.stream()
                 .map(pid -> firestore.collection(COLLECTION).document(pid))
                 .toList();
@@ -71,6 +70,7 @@ public class ProductRepositoryImpl implements ProductRepository {
             Product product = productDocs.get(i).toObject(Product.class);
             assert product != null;
             productDetailedList.add(new ProductDetailedDTO(
+                    swpid_list.get(i),
                     productid_list.get(i),
                     product.getName(),
                     product.getPackage_size(),
@@ -118,6 +118,15 @@ public class ProductRepositoryImpl implements ProductRepository {
         }
 
         return product;
+    }
+
+    @Override
+    public DocumentSnapshot getUrlByName(String productName) throws ExecutionException, InterruptedException {
+        CollectionReference products = firestore.collection("products");
+        ApiFuture<QuerySnapshot> query = products.whereEqualTo("name", productName).get();
+
+        QuerySnapshot querySnapshot = query.get();
+        return querySnapshot.isEmpty() ? null : querySnapshot.getDocuments().getFirst();
     }
 
 }

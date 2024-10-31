@@ -84,7 +84,7 @@ public class WholesalerController {
     }
 
     @GetMapping("/rating/{uen}")
-    @PreAuthorize("hasRole('CONSUMER')")
+    @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public RatingDTO getRating(@PathVariable("uen") String UEN) throws ExecutionException, InterruptedException {
         // Get UID

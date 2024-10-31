@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Modal, TextInput, Image } from "react-native"
 import { Ionicons } from '@expo/vector-icons';
 
-const EditProduct = ({visible, onClose, onEdit, name, initialPrice, initialStock, imageUrl}) => {
+const EditProduct = ({visible, onClose, onEdit, initialPrice, initialStock}) => {
     const [editedPrice, setEditedPrice] = useState(initialPrice.toString());
     const [editedStock, setEditedStock] = useState(initialStock.toString());
 
     const handleEdit = () => {
-        const updatedProductData = {
-            name: name,
+        onEdit({
             price: parseFloat(editedPrice),
             stock: parseInt(editedStock),
         }
@@ -31,8 +30,6 @@ const EditProduct = ({visible, onClose, onEdit, name, initialPrice, initialStock
                         </TouchableOpacity>
                     </View>
                     <View style = {styles.editContainer}>
-                        <Text style={styles.productName}>{name}</Text>
-                        <Image source={{ uri: imageUrl }} style={styles.productImage} />
                         <Text style={styles.editInputLabel}>Price:</Text>
                         <TextInput
                             style={styles.editInput}
@@ -122,8 +119,7 @@ const styles = StyleSheet.create({
         margin: "auto",
     },
     editClose:{
-        left: "100%",
-        bottom: "3%",
+        left: "60%",
     },
     editInputLabel: {
         fontSize: 16,
@@ -180,9 +176,15 @@ const styles = StyleSheet.create({
     },
     editButton:{
         marginTop: '5%',
+        backgroundColor: '#EBF3D1',
+        borderRadius: 10,
+        borderWidth: 2,
+        borderColor: '#B8C99B',
     },
     editButtonText:{
         color: '#0C5E52',
         fontSize: 20,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
     },
 })

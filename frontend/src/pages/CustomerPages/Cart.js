@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
-import { useUserStore } from "../../lib/userStore";
 import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
 
@@ -20,7 +19,7 @@ const Cart = ({ navigation }) => {
     clearCart();
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     navigation.navigate("Payment");
   };
 

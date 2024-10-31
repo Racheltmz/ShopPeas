@@ -7,10 +7,9 @@ import com.peaslimited.shoppeas.model.Product;
 import com.peaslimited.shoppeas.model.WholesalerProducts;
 import com.peaslimited.shoppeas.service.ProductService;
 import com.peaslimited.shoppeas.service.WholesalerProductService;
-import com.peaslimited.shoppeas.service.OneMapService;
-import com.peaslimited.shoppeas.service.WholesalerAddressService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,13 +31,6 @@ public class ProductController {
 
     @Autowired
     private WholesalerProductService wholesalerProductService;
-
-    @Autowired
-    private OneMapService oneMapService;
-
-    @Autowired
-    private WholesalerAddressService wholesalerAddressService;
-
 
     /**
      * Get all products for consumers
@@ -105,40 +97,27 @@ public class ProductController {
      * Delete a wholesaler product by Pid
      * @return void
      */
-    @PatchMapping("/delete/{swpid}")
+    @DeleteMapping("/delete/{swpid}")
     @PreAuthorize(("hasRole('WHOLESALER')"))
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void deleteWholesalerProduct(@PathVariable String swpid) throws ExecutionException, InterruptedException {
         wholesalerProductService.deleteWholesalerProduct(swpid); // Call service to delete the product by PID
     }
 
-    @GetMapping("/getswpid")
-    @PreAuthorize("hasAnyRole('WHOLESALER', 'CONSUMER')")
+    /**
+     * Returns the image of a product via its name.
+     * @param name The name of the product.
+     * @return ResponseEntity containing the image URL or an error message.
+     */
+    @GetMapping("/image")
+    @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public Map<String, Object> getSWP_IDbyProductName(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String uid = (String) authentication.getPrincipal();
-        Map<String, Object> returnMap = new HashMap<>();
-        //ACTION: parse input data
-        String name = data.get("product_name").toString();
-        String uen = data.get("uen").toString();
-        //ACTION: get PID
-        Product product = productService.findByProductName(name);
-        if(product == null)
-        {
-            returnMap.put("swp_id", "null");
-            return returnMap;
+    public ResponseEntity<String> getProductImage(@RequestParam String name) throws ExecutionException, InterruptedException {
+        String imageUrl = productService.getImageURLByProductName(name);
+        if (imageUrl != null) {
+            return ResponseEntity.ok(imageUrl);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No image available");
         }
-        String pid = product.getPid();
-        //ACTION: get SWPID
-        WholesalerProducts wholesalerProducts = wholesalerProductService.getWProductByPIDandUEN(pid, uen);
-        if(wholesalerProducts == null)
-        {
-            returnMap.put("swp_id", "null");
-            return returnMap;
-        }
-        String swpid = wholesalerProducts.getSwpid();
-        returnMap.put("swp_id", swpid);
-        return returnMap;
     }
 }
