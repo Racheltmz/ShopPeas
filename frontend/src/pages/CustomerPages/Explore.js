@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Fuse from 'fuse.js';
@@ -15,13 +15,13 @@ const Explore = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const { userUid } = useUserStore();
+  const { userUid, currentUser } = useUserStore();
 
   const handleProductPress = (item) => {
     navigation.navigate('ProductDetails', { product: item });
   }
 
-  const loadProducts = async (userUid) => {
+  const loadProducts = useCallback(async (userUid) => {
     await productService.fetchProductData(userUid)
       .then((res) => {
         setProducts(res);
@@ -37,7 +37,7 @@ const Explore = () => {
         })
         setLoading(false);
       })
-  };
+  },[userUid]);
 
   useEffect(() => {
     setLoading(true);
@@ -72,7 +72,7 @@ const Explore = () => {
           autoCapitalize="none"
         />
       </View>
-      {loading && <Loader loading={loading}></Loader>}
+      {/* {loading && <Loader loading={loading}></Loader>} */}
       <View style={{ flex: 2, justifyContent: 'center' }}>
         <Products onProductPress={handleProductPress} productData={filteredProducts}/>
       </View>

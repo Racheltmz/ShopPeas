@@ -34,6 +34,7 @@ const CustomerPages = () => {
   const { fetchCart } = useCart();
   const [ history, setHistory ] = useState([])
   
+  
   const fetchHistory = async () => {
     try {
       const res = await transactionService.viewOrderHistory(userUid);
