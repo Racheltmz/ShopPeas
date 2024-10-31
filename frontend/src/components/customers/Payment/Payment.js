@@ -10,16 +10,23 @@ import CustomAlert from '../../utils/Alert';
 
 const Payment = () => {
   const navigation = useNavigation();
-  const { userUid, currentUser } = useUserStore();
+  const { userUid, currentUser, cardNumbers } = useUserStore();
   const { cart, checkout, getTotal, fetchCart } = useCart();
   const [ loading, setLoading ] = useState(false);
   const [productImages, setProductImages] = useState({}); 
   const [alertVisible, setAlertVisible] = useState(false);
   const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [alertPaymentVisible, setAlertPaymentVisible] = useState(false);
+  const [customAlertPayment, setCustomAlertPayment] = useState({ title: '', message: '', onConfirm: () => { } });
   
   const showAlert = (title, message, onConfirm) => {
     setCustomAlert({ title, message, onConfirm });
     setAlertVisible(true);
+  };
+
+  const showAlertPayment = (title, message, onConfirm) => {
+    setCustomAlertPayment({ title, message, onConfirm });
+    setAlertPaymentVisible(true);
   };
 
   // Add this function to fetch images
@@ -61,6 +68,18 @@ const Payment = () => {
   };
 
   const handleMakePayment = async () => {
+    if (!cardNumbers || cardNumbers.length === 0) {
+      showAlertPayment(
+        "No Payment Method",
+        "Please add a payment method before making a payment.",
+        () => {
+          setAlertPaymentVisible(false);
+          navigation.navigate('PaymentMethod');
+        },
+      );
+      return;
+    }
+
     try {
       setLoading(true); 
       await checkout(userUid);
@@ -139,6 +158,15 @@ const Payment = () => {
           <Text style={styles.makePaymentText}>Make Payment</Text>
         </TouchableOpacity>
       </View>
+      <CustomAlert
+          visible={alertPaymentVisible}
+          title={customAlertPayment.title}
+          message={customAlertPayment.message}
+          onConfirm={() => {
+          setAlertPaymentVisible(false);
+          customAlertPayment.onConfirm;
+          }}
+      />
       <CustomAlert
           visible={alertVisible}
           title={customAlert.title}

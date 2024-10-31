@@ -1,36 +1,64 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useUserStore } from '../../lib/userStore';
 import Loader from '../../components/utils/Loader';
 import HistoryItems from '../../components/customers/HistoryItems';
+import transactionService from '../../service/TransactionService';
 
 
-const History = ({ historyData, onUpdateRating }) => {
+const History = () => {
   const navigation = useNavigation();
+  const { userUid } = useUserStore();
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Update history when historyData prop changes
-  useEffect(() => {
-    if (historyData) {
-      setHistory(historyData);
+  const fetchHistory = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await transactionService.viewOrderHistory(userUid);
+      const sortedData = res.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setHistory(sortedData);
+    } catch (err) {
+      if (err.status === 404) {
+        setHistory([]);
+      } else {
+        setError(err.message);
+        console.error('Error fetching history:', err);
+      }
+    } finally {
       setLoading(false);
     }
-  }, [historyData]);
+  }, [userUid]);
 
-  // Handle navigation focus updates
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      setLoading(true);
-      if (historyData) {
-        setHistory(historyData);
-        setLoading(false);
-      }
-    });
+  // Fetch when component mounts and whenever it comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchHistory();
+    }, [fetchHistory])
+  );
 
-    return unsubscribe;
-  }, [navigation, historyData]);
+  const handleRating = async (tid) => {
+    // Update local state immediately for better UX
+    setHistory(prevHistory => 
+      prevHistory.map(order => ({
+        ...order,
+        orders: order.orders.map(wholesaler => {
+          if (wholesaler.tid === tid) {
+            return { ...wholesaler, rated: true };
+          }
+          return wholesaler;
+        })
+      }))
+    );
+    
+    // Optionally fetch fresh data after a short delay
+    setTimeout(() => {
+      fetchHistory();
+    }, 1000);
+  };
 
   if (loading) {
     return <Loader loading={loading} />;
@@ -44,7 +72,7 @@ const History = ({ historyData, onUpdateRating }) => {
       <HistoryItems 
         navigation={navigation} 
         historyList={history} 
-        onRatedItem={onUpdateRating} 
+        onRatedItem={handleRating} 
       />
     </View>
   );

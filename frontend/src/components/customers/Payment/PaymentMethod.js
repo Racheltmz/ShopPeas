@@ -189,6 +189,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0C5E52',
   },
+  cardNumber: {
+    textAlign: 'center',
+  }
 });
 
 export default PaymentMethod;
