@@ -7,6 +7,7 @@ import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.model.ShoppingCart;
 import com.peaslimited.shoppeas.service.*;
 
+import com.peaslimited.shoppeas.service.implementation.TransactionCacheServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,6 +34,9 @@ public class TransactionController {
 
     @Autowired
     private WholesalerService wholesalerService;
+
+    @Autowired
+    private TransactionCacheServiceImpl transactionCacheService;
 
     @GetMapping("/get")
     @PreAuthorize("hasRole('WHOLESALER')")
@@ -79,7 +83,17 @@ public class TransactionController {
     @PatchMapping("/updatetransactionstatus")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
-    public void updateTransactionStatus(@RequestBody Map<String, Object> data) {
+    public void updateTransactionStatus(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
+        String tid = (String) data.get("tid");
+        String status = (String) data.get("status");
+
+        if (!transactionCacheService.doesTransactionExist(tid)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid TID: Order not found");
+        }
+        if(!wholesalerService.isValidStatus(status)){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid status");
+        }
+
         transactionService.updateTransactionStatus(data);
     }
 
