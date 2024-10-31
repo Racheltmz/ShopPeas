@@ -21,10 +21,27 @@ const Profile = ({ navigation }) => {
     postalCode: userAddress["postal_code"],
   });
 
-  const handleSaveProfile = async (updatedUserData) => {
-    console.log("Saving updated user data:", updatedUserData);
-    await consumerService.editProfile(userUid, updatedUserData);
-    await fetchUserInfo(userUid)
+  const handleSaveProfile = async (updatedUserData, navigation) => {
+    try {
+      // First update the backend
+      await consumerService.editProfile(userUid, updatedUserData);
+      
+      // Update local state immediately
+      setUserData(prevData => ({
+        ...prevData,
+        ...updatedUserData
+      }));
+      
+      // Batch update user info
+      await fetchUserInfo(userUid);
+      
+      // Navigate back only after all updates are complete
+      navigation.goBack();
+      
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      // Handle error (maybe show an alert)
+    }
   };
 
   return (
@@ -32,13 +49,13 @@ const Profile = ({ navigation }) => {
       <Stack.Screen name="ProfileDetails">
         {(props) => <ProfileDetails {...props} userData={userData} />}
       </Stack.Screen>
-      <Stack.Screen name="ProfileEdit">
+      <Stack.Screen name="ProfileEdit" >
         {(props) => (
           <ProfileEdit
             {...props}
             route={{
               ...props.route,
-              params: { ...props.route.params, userData: userData, onSave: handleSaveProfile }
+              params: { ...props.route.params, userData: userData, onSave: (updatedData) => handleSaveProfile(updatedData, props.navigation) }
             }}
           />
         )}

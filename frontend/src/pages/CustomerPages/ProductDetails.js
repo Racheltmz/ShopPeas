@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, SafeAreaView } from "react-native";
-import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Modal,
+  SafeAreaView,
+} from "react-native";
+import { Dialog, ALERT_TYPE } from "react-native-alert-notification";
 import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import { useNavigation } from "@react-navigation/native";
 import { useUserStore } from "../../lib/userStore";
-import { Divider } from 'react-native-paper';
-import Loader from '../../components/utils/Loader';
-import MapView, { Marker } from 'react-native-maps';
+import { Divider } from "react-native-paper";
+import Loader from "../../components/utils/Loader";
+import MapView, { Marker } from "react-native-maps";
 import ProductDetailsHeader from "../../components/customers/ProductDetailsHeader";
 import productService from "../../service/ProductService";
 import locationService from "../../service/LocationService";
-import Alert from '../../components/utils/Alert';
+import CustomAlert from "../../components/utils/Alert";
 
 const ProductDetails = ({ route }) => {
   const { product } = route.params;
@@ -23,34 +31,47 @@ const ProductDetails = ({ route }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [location, setLocation] = useState([1.290270, 103.851959]); // by default, set to Singapore's coordinates
+  const [location, setLocation] = useState([1.29027, 103.851959]); // by default, set to Singapore's coordinates
   const { cart, addItem, fetchCart } = useCart();
   const navigation = useNavigation();
   const [alertVisible, setAlertVisible] = useState(false);
-  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [customAlert, setCustomAlert] = useState({
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
 
   const showAlert = (title, message, onConfirm) => {
-      setCustomAlert({ title, message, onConfirm });
-      setAlertVisible(true);
+    setCustomAlert({
+      title,
+      message,
+      onConfirm: () => {
+        onConfirm?.();
+        setAlertVisible(false);
+        setShowModal(false);
+      },
+    });
+    setAlertVisible(true);
   };
 
   const fetchProductData = (userUid, pid) => {
-    productService.getDetailsByPID(userUid, pid)
+    productService
+      .getDetailsByPID(userUid, pid)
       .then((res) => {
         let data = [];
         for (let i = 0; i < res.length; i++) {
           let record = {
-            'swp_id': res[i].swp_id,
-            'name': res[i].name,
-            'location': res[i].location,
-            'postal_code': res[i].postal_code,
-            'duration': res[i].duration,
-            'distance': res[i].distance,
-            'stocks': res[i].stock,
-            'price': res[i].price,
-            'ratings': res[i].ratings.toFixed(1),
-            'uen': res[i].uen
-          }
+            swp_id: res[i].swp_id,
+            name: res[i].name,
+            location: res[i].location,
+            postal_code: res[i].postal_code,
+            duration: res[i].duration,
+            distance: res[i].distance,
+            stocks: res[i].stock,
+            price: res[i].price,
+            ratings: res[i].ratings.toFixed(1),
+            uen: res[i].uen,
+          };
           data.push(record);
         }
         setWholesalerInfo(data);
@@ -62,10 +83,10 @@ const ProductDetails = ({ route }) => {
           type: ALERT_TYPE.DANGER,
           title: "Error",
           textBody: err.message,
-          button: 'close',
-        })
+          button: "close",
+        });
       });
-  }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -73,14 +94,18 @@ const ProductDetails = ({ route }) => {
   }, [product.pid, userUid]);
 
   const getLatLong = async (postalCode) => {
-    await locationService.getCoordinates(postalCode)
+    await locationService
+      .getCoordinates(postalCode)
       .then((res) => {
-        setLocation([parseFloat(res.results[0]['LATITUDE']), parseFloat(res.results[0]['LONGITUDE'])]);
+        setLocation([
+          parseFloat(res.results[0]["LATITUDE"]),
+          parseFloat(res.results[0]["LONGITUDE"]),
+        ]);
       })
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
 
   const handleWholesalerPress = () => {
     setShowModal(false);
@@ -137,10 +162,12 @@ const ProductDetails = ({ route }) => {
               </View>
             </View>
             <Text style={styles.wholesalerLocation}>
-              {item.location}{"\n"}{item.duration} minutes away from your house{"\n"}{item.distance} km drive
+              {item.location}
+              {"\n"}
+              {item.duration} minutes away from your house{"\n"}
+              {item.distance} km drive
             </Text>
           </View>
-
         </View>
         <Divider style={styles.divider} />
         <View style={styles.row}>
@@ -156,58 +183,86 @@ const ProductDetails = ({ route }) => {
   );
 
   const handleAddCartItem = async () => {
-    const productSubmitData = {
-      "swp_id": selectedWholesaler.swp_id,
-      "price": selectedWholesaler.price,
-      "quantity": quantity,
-      "total_price": (selectedWholesaler.price * quantity).toFixed(2),
-      "uen": selectedWholesaler.uen,
-    };
+    try {
+      const productSubmitData = {
+        swp_id: selectedWholesaler.swp_id,
+        price: selectedWholesaler.price,
+        quantity: quantity,
+        total_price: (selectedWholesaler.price * quantity).toFixed(2),
+        uen: selectedWholesaler.uen,
+      };
 
-    const newItem = {
-      "image_url": product.image_url,
-      "name": product.name,
-      "price": selectedWholesaler.price,
-      "quantity": quantity,
-      "swp_id": selectedWholesaler.swp_id,
+      const newItem = {
+        image_url: product.image_url,
+        name: product.name,
+        price: selectedWholesaler.price,
+        quantity: quantity,
+        swp_id: selectedWholesaler.swp_id,
+      };
+
+      await addItem(
+        userUid,
+        productSubmitData,
+        product.name,
+        quantity,
+        newItem,
+        selectedWholesaler
+      );
+      await fetchCart(userUid);
+
+      setShowModal(false);
+      setQuantity(1);
+      showAlert("Success!", "Item has been added to cart!");
+    } catch (error) {
+      showAlert("Error", "Failed to add item to cart. Please try again.", () =>
+        setAlertVisible(false)
+      );
     }
-    let success = await addItem(userUid, productSubmitData, product.name, quantity, newItem, selectedWholesaler);
-    await fetchCart(userUid);
-    showAlert("Successful!", "Item has been added to cart!", () => setAlertVisible(false));
-    navigation.goBack();
-    setQuantity(1);
   };
 
   return (
     <View style={{ flex: 1 }}>
-      <ProductDetailsHeader name={product.name} desc={`${product.package_size}`} navigation={navigation} />
+      <ProductDetailsHeader
+        name={product.name}
+        desc={`${product.package_size}`}
+        navigation={navigation}
+      />
       {loading && <Loader loading={loading}></Loader>}
       <View style={styles.bodyContainer}>
         <View style={styles.sortContainer}>
           <Text>Sort By:</Text>
           <TouchableOpacity onPress={() => handleSort("price")}>
             <Text
-              style={sortBy === "price" ? styles.activeSortButton : styles.sortButton}
+              style={
+                sortBy === "price" ? styles.activeSortButton : styles.sortButton
+              }
             >
-              Price {sortBy === "price" && (sortDirection === "asc" ? "▲" : "▼")}
+              Price{" "}
+              {sortBy === "price" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleSort("duration")}>
             <Text
               style={
-                sortBy === "duration" ? styles.activeSortButton : styles.sortButton
+                sortBy === "duration"
+                  ? styles.activeSortButton
+                  : styles.sortButton
               }
             >
-              Duration {sortBy === "duration" && (sortDirection === "asc" ? "▲" : "▼")}
+              Duration{" "}
+              {sortBy === "duration" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handleSort("stocks")}>
             <Text
               style={
-                sortBy === "stocks" ? styles.activeSortButton : styles.sortButton
+                sortBy === "stocks"
+                  ? styles.activeSortButton
+                  : styles.sortButton
               }
             >
-              Stocks {sortBy === "stocks" && (sortDirection === "asc" ? "▲" : "▼")}
+              Stocks{" "}
+              {sortBy === "stocks" && (sortDirection === "asc" ? "▲" : "▼")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -233,16 +288,30 @@ const ProductDetails = ({ route }) => {
               <TouchableOpacity onPress={handleWholesalerPress}>
                 <Text style={styles.wholesalerName}>
                   {selectedWholesaler?.name}
-                  <Ionicons name="chevron-forward-outline" size={16} color="#0C5E52" />
+                  <Ionicons
+                    name="chevron-forward-outline"
+                    size={16}
+                    color="#0C5E52"
+                  />
                 </Text>
               </TouchableOpacity>
               <Text style={styles.wholesalerLocation}>
-                {selectedWholesaler?.location}{"\n"}{selectedWholesaler?.duration} minutes away from your house, {selectedWholesaler?.distance} km drive
+                {selectedWholesaler?.location}
+                {"\n"}
+                {selectedWholesaler?.duration} minutes away from your house,{" "}
+                {selectedWholesaler?.distance} km drive
               </Text>
-              <Text style={styles.wholesalerStocks}>Stocks: {selectedWholesaler?.stocks}</Text>
+              <Text style={styles.wholesalerStocks}>
+                Stocks: {selectedWholesaler?.stocks}
+              </Text>
               <SafeAreaView style={styles.wholesalerMapContainer}>
                 <MapView style={styles.map}>
-                  <Marker coordinate={{ latitude: location[0], longitude: location[1] }} >
+                  <Marker
+                    coordinate={{
+                      latitude: location[0],
+                      longitude: location[1],
+                    }}
+                  >
                     <Ionicons name="location" size={24} color="red" />
                   </Marker>
                 </MapView>
@@ -271,15 +340,15 @@ const ProductDetails = ({ route }) => {
           </View>
         </Modal>
       </View>
-      <Alert
-          visible={alertVisible}
-          title={customAlert.title}
-          message={customAlert.message}
-          onConfirm={() => {
-          setAlertVisible(false);
+      <CustomAlert
+        visible={alertVisible}
+        title={customAlert.title}
+        message={customAlert.message}
+        onConfirm={() => {
           customAlert.onConfirm();
-          }}
-          onCancel={() => setAlertVisible(false)}
+          setAlertVisible(false);
+          navigation.goBack();
+        }}
       />
     </View>
   );
@@ -294,9 +363,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   sortContainer: {
     flexDirection: "row",
@@ -321,10 +390,10 @@ const styles = StyleSheet.create({
   divider: {
     marginVertical: 5,
     height: 1,
-    backgroundColor: '#0C5E5250',
+    backgroundColor: "#0C5E5250",
   },
   wholesalerTopSection: {
-    width: '100%',
+    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -340,14 +409,14 @@ const styles = StyleSheet.create({
   wholesalerNameHeader: {
     fontWeight: "bold",
     fontSize: 16,
-    color: '#0C5E52',
+    color: "#0C5E52",
     marginBottom: 2,
     width: "80%",
   },
   wholesalerName: {
     fontWeight: "bold",
     fontSize: 16,
-    color: '#0C5E52',
+    color: "#0C5E52",
     marginBottom: 2,
   },
   wholesalerLocation: {
@@ -359,7 +428,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   wholesalerQty: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 18,
     color: "#0C5E52",
     marginBottom: 2,
@@ -390,10 +459,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 5,
-    color: '#0C5E52',
+    color: "#0C5E52",
   },
   modalText: {
-    color: '#0C5E52',
+    color: "#0C5E52",
     marginBottom: 20,
   },
   quantityContainer: {
@@ -426,10 +495,10 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   map: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderWidth: 2,
-    borderColor: '#D1D1D1',
+    borderColor: "#D1D1D1",
     borderRadius: 10,
   },
 });

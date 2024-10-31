@@ -12,13 +12,14 @@ const RatingModal = ({ visible, onClose, wholesaler, tid, onRated }) => {
     setRating(selectedRating);
   };
 
-  const handleSubmit = () => {
-    wholesalerService.rateWholesaler(userUid, wholesaler, tid, rating);
-    setTimeout(() => {
-      onClose();
-      setRating(0); // Reset rating after closing
-    }, 500);
-    onRated(true);
+  const handleSubmit = async () => {
+    try {
+      await wholesalerService.rateWholesaler(userUid, wholesaler, tid, rating);
+      onRated(tid);
+      setRating(0); 
+    } catch (error) {
+      console.error('Error submitting rating:', error);
+    }
   };
 
   return (

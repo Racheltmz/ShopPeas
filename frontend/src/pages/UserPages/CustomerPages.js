@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Explore from '../CustomerPages/Explore';
@@ -15,6 +15,7 @@ import ViewWholesaler from '../../components/customers/ViewWholesaler';
 import cartService from '../../service/CartService';
 import { useUserStore } from '../../lib/userStore';
 import { useCart } from '../../lib/userCart';
+import transactionService from '../../service/TransactionService';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -27,15 +28,50 @@ const ExploreStack = () => (
   </Stack.Navigator>
 );
 
+
 const CustomerPages = () => {
   const { userUid } = useUserStore();
   const { fetchCart } = useCart();
+  const [ history, setHistory ] = useState([])
   
+  const fetchHistory = async () => {
+    try {
+      const res = await transactionService.viewOrderHistory(userUid);
+      const data = res.sort((a, b) => new Date(b.date) - new Date(a.date));
+      setHistory(data);
+    } catch (err) {
+      if (err.status === 404) {
+        setHistory([]);
+      } else {
+        console.error(err);
+      }
+    }
+  }
+
+  const updateHistoryRating = (tid) => {
+    setHistory(prevHistory => 
+      prevHistory.map(order => ({
+        ...order,
+        orders: order.orders.map(wholesaler => {
+          if (wholesaler.tid === tid) {
+            return { ...wholesaler, rated: true };
+          }
+          return wholesaler;
+        })
+      }))
+    );
+  };
+  
+  // fetch cart and history
   useEffect(() => {
     fetchCart(userUid);
+    fetchHistory()
   }, [userUid]);
-
-
+  
+  const HistoryWrapper = () => {
+    return <History historyData={history} onUpdateRating={updateHistoryRating} />;
+  };
+  
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainTabs">
@@ -78,7 +114,7 @@ const CustomerPages = () => {
           >
             <Tab.Screen name="Explore" component={ExploreStack} />
             <Tab.Screen name="Cart" component={Cart} />
-            <Tab.Screen name="History" component={History} />
+            <Tab.Screen name="History" component={HistoryWrapper} />
             <Tab.Screen name="Profile" component={Profile} />
           </Tab.Navigator>
         )}

@@ -21,7 +21,7 @@ const ProfileEdit = ({ route, navigation }) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
-  const handleSave = () => {  
+  const handleSave = async () => {  
     const data = {
       consumer: {
         "first_name": formData.firstName,
@@ -37,8 +37,11 @@ const ProfileEdit = ({ route, navigation }) => {
         "city": formData.city,
       },
     };  
-    onSave(data);
-    navigation.goBack();
+    try {
+      await onSave(data);
+    } catch(error) {
+      console.error('Error saving:', error);
+    }
   };
 
   return (

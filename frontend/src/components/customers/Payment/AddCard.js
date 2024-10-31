@@ -5,11 +5,11 @@ import { useUserStore } from '../../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
 import { Divider } from 'react-native-paper';
 import paymentService from '../../../service/PaymentService';
-import Alert from '../../utils/Alert';
+import CustomAlert from '../../utils/Alert';
 
 const AddCard = () => {
   const navigation = useNavigation();
-  const { userUid } = useUserStore();
+  const { userUid, updateCardNumbers } = useUserStore();
   const [alertVisible, setAlertVisible] = useState(false);
   const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
 
@@ -37,7 +37,7 @@ const AddCard = () => {
     return cvv.match(/^[0-9]{3,4}$/);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!validateCardNumber(formData.card_no)) {
       showAlert("Invalid Card Number", "Please enter a valid 16-digit card number.", () => setAlertVisible(false));
       return;
@@ -63,9 +63,11 @@ const AddCard = () => {
             name: formData.name.trim()
         };
 
-        paymentService.addCard(userUid, paymentDetails)
-        //TODO: add alert on successful addition of payment method
-        navigation.goBack();
+        await paymentService.addCard(userUid, paymentDetails)
+        const newPaymentsList = await paymentService.getPayment(userUid);
+        updateCardNumbers(newPaymentsList);
+
+        showAlert("Success!", "Card successfully added!");
     } catch(err){
       alert("Addition of card failed: " + err.message);
     }
@@ -140,15 +142,15 @@ const AddCard = () => {
         <Ionicons name="arrow-forward" size={24} color="white" />
       </TouchableOpacity>
       </ScrollView>
-      <Alert
+      <CustomAlert
           visible={alertVisible}
           title={customAlert.title}
           message={customAlert.message}
           onConfirm={() => {
           setAlertVisible(false);
-          customAlert.onConfirm();
+          customAlert.onConfirm;
+          navigation.goBack();
           }}
-          onCancel={() => setAlertVisible(false)}
       />
     </View>
   );

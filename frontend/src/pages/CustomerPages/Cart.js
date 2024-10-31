@@ -10,14 +10,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useCart } from "../../lib/userCart";
 import CartItem from "../../components/customers/CartItem";
 import Empty from '../../components/utils/Empty';
+import { useUserStore } from "../../lib/userStore";
 
 const Cart = ({ navigation }) => {
   const { cart, clearCart, getTotal, fetchCart } = useCart();
   const { userUid } = useUserStore();
-
-  const handleClearCart = () => {
-    clearCart();
-  };
 
   const handleCheckout = async () => {
     navigation.navigate("Payment");

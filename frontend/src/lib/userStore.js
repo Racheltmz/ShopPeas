@@ -9,6 +9,7 @@ export const useUserStore = create((set, get) => ({
   userRole: "",
   userAddress: null,
   paymentDetails: null,
+  cardNumbers: [],
   isLoading: true,
   userUid: "",
   fetchUserInfo: async (uid) => {
@@ -93,5 +94,11 @@ export const useUserStore = create((set, get) => ({
   },
   resetUser: () => {
     set({ currentUser: null, userRole: "", isLoading: false });
+  },
+  getCardNumbers: () => {
+    return get().cardNumbers;
+  },
+  updateCardNumbers: ( newCardNumbers ) => {
+    set({ cardNumbers: newCardNumbers })
   },
 }));

@@ -4,44 +4,36 @@ import { useNavigation } from "@react-navigation/native";
 import { useUserStore } from '../../lib/userStore';
 import Loader from '../../components/utils/Loader';
 import HistoryItems from '../../components/customers/HistoryItems';
-import transactionService from '../../service/TransactionService';
 
-const History = () => {
+
+const History = ({ historyData, onUpdateRating }) => {
   const navigation = useNavigation();
-  const { userUid } = useUserStore();
   const [loading, setLoading] = useState(true);
   const [history, setHistory] = useState([]);
-  const [rated, setRated] = useState(false);
 
-  const fetchData = async (userUid) => {
-    await transactionService.viewOrderHistory(userUid)
-      .then((res) => {
-        data = res.sort((a, b) => new Date(b.date) - new Date(a.date));
-        setHistory(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setLoading(false);
-        if (err.status === 404) {
-          setHistory([]);
-        } else {
-          console.error(err);
-        }
-      });
-  }
-  
-  const updateRated = () => {
-    setRated(true);
-  }
-
+  // Update history when historyData prop changes
   useEffect(() => {
-    fetchData(userUid);
-  }, [userUid, rated]);
+    if (historyData) {
+      setHistory(historyData);
+      setLoading(false);
+    }
+  }, [historyData]);
+
+  // Handle navigation focus updates
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setLoading(true);
+      if (historyData) {
+        setHistory(historyData);
+        setLoading(false);
+      }
+    });
+
+    return unsubscribe;
+  }, [navigation, historyData]);
 
   if (loading) {
-    return (
-      <Loader loading={loading}></Loader>
-    )
+    return <Loader loading={loading} />;
   }
 
   return (
@@ -49,7 +41,11 @@ const History = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Order History</Text>
       </View>
-      <HistoryItems navigation={navigation} historyList={history} onRatedItem={updateRated} />
+      <HistoryItems 
+        navigation={navigation} 
+        historyList={history} 
+        onRatedItem={onUpdateRating} 
+      />
     </View>
   );
 };

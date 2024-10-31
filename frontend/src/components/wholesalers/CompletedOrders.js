@@ -13,7 +13,6 @@ const CompletedOrders = ({ orders }) => {
       };
     }
 
-    // convert orders into an array
     const ordersList = Array.isArray(orders) ? orders : [orders];
     
     const orderGroups = ordersList.map(order => ({
@@ -25,12 +24,10 @@ const CompletedOrders = ({ orders }) => {
       uid: order.uid
     }));
 
-    // filter orders based on status
     const filtered = orderGroups.filter(group => 
       group.status === 'COMPLETED' && group.items.length > 0
     );
 
-    // counting for header
     const counts = {
       'COMPLETED': orderGroups.filter(group => group.status === 'COMPLETED').length,
     };
@@ -38,9 +35,8 @@ const CompletedOrders = ({ orders }) => {
     return { groupedOrders: filtered, orderCounts: counts };
   }, [orders]); 
 
-
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.statusBar}>
         <Text style={styles.statusText}>Completed Orders</Text>
         <View style={styles.statusCount}>
@@ -69,18 +65,20 @@ const CompletedOrders = ({ orders }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    height: '100%',  
+  },
   statusBar: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    alignSelf: 'left',
-    marginLeft: '5%'
+    paddingHorizontal: '5%',
   },
   statusText: {
     fontSize: 16,
     color: '#0C5E52',
     marginRight: 5,
-    alignItems: 'left',
   },
   statusCount: {
     backgroundColor: '#0C5E52',
@@ -92,6 +90,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     fontWeight: 'bold',
+  },
+  flatList: {
+    flex: 1,  
   },
   orderList: {
     paddingHorizontal: 10,
