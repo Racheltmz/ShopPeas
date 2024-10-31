@@ -148,7 +148,7 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {loading && <Loader loading={loading}></Loader>}
+      {/* {loading && <Loader loading={loading}></Loader>} */}
       <View style={styles.searchBar}>
         <Ionicons name="search" size={24} color="#0C5E52" />
         <TextInput

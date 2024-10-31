@@ -60,19 +60,21 @@ const ProductDetails = ({ route }) => {
       .then((res) => {
         let data = [];
         for (let i = 0; i < res.length; i++) {
-          let record = {
-            swp_id: res[i].swp_id,
-            name: res[i].name,
-            location: res[i].location,
-            postal_code: res[i].postal_code,
-            duration: res[i].duration,
-            distance: res[i].distance,
-            stocks: res[i].stock,
-            price: res[i].price,
-            ratings: res[i].ratings.toFixed(1),
-            uen: res[i].uen,
-          };
-          data.push(record);
+          if (res[i]) {
+            let record = {
+              swp_id: res[i].swp_id,
+              name: res[i].name,
+              location: res[i].location,
+              postal_code: res[i].postal_code,
+              duration: res[i].duration,
+              distance: res[i].distance,
+              stocks: res[i].stock,
+              price: res[i].price,
+              ratings: res[i].ratings.toFixed(1),
+              uen: res[i].uen,
+            };
+            data.push(record);
+          }
         }
         setWholesalerInfo(data);
         setLoading(false);
