@@ -5,7 +5,10 @@ import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +33,9 @@ public class CartServiceImpl implements CartService {
     private ProductService productService;
     @Autowired
     private TransactionsRepository transactionsRepository;
+
+    @Autowired
+    private WholesalerProductCacheServiceImpl wholesalerProductCacheService;
 
     @Override
     public Map<String, Object> getCartByUID(String uid) throws ExecutionException, InterruptedException {
@@ -90,18 +96,22 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void addCartItem(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
+    public void addCartItem(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException,ResponseStatusException {
         // Get order data
         String swp_id = data.get("swp_id").toString();
         int quantity = Integer.parseInt(data.get("quantity").toString());
         double total_price = Double.parseDouble(data.get("total_price").toString());
+        WholesalerProductDTO wProduct = wholesalerProductService.getBySwp_id(swp_id);
 
-        if (quantity <= 0) {
-            System.out.println("Error! Invalid quantity");
-            return;
-        } else if (wholesalerProductService.getBySwp_id(swp_id) == null) {
-            System.out.println("Error! Wholesaler product does not exist");
-            return;
+        if(wholesalerProductCacheService.doesTransactionExist(swp_id) == false)
+        {
+            System.out.println("Error! 2");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
+        }
+        else if (checkQuantity(quantity) ==false) {
+            System.out.println("Error! 1");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Invalid quantity");
+            //wholesalerProductCacheService.doesTransactionExist(swp_id) == false
         }
 
         //ACTION: ADDS TRANSACTION RECORD
@@ -124,8 +134,21 @@ public class CartServiceImpl implements CartService {
         int quantity = Integer.parseInt(data.get("quantity").toString());
         double price = Double.parseDouble(data.get("price").toString());
 
-        transactionsRepository.updateProductQuantity(uid, uen, swp_id, quantity, price);
+        if(wholesalerService.UENExists(uen) == false)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler does not exist");
+        }
+        System.out.println(swp_id);
+        if(wholesalerProductService.getBySwp_id(swp_id) == null)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
+        }
         String cid = cartRepository.findCIDByUID(uid);
+        if(cid == null)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Cart does not exist");
+        }
+        transactionsRepository.updateProductQuantity(uid, uen, swp_id, quantity, price);
         cartRepository.updateCartPrice(cid, price);
     }
 
@@ -143,6 +166,38 @@ public class CartServiceImpl implements CartService {
         if (Integer.parseInt(outputMap.get("num_products").toString()) == 0) {
             cartRepository.deleteTransaction(cid, outputMap.get("tid").toString());
         }
+    }
+
+    @Override
+    public boolean checkQuantity(int quantity)
+    {
+        if(quantity >= 0) return true;
+        else return false;
+    }
+
+    @Override
+    public boolean checkObjectNull(Object obj)
+    {
+        if(obj == null) return true;
+        else return false;
+    }
+
+    @Override
+    public int testException(int j)
+    {
+        if(j <= 0)
+        {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        else if(j <= 10)
+        {
+            return 100;
+        }
+        else if(j <= 20)
+        {
+            return 1000;
+        }
+        else return 999;
     }
 
 }
