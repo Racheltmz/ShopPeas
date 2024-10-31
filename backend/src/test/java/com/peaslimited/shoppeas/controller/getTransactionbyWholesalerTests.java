@@ -27,9 +27,6 @@ public class getTransactionbyWholesalerTests {
     private CurrencyService currencyService;
 
     @MockBean
-    private WholesalerTransactionsService wholesalerTransactionService;
-
-    @MockBean
     private WholesalerService wholesalerService;
 
     @MockBean
