@@ -1,32 +1,95 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useUserStore } from '../../../lib/userStore';
 import { useCart } from '../../../lib/userCart';
-import transactionService from '../../../service/TransactionService';
+import Loader from '../../utils/Loader';
+import productService from '../../../service/ProductService';
+import CustomAlert from '../../utils/Alert';
 
 const Payment = () => {
   const navigation = useNavigation();
-  const { userUid, currentUser } = useUserStore();
-  const { cart, checkout, getTotal } = useCart();
+  const { userUid, currentUser, cardNumbers } = useUserStore();
+  const { cart, checkout, getTotal, fetchCart } = useCart();
+  const [ loading, setLoading ] = useState(false);
+  const [productImages, setProductImages] = useState({}); 
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({ title: '', message: '', onConfirm: () => { } });
+  const [alertPaymentVisible, setAlertPaymentVisible] = useState(false);
+  const [customAlertPayment, setCustomAlertPayment] = useState({ title: '', message: '', onConfirm: () => { } });
+  
+  const showAlert = (title, message, onConfirm) => {
+    setCustomAlert({ title, message, onConfirm });
+    setAlertVisible(true);
+  };
 
-  const updateOrderHistory = async () => {
-    await transactionService.viewOrderHistory(userUid)
-      .catch((err) => {
-        console.error(err);
-      });
-  }
+  const showAlertPayment = (title, message, onConfirm) => {
+    setCustomAlertPayment({ title, message, onConfirm });
+    setAlertPaymentVisible(true);
+  };
 
+  // Add this function to fetch images
+  const fetchProductImages = async () => {
+    try {
+      const imagePromises = cart.flatMap(wholesaler =>
+        wholesaler.items.map(async (item) => {
+          try {
+            const imageData = await productService.fetchProductImage(userUid, item.name);
+            return { 
+              name: item.name, 
+              image: imageData // If this is already the URL, don't try to access image_url
+            };
+          } catch (err) {
+            console.error(`Error fetching image for ${item.name}:`, err);
+            return { name: item.name, image: null };
+          }
+        })
+      );
+  
+      const images = await Promise.all(imagePromises);
+      const imageMap = images.reduce((acc, item) => {
+        acc[item.name] = item.image; 
+        return acc;
+      }, {});
+      setProductImages(imageMap);
+    } catch (err) {
+      console.error("Error fetching product images:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (cart.length > 0) {
+      fetchProductImages();
+    }
+  }, [cart]);
   const handlePaymentMethodPress = () => {
     navigation.navigate('PaymentMethod');
   };
 
   const handleMakePayment = async () => {
-    checkout(userUid);
-    await updateOrderHistory();
-    // Implement payment logic here
-    navigation.navigate('History');
+    if (!cardNumbers || cardNumbers.length === 0) {
+      showAlertPayment(
+        "No Payment Method",
+        "Please add a payment method before making a payment.",
+        () => {
+          setAlertPaymentVisible(false);
+          navigation.navigate('PaymentMethod');
+        },
+      );
+      return;
+    }
+
+    try {
+      setLoading(true); 
+      await checkout(userUid);
+      await fetchCart(userUid); 
+      showAlert("Success!", "Payment Successful!");
+    } catch (err) {
+      console.error("Payment failed:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleWholesalerPress = (wholesalerName) => {
@@ -35,6 +98,7 @@ const Payment = () => {
 
   return (
     <View style={styles.container}>
+      {loading && <Loader loading={loading}></Loader>}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#0C5E52" />
@@ -64,7 +128,14 @@ const Payment = () => {
             </TouchableOpacity>
             {wholesaler.items.map((item, itemIndex) => (
               <View key={itemIndex} style={styles.itemContainer}>
-                <Image source={require('../../../../assets/imgs/DummyImage.jpg')} style={styles.itemImage} />
+                <Image 
+                source={
+                  productImages[item.name] 
+                    ? { uri: productImages[item.name] }
+                    : ""
+                } 
+                style={styles.itemImage}
+              />
                 <View style={styles.itemDetails}>
                   <Text style={styles.itemName}>{item.name}</Text>
                   <Text style={styles.itemQuantity}>{item.quantity} {item.Measurement}</Text>
@@ -87,6 +158,25 @@ const Payment = () => {
           <Text style={styles.makePaymentText}>Make Payment</Text>
         </TouchableOpacity>
       </View>
+      <CustomAlert
+          visible={alertPaymentVisible}
+          title={customAlertPayment.title}
+          message={customAlertPayment.message}
+          onConfirm={() => {
+          setAlertPaymentVisible(false);
+          customAlertPayment.onConfirm;
+          }}
+      />
+      <CustomAlert
+          visible={alertVisible}
+          title={customAlert.title}
+          message={customAlert.message}
+          onConfirm={() => {
+          setAlertVisible(false);
+          customAlert.onConfirm;
+          navigation.navigate('History', { refresh: true }); 
+          }}
+      />
     </View>
   );
 };

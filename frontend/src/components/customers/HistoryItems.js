@@ -17,6 +17,11 @@ const HistoryItems = ({ navigation, historyList, onRatedItem }) => {
   const [selectedWholesaler, setSelectedWholesaler] = useState(null);
   const [tid, setTid] = useState(null);
 
+  const handleRatingComplete = (tid) => {
+    onRatedItem(tid); 
+    setModalVisible(false);
+  };
+
   const handleWholesalerPress = (uen) => {
     navigation.navigate('ViewWholesaler', { wholesalerUEN: uen, });
   };
@@ -104,7 +109,7 @@ const HistoryItems = ({ navigation, historyList, onRatedItem }) => {
           onClose={() => setModalVisible(false)}
           wholesaler={selectedWholesaler}
           tid={tid}
-          onRated={onRatedItem}
+          onRated={handleRatingComplete}
         />
       </> :
       <Empty subject="Orders"></Empty>

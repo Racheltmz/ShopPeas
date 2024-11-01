@@ -11,6 +11,27 @@ const productService = {
         });
         return response.data;
     },
+    fetchProductImage: async (uid, name) => {
+        const response = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/image`, {  
+            headers: {
+                Authorization: `Bearer ${uid}`,
+                Accept: "application/json",
+            },
+            params: {
+                name: name 
+            }
+        });
+        return response.data;
+    },
+    fetchProductData: async (uid) => {
+        const response = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/all`, {
+            headers: {
+                Authorization: `Bearer ${uid}`,
+                Accept: "application/json",
+            },
+        });
+        return response.data;
+    },
     getDetailsByPID: async (token, pid) => {
         const response = await apiClient.get(`${REACT_APP_BACKEND_PRODUCT}/${pid}`, {
             headers: {
@@ -45,7 +66,6 @@ const productService = {
         return response.data;
     },
     deleteWholesalerProduct: async (token, swp_id) => {
-        console.log(`${REACT_APP_BACKEND_PRODUCT}/delete/${swp_id}`, token);
         const response = await apiClient.delete(`${REACT_APP_BACKEND_PRODUCT}/delete/${swp_id}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
