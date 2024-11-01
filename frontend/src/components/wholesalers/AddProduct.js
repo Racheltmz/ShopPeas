@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal } from 'reac
 import { Dropdown } from 'react-native-element-dropdown';
 import { useUserStore } from "../../lib/userStore";
 import { Ionicons } from '@expo/vector-icons';
-import Alert from '../utils/Alert';
+import { CustomAlert } from '../utils/Alert';
 import productService from '../../service/ProductService';
 
 const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
@@ -28,7 +28,7 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
   useEffect(() => {
     // Get products wholesaler isn't selling
     getOtherProducts();
-  });
+  }, []);
 
   const showAlert = (title, message, onConfirm) => {
     setCustomAlert({ title, message, onConfirm });
@@ -106,7 +106,7 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
         </View>
       </View>
 
-      <Alert
+      <CustomAlert
         visible={alertVisible}
         title={customAlert.title}
         message={customAlert.message}

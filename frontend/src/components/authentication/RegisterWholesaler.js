@@ -9,7 +9,7 @@ import WholesalerDetails from './WholesalerDetails';
 import Address from './Address';
 import WholesalerBank from './WholesalerBank';
 import Password from './Password';
-import Alert from '../utils/Alert';
+import { CustomAlert } from '../utils/Alert';
 
 const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
     const [step, setStep] = useState(1);
@@ -193,7 +193,7 @@ const RegisterWholesaler = ({onBackPress, onRegComplete}) => {
                 <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
             </TouchableOpacity>
 
-            <Alert
+            <CustomAlert
                 visible={alertVisible}
                 title={customAlert.title}
                 message={customAlert.message}

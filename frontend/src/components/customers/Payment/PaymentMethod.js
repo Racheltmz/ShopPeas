@@ -99,7 +99,7 @@ const PaymentMethod = () => {
             renderItem={({ item }) => <Item item={item} />}
             keyExtractor={item => item}
             ListEmptyComponent={() => (
-              <Text style={styles.cardNumber}>
+              <Text style={styles.loadingText}>
                 No payment methods found
               </Text>
             )}
@@ -189,9 +189,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#0C5E52',
   },
-  cardNumber: {
-    textAlign: 'center',
-  }
 });
 
 export default PaymentMethod;

@@ -4,7 +4,7 @@ import { FirebaseAuth } from '../../lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useUserStore } from '../../lib/userStore';
 import { Ionicons } from '@expo/vector-icons';
-import Alert from '../utils/Alert';
+import { CustomAlert } from '../utils/Alert';
 
 const Login = ({ onBackPress, onRegisterPress }) => {
     const auth = FirebaseAuth;
@@ -104,7 +104,7 @@ const Login = ({ onBackPress, onRegisterPress }) => {
                 </TouchableOpacity>
             </View>
 
-            <Alert
+            <CustomAlert
                 visible={alertVisible}
                 title={customAlert.title}
                 message={customAlert.message}
