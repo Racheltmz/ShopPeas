@@ -74,7 +74,9 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             document = documents.getFirst();
             double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
             Map<String, Object> products = (Map<String,Object>) document.get("products");
-            boolean rated = Boolean.parseBoolean(Objects.requireNonNull(document.get("rated")).toString());
+            // boolean rated = Boolean.parseBoolean(Objects.requireNonNull(document.get("rated")).toString());
+            // Safely check if "rated" exists and set it to false if missing
+            boolean rated = document.contains("rated") && Boolean.parseBoolean(document.get("rated").toString());
             String status = Objects.requireNonNull(document.get("status")).toString();
 
             return new Transactions(

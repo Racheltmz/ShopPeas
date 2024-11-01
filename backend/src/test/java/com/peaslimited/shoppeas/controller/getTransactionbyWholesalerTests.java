@@ -2,6 +2,7 @@ package com.peaslimited.shoppeas.controller;
 
 import com.peaslimited.shoppeas.service.*;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.peaslimited.shoppeas.service.implementation.TransactionCacheServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 
 import java.util.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest( value = TransactionController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -25,6 +27,9 @@ public class getTransactionbyWholesalerTests {
     // Mock all dependencies of TransactionController
     @MockBean
     private CurrencyService currencyService;
+
+    @MockBean
+    private TransactionCacheServiceImpl transactionCacheService;
 
     @MockBean
     private WholesalerService wholesalerService;

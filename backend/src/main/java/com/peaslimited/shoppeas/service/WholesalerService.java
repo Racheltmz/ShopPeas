@@ -26,4 +26,6 @@ public interface WholesalerService {
     boolean UENExists(String uen) throws ExecutionException, InterruptedException;
 
     boolean isValidStatus(String status) throws ExecutionException, InterruptedException;
+
+    boolean isValidWholesalerAndUEN(String wholesaler, String uen) throws ExecutionException, InterruptedException;
 }
