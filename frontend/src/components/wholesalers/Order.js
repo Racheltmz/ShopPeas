@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useUserStore } from '../../lib/userStore';
 
 const Order = ({ orderGroup, onAccept, onComplete }) => {
+  const { currentUser } = useUserStore();
+
   if (!orderGroup || !orderGroup.items) return null;
 
   const isToBeAccepted = orderGroup.status === 'PENDING-ACCEPTANCE';
@@ -53,7 +56,7 @@ const Order = ({ orderGroup, onAccept, onComplete }) => {
       <View style={styles.orderFooter}>
         <View style={styles.totalAndDetails}>
           <Text style={styles.totalAmount}>
-            Total Price: {orderGroup.currency === "SGD" ? "S$" : "MYR"} {orderGroup.totalAmount}
+            Total Price: {currentUser.currency === "SGD" ? "S$" : "MYR"} {orderGroup.totalAmount}
           </Text>
         </View>
       </View>

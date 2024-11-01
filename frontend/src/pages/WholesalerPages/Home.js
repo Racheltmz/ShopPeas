@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
   StyleSheet,
   Text,
@@ -16,8 +16,7 @@ import Fuse from "fuse.js";
 import WholesalerProduct from "../../components/wholesalers/WholesalerProduct";
 import AddProduct from "../../components/wholesalers/AddProduct";
 import productService from "../../service/ProductService";
-import Loader from "../../components/utils/Loader";
-import Alert from "../../components/utils/Alert";
+import { CustomAlert } from "../../components/utils/Alert";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -26,7 +25,6 @@ const Home = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [customAlert, setCustomAlert] = useState({
     title: "",
@@ -52,9 +50,7 @@ const Home = () => {
 
   useEffect(() => {
     const initializePage = async () => {
-      setLoading(true);
       await fetchProducts(userUid);
-      setLoading(false);
     };
 
     initializePage();
@@ -66,7 +62,6 @@ const Home = () => {
 
   // Use useCallback for handleAddProduct to prevent re-renders
   const handleAddProduct = async (newProduct) => {
-    setLoading(true);
     try {
       await productService.addWholesalerProduct(userUid, newProduct);
       setProducts((currentProducts) => [...currentProducts, newProduct]);
@@ -74,13 +69,11 @@ const Home = () => {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
       showAlert("SUCCESS", "New Product Added!", setAlertVisible(false))
     }
   };
 
   const editProduct = async (productName, updatedProduct) => {
-    setLoading(true);
     const selectedProductswpid = products.find(
       (product) => product.name === productName
     )?.swp_id;
@@ -106,13 +99,11 @@ const Home = () => {
     } catch (err) {
       console.error(err);
     } finally {
-      setLoading(false);
       showAlert("SUCCESS", "Product Edited!", setAlertVisible(false))
     }
   };
 
   const removeProduct = async (index) => {
-    setLoading(true);
     try {
       await productService.deleteWholesalerProduct(userUid, products[index].swp_id)
       setProducts((currentProducts) =>
@@ -122,7 +113,6 @@ const Home = () => {
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
         showAlert("SUCCESS", "Product Removed!", setAlertVisible(false))
       }
   };
@@ -211,7 +201,7 @@ const Home = () => {
         uen={currentUser.uen}
       />
 
-      <Alert
+      <CustomAlert
         visible={alertVisible}
         title={customAlert.title}
         message={customAlert.message}
