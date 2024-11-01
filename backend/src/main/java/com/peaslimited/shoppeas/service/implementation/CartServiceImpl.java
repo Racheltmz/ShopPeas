@@ -6,7 +6,6 @@ import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -101,7 +100,6 @@ public class CartServiceImpl implements CartService {
         String swp_id = data.get("swp_id").toString();
         int quantity = Integer.parseInt(data.get("quantity").toString());
         double total_price = Double.parseDouble(data.get("total_price").toString());
-        WholesalerProductDTO wProduct = wholesalerProductService.getBySwp_id(swp_id);
 
         if(wholesalerProductCacheService.doesTransactionExist(swp_id) == false)
         {

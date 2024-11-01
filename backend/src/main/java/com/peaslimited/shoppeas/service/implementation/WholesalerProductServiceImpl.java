@@ -30,7 +30,7 @@ public class WholesalerProductServiceImpl implements WholesalerProductService {
 
     @Override
     public List<WholesalerProductDetailsDTO> findByPid(String pid, String uid) throws ExecutionException, InterruptedException, IOException {
-        String userPostalCode =consumerAddressRepository.findByUID(uid).getPostal_code();
+        String userPostalCode = consumerAddressRepository.findByUID(uid).getPostal_code();
         return wholesalerProductRepository.findByPid(pid, userPostalCode);
     }
 
