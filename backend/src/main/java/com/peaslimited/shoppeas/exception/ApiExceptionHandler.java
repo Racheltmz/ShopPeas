@@ -55,4 +55,5 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
         // Return response entity
         return new ResponseEntity<>(errorResponse, internalServer);
     }
+
 }

@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.peaslimited.shoppeas.dto.*;
+import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
 import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
@@ -107,6 +108,7 @@ public class CartServiceImpl implements CartService {
         {
             System.out.println("Error! 2");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
+
         }
         else if (checkQuantity(quantity) ==false) {
             System.out.println("Error! 1");

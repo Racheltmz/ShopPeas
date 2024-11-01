@@ -69,7 +69,6 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
 
         List<QueryDocumentSnapshot> documents = querySnapshot.getDocuments();
         DocumentSnapshot document = null;
-
         if (!documents.isEmpty()) {
             document = documents.getFirst();
             double total_price = Double.parseDouble(Objects.requireNonNull(document.get("total_price")).toString());
