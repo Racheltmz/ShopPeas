@@ -104,7 +104,7 @@ public class CartServiceImpl implements CartService {
         double total_price = Double.parseDouble(data.get("total_price").toString());
         WholesalerProductDTO wProduct = wholesalerProductService.getBySwp_id(swp_id);
 
-        if(wholesalerProductCacheService.doesTransactionExist(swp_id) == false)
+        if(wholesalerProductService.getBySwp_id(swp_id) == null)
         {
             System.out.println("Error! 2");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
