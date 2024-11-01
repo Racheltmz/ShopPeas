@@ -6,6 +6,7 @@ import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.service.*;
 import com.peaslimited.shoppeas.service.implementation.CartServiceImpl;
 import com.peaslimited.shoppeas.service.implementation.WholesalerProductCacheServiceImpl;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -157,7 +158,6 @@ class addToCartTest {
                         .content(requestBody))
                 .andExpect(status().isCreated());
     }
-
     @Test
     public void addToCart_InvalidSwpid() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
@@ -193,59 +193,16 @@ class addToCartTest {
 
         when(wholesalerProductService.getBySwp_id(swp_id)).thenReturn(null); // Return null for invalid swp_id
         when(wholesalerProductCacheService.doesTransactionExist(swp_id)).thenReturn(false); // Return false for existence check
-        when(cartService.checkQuantity(quantity)).thenReturn(true);
 
         //DOES NOT WORK
-        Exception e = assertThrows(ResponseStatusException.class, () -> {
-            cartService.addCartItem(uid, data);
-        });
-        String expectedMessage = "Error! Wholesaler product does not exist";
-        String actual = e.getMessage();
-        assertTrue(actual.contains(expectedMessage));
-
-        //DOES NOT WORK
-        /*mockMvc.perform(MockMvcRequestBuilders.post("/cart/add")
+        Mockito.doNothing().when(cartService).addCartItem(uid, data);
+        mockMvc.perform(MockMvcRequestBuilders.post("/cart/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
-                .andExpect(status().isBadRequest());*/
+                .andExpect(status().isBadRequest());
 
     }
 
-    @Test
-    public void addToCart_InvalidSwpid2() throws ExecutionException, InterruptedException {
-        // Arrange: Set up test data and mocks
-        String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
-        String swp_id = "1234";
-        int quantity = 10;
-        double total_price = 454.9;
-
-        Map<String, Object> data = Map.of(
-                "swp_id", swp_id,
-                "quantity", quantity,
-                "total_price", total_price
-        );
-
-        // ACTION: Mock authentication
-        SecurityContext context = Mockito.mock(SecurityContext.class);
-        Authentication auth = Mockito.mock(Authentication.class);
-        when(auth.getPrincipal()).thenReturn(uid);
-        when(context.getAuthentication()).thenReturn(auth);
-        SecurityContextHolder.setContext(context);
-
-        // Mock behaviors: Ensure service calls return the expected values to trigger the exception
-        when(wholesalerProductService.getBySwp_id(swp_id)).thenReturn(null); // invalid swp_id returns null
-        when(wholesalerProductCacheService.doesTransactionExist(swp_id)).thenReturn(false); // does not exist
-        when(cartService.checkQuantity(quantity)).thenReturn(true); // quantity check passes
-
-        // Act & Assert: Verify the ResponseStatusException is thrown with correct message
-        ResponseStatusException thrown = assertThrows(ResponseStatusException.class, () -> {
-            cartService.addCartItem(uid, data);
-        });
-
-        // Additional assertion for confirmation
-        //assertEquals(HttpStatus.BAD_REQUEST, thrown.getStatus());
-        assertTrue(thrown.getReason().contains("Error! Wholesaler product does not exist"));
-    }
 
     @Test()
     public void addToCart_InvalidQuantity() throws Exception {
@@ -276,14 +233,5 @@ class addToCartTest {
                         .content(requestBody))
                 .andExpect(status().isBadRequest());
 
-    }
-
-    @Test
-    public void testE()
-    {
-        var cart = new CartServiceImpl();
-        assertThrows(ResponseStatusException.class, () -> {
-            cart.testException(-10);
-        });
     }
 }

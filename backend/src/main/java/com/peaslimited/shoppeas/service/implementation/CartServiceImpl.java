@@ -1,6 +1,7 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.peaslimited.shoppeas.dto.*;
+import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
 import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
@@ -101,10 +102,11 @@ public class CartServiceImpl implements CartService {
         int quantity = Integer.parseInt(data.get("quantity").toString());
         double total_price = Double.parseDouble(data.get("total_price").toString());
 
-        if(wholesalerProductCacheService.doesTransactionExist(swp_id) == false)
+        if(wholesalerProductService.getBySwp_id(swp_id) == null)
         {
             System.out.println("Error! 2");
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
+
         }
         else if (checkQuantity(quantity) ==false) {
             System.out.println("Error! 1");
