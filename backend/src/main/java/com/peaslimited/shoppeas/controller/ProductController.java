@@ -13,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.util.Map;
@@ -36,7 +35,7 @@ public class ProductController {
      * @return product details
      */
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
+    @PreAuthorize("hasAnyRole('CONSUMER','WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Product> getAllProducts() throws ExecutionException, InterruptedException {
         return productService.getAllProducts();

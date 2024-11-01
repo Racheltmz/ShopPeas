@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput, Modal } from 'reac
 import { Dropdown } from 'react-native-element-dropdown';
 import { useUserStore } from "../../lib/userStore";
 import { Ionicons } from '@expo/vector-icons';
-import Alert from '../utils/Alert';
+import { CustomAlert } from '../utils/Alert';
 import productService from '../../service/ProductService';
 
 const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
@@ -28,7 +28,7 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
   useEffect(() => {
     // Get products wholesaler isn't selling
     getOtherProducts();
-  });
+  }, []);
 
   const showAlert = (title, message, onConfirm) => {
     setCustomAlert({ title, message, onConfirm });
@@ -62,10 +62,7 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={onClose}
-          >
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <Ionicons name="close" size={24} color="#0C5E52" />
           </TouchableOpacity>
           <Text style={styles.modalTitle}>Add New Product</Text>
@@ -109,7 +106,7 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
         </View>
       </View>
 
-      <Alert
+      <CustomAlert
         visible={alertVisible}
         title={customAlert.title}
         message={customAlert.message}
@@ -126,26 +123,26 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: '90%',
-    backgroundColor: '#F5F5F5',
+    width: "90%",
+    backgroundColor: "#F5F5F5",
     padding: 20,
     borderRadius: 10,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#0C5E52',
+    fontWeight: "bold",
+    color: "#0C5E52",
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: '#0C5E52',
+    borderColor: "#0C5E52",
     borderRadius: 5,
     padding: 10,
     marginBottom: 12,
@@ -155,18 +152,18 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   modalAddButton: {
-    backgroundColor: '#0C5E52',
+    backgroundColor: "#0C5E52",
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
   },
   modalAddButtonText: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 16,
-    color: '#EBF3D1',
+    color: "#EBF3D1",
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
   },
@@ -174,15 +171,15 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   quantityControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginTop: 10,
   },
   quantityText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#0C5E52',
+    fontWeight: "bold",
+    color: "#0C5E52",
   },
 });
 

@@ -16,7 +16,6 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
       };
     }
 
-    // convert orders into an array
     const ordersList = Array.isArray(orders) ? orders : [orders];
     
     const orderGroups = ordersList.map(order => ({
@@ -28,12 +27,10 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
       uid: order.uid
     }));
 
-    // filter orders based on status
     const filtered = orderGroups.filter(group => 
       group.status === selectedStatus && group.items.length > 0
     );
 
-    // counting for header
     const counts = {
       'PENDING-ACCEPTANCE': orderGroups.filter(group => group.status === 'PENDING-ACCEPTANCE').length,
       'PENDING-COMPLETION': orderGroups.filter(group => group.status === 'PENDING-COMPLETION').length,
@@ -47,7 +44,7 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.mainContainer}>
       <View style={styles.statusTabs}>
         <TouchableOpacity 
           style={[
@@ -80,41 +77,51 @@ const PendingOrders = ({ orders, onAccept, onComplete }) => {
         </TouchableOpacity>
       </View>
       
-      <FlatList
-        data={groupedOrders}
-        renderItem={({ item }) => (
-          <Order 
-            orderGroup={item}
-            onAccept={onAccept}
-            onComplete={onComplete}
-          />
-        )}
-        keyExtractor={item => item.orderId?.toString()}
-        contentContainerStyle={styles.orderList}
-        style={styles.flatList}
-        ListEmptyComponent={() => (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No orders found</Text>
-          </View>
-        )}
-      />
+      <View style={styles.listContainer}>
+        <FlatList
+          data={groupedOrders}
+          renderItem={({ item }) => (
+            <Order 
+              orderGroup={item}
+              onAccept={onAccept}
+              onComplete={onComplete}
+            />
+          )}
+          keyExtractor={item => item.orderId?.toString()}
+          contentContainerStyle={styles.orderList}
+          style={styles.flatList}
+          showsVerticalScrollIndicator={true}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No orders found</Text>
+            </View>
+          )}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
     flex: 1,
+    height: '100%',
+  },
+  listContainer: {
+    flex: 1,
+    height: '100%',
   },
   statusTabs: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginVertical: 10,
+    paddingHorizontal: 10,
   },
   statusTab: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   activeTab: {
     borderBottomWidth: 2,
@@ -135,11 +142,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
   },
-  orderList: {
-    paddingHorizontal: 10,
-  },
   flatList: {
     flex: 1,
+  },
+  orderList: {
+    paddingHorizontal: 10,
+    paddingBottom: 20,
   },
   emptyContainer: {
     flex: 1,

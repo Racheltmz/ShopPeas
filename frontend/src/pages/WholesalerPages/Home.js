@@ -1,12 +1,22 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, TextInput, SafeAreaView, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  TextInput,
+  SafeAreaView,
+  Image,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { useUserStore } from "../../lib/userStore";
-import Fuse from 'fuse.js';
-import WholesalerProduct from '../../components/wholesalers/WholesalerProduct';
-import AddProduct from '../../components/wholesalers/AddProduct';
-import productService from '../../service/ProductService';
+import Fuse from "fuse.js";
+import WholesalerProduct from "../../components/wholesalers/WholesalerProduct";
+import AddProduct from "../../components/wholesalers/AddProduct";
+import productService from "../../service/ProductService";
+import { CustomAlert } from "../../components/utils/Alert";
 
 const Home = () => {
   const navigation = useNavigation();
@@ -15,73 +25,102 @@ const Home = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [customAlert, setCustomAlert] = useState({
+    title: "",
+    message: "",
+    onConfirm: () => {},
+  });
+
+  const showAlert = (title, message, onConfirm) => {
+    setCustomAlert({ title, message, onConfirm });
+    setAlertVisible(true);
+  };
 
   const fetchProducts = async (userUid) => {
-    await productService.getProductsByUEN(userUid)
-      .then((res) => {
-        setProducts(res);
-        setFilteredProducts(res);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
-  }
+    try {
+      const res = await productService.getProductsByUEN(userUid);
+      setProducts(res);
+      setFilteredProducts(res);
+      return res;
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    fetchProducts(userUid);
+    const initializePage = async () => {
+      await fetchProducts(userUid);
+    };
+
+    initializePage();
   }, [userUid]);
 
   const navigateToProfile = () => {
-    navigation.navigate('Profile');
+    navigation.navigate("Profile");
   };
 
   // Use useCallback for handleAddProduct to prevent re-renders
   const handleAddProduct = async (newProduct) => {
-    await productService.addWholesalerProduct(userUid, newProduct)
-      .then(() => {
-        setProducts((currentProducts) => [...currentProducts, newProduct]);
-        fetchProducts(userUid);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
+    try {
+      await productService.addWholesalerProduct(userUid, newProduct);
+      setProducts((currentProducts) => [...currentProducts, newProduct]);
+      await fetchProducts(userUid);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      showAlert("SUCCESS", "New Product Added!", setAlertVisible(false))
+    }
   };
 
-  const editProduct = async (index, updatedProduct) => {
-    await productService.editWholesalerProduct(userUid, products[index].swp_id, updatedProduct)
-      .then(() => {
-        setProducts(currentProducts =>
-          currentProducts.map((product, i) =>
-            i === index ? {
-              ...product,
-              price: updatedProduct.price,
-              stock: updatedProduct.stock
-            } : product
-          )
-        );
-        fetchProducts(userUid);
-      })
-      .catch((err) => {
-        console.error(err);
-      })
+  const editProduct = async (productName, updatedProduct) => {
+    const selectedProductswpid = products.find(
+      (product) => product.name === productName
+    )?.swp_id;
 
+    try {
+      await productService.editWholesalerProduct(
+        userUid,
+        selectedProductswpid,
+        updatedProduct
+      );
+      setProducts((currentProducts) =>
+        currentProducts.map((product) =>
+          product.swp_id === selectedProductswpid
+            ? {
+                ...product,
+                price: updatedProduct.price,
+                stock: updatedProduct.stock,
+              }
+            : product
+        )
+      );
+      await fetchProducts(userUid);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      showAlert("SUCCESS", "Product Edited!", setAlertVisible(false))
+    }
   };
 
   const removeProduct = async (index) => {
-    await productService.deleteWholesalerProduct(userUid, products[index].swp_id)
-      .then(() => {
-        setProducts(currentProducts => currentProducts.filter((_, i) => i !== index));
-        fetchProducts(userUid);
-      })
-      .catch((err) => {
+    try {
+      await productService.deleteWholesalerProduct(userUid, products[index].swp_id)
+      setProducts((currentProducts) =>
+        currentProducts.filter((_, i) => i !== index)
+      );
+      await fetchProducts(userUid);
+      } catch (err) {
         console.error(err);
-      })
+      } finally {
+        showAlert("SUCCESS", "Product Removed!", setAlertVisible(false))
+      }
   };
 
   const fuse = useMemo(() => {
     return new Fuse(products, {
       // fields to search
-      keys: ['name'],
+      keys: ["name"],
       threshold: 0.3, // Adjust this value to make the search more or less strict
       includeScore: true,
     });
@@ -89,16 +128,17 @@ const Home = () => {
 
   const handleSearch = (query) => {
     setSearchText(query);
-    if (query.trim() === '') {
+    if (query.trim() === "") {
       setFilteredProducts(products);
     } else {
       const results = fuse.search(query);
-      setFilteredProducts(results.map(result => result.item));
+      setFilteredProducts(results.map((result) => result.item));
     }
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* {loading && <Loader loading={loading}></Loader>} */}
       <View style={styles.searchBar}>
         <Ionicons name="search" size={24} color="#0C5E52" />
         <TextInput
@@ -120,19 +160,19 @@ const Home = () => {
           <Text style={styles.subHeaderTitle}>My Products</Text>
         </View>
         <Image
-          source={require('../../../assets/imgs/pea.png')}
+          source={require("../../../assets/imgs/pea.png")}
           style={styles.headerImage}
         />
       </View>
 
       <View style={styles.addProductContainer}>
-        <TouchableOpacity style={styles.addButton} onPress={() => setShowAddProduct(true)}>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => setShowAddProduct(true)}
+        >
           <Ionicons name="add-circle-outline" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.addButtonText}>Add New Product</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
-        </TouchableOpacity>
       </View>
       <ScrollView style={styles.productList}>
         {filteredProducts.map((product, index) => (
@@ -157,6 +197,16 @@ const Home = () => {
         products={products}
         uen={currentUser.uen}
       />
+
+      <CustomAlert
+        visible={alertVisible}
+        title={customAlert.title}
+        message={customAlert.message}
+        onConfirm={() => {
+          setAlertVisible(false);
+          customAlert.onConfirm;
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -164,12 +214,12 @@ const Home = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#E2ECEA',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#E2ECEA",
     margin: 10,
     padding: 10,
     borderRadius: 25,
@@ -177,58 +227,58 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     marginLeft: 10,
-    color: '#0C5E52',
+    color: "#0C5E52",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginLeft: '5%',
-    marginTop: '1%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginLeft: "5%",
+    marginTop: "1%",
   },
   headerTitle: {
     fontFamily: "Amiko, Noto Sans",
     fontSize: 25,
-    fontWeight: 'normal',
-    color: '#0C5E52',
-    marginLeft: '2%',
+    fontWeight: "normal",
+    color: "#0C5E52",
+    marginLeft: "2%",
   },
   subHeaderTitle: {
     fontFamily: "Amiko, Noto Sans",
     fontSize: 35,
-    fontWeight: 'bold',
-    color: '#0C5E52',
-    margin: '2%',
+    fontWeight: "bold",
+    color: "#0C5E52",
+    margin: "2%",
   },
   headerImage: {
-    width: '18%',
-    height: '65%',
+    width: "18%",
+    height: "65%",
     marginRight: "29.2%",
   },
   addProductContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: '1%',
-    marginLeft: '6%',
-    marginBottom: '1%',
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: "1%",
+    marginLeft: "6%",
+    marginBottom: "1%",
   },
   addButton: {
-    backgroundColor: '#FF7B5F',
+    backgroundColor: "#FF7B5F",
     padding: 5,
     borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   addButtonText: {
-    color: '#0C5E52',
+    color: "#0C5E52",
     marginLeft: 10,
-    fontSize: '20%',
-    fontWeight: 'normal',
+    fontSize: "20%",
+    fontWeight: "normal",
   },
   filterButton: {
-    padding: '1%',
+    padding: "1%",
     marginLeft: "auto",
-    marginRight: '3%',
+    marginRight: "3%",
   },
 });
 

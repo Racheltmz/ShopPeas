@@ -14,7 +14,7 @@ const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemov
     };
 
     const handleEdit = (updatedProduct) => {
-        onEdit(index, updatedProduct);
+        onEdit(name, updatedProduct);
         setEditVisible(false);
     };
 
@@ -52,6 +52,8 @@ const WholesalerProduct = ({ index, name, price, unit, stock, image_url, onRemov
                 onEdit={handleEdit}
                 initialPrice={price}
                 initialStock={stock}
+                imageUrl={image_url}
+                name={name}
             />
         </View>
     )

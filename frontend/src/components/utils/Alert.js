@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const CustomAlert = ({ visible, title, message, onConfirm, onCancel }) => {
+export const CustomAlert = ({ visible, title, message, onConfirm, onCancel }) => {
   return (
     <Modal
       animationType="fade"

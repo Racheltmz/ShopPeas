@@ -36,7 +36,6 @@ const transactionService = {
                     }
                 }
             );
-            console.log('Status update success:', response);
             return response.data;
         } catch (error) {
             console.error('Update status error:', error);

@@ -7,7 +7,8 @@ import authService from '../../service/AuthService';
 import ConsumerDetails from './ConsumerDetails';
 import Address from './Address';
 import Password from './Password';
-import Alert from '../utils/Alert';
+import { CustomAlert } from '../utils/Alert';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 
 const RegisterCustomer = ({ onBackPress }) => {
   const [step, setStep] = useState(1);
@@ -192,7 +193,7 @@ const RegisterCustomer = ({ onBackPress }) => {
         <Ionicons name="arrow-forward" size={24} color="#EBF3D1" style={styles.arrowIcon} />
       </TouchableOpacity>
 
-      <Alert
+      <CustomAlert
         visible={alertVisible}
         title={customAlert.title}
         message={customAlert.message}
