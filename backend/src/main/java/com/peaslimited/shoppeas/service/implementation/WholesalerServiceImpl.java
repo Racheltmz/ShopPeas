@@ -5,6 +5,7 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.peaslimited.shoppeas.dto.RatingDTO;
 import com.peaslimited.shoppeas.dto.WholesalerDTO;
+import com.peaslimited.shoppeas.model.Wholesaler;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.repository.WholesalerRepository;
 import com.peaslimited.shoppeas.service.WholesalerService;
@@ -83,6 +84,19 @@ public class WholesalerServiceImpl implements WholesalerService {
     public boolean isValidStatus(String status){
         List<String> validStatus = Arrays.asList("IN-CART","COMPLETED","PENDING-ACCEPTANCE","PENDING-COMPLETION");
         return validStatus.contains(status);
+    }
+
+    @Override
+    public boolean isValidWholesalerAndUEN(String wholesaler, String uen) throws ExecutionException, InterruptedException {
+        // Retrieve the wholesaler information from Firebase using UEN
+        Wholesaler wholesalerData = firestore.collection("wholesalers")
+                .document(uen)
+                .get()
+                .get()
+                .toObject(Wholesaler.class);
+
+        // Check if wholesaler data exists and matches the provided wholesaler name
+        return wholesalerData != null && wholesalerData.getName().equalsIgnoreCase(wholesaler);
     }
 
 }

@@ -93,8 +93,14 @@ public class TransactionsServiceImpl implements TransactionsService {
         //convert order data to array
         ArrayList<Object> cartList = (ArrayList<Object>) data.get("cart_items");
 
+        // Check max number of orders in the cart
+        if(cartList.size() > 10){
+            throw new IllegalArgumentException("Too many orders in cart. Maximum allowed is 10");
+        }
+
         // ACTION: add order history
         orderHistoryService.addOrderHistory(uid, cartList);
+        System.out.println("Order history added successfully for UID: " + uid);
 
         // ACTION: delete cart
         String cid = cartRepository.findCIDByUID(uid);

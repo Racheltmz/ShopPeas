@@ -99,6 +99,48 @@ public class TransactionController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
 
+
+        // Check cart items and enforce limits
+        ArrayList<Object> cartItems = (ArrayList<Object>) data.get("cart_items");
+
+        // Check that there is at least one order in cart
+        if (cartItems == null || cartItems.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cart cannot be empty");
+        }
+        // Check max number of orders in cart
+        if (cartItems.size() > 4) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Too many orders in cart. Maximum allowed is 4 ");
+        }
+
+        for (Object order : cartItems) {
+            Map<String, Object> orderMap = (Map<String, Object>) order;
+            // Validate wholesaler and uen fields
+            String wholesaler = (String) orderMap.get("wholesaler");
+            String uen = (String) orderMap.get("uen");
+
+            if (wholesaler == null || wholesaler.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wholesaler cannot be empty");
+            }
+            if (uen == null || uen.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "UEN cannot be empty");
+            }
+
+            // Check if the wholesaler and uen are valid and match each other
+            if (!wholesalerService.isValidWholesalerAndUEN(wholesaler, uen)) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid wholesaler or UEN does not match wholesaler");
+            }
+
+            ArrayList<Object> items = (ArrayList<Object>) orderMap.get("items");
+            // Check order has at least 1 item
+            if (items == null || items.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Each order must contain at least one item");
+            }
+            // Check max items per order
+            if (items.size() > 5) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Too many items in order. Maximum allowed is 5");
+            }
+        }
+
         transactionService.updateToCheckout(uid, data);
     }
 }
