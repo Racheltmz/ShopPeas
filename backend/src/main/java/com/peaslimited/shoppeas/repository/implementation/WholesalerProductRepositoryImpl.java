@@ -95,7 +95,6 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
         // Get wholesaler address info
         List<WholesalerAddress> wholesalerAddresses = wholesalerAddressRepository.findAllWholesalerAddress(wholesalerProducts);
-
         // Combine product and wholesaler data into DTOs
         List<CompletableFuture<WholesalerProductDetailsDTO>> futures = new ArrayList<>();
 
@@ -104,6 +103,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
             WholesalerDTO wholesaler = wholesalers.get(i);
             WholesalerAddress address = wholesalerAddresses.get(i);
             String swp_id = swp_id_list.get(i);
+            String uen = uen_list.get(i);
 
             CompletableFuture<WholesalerProductDetailsDTO> future = CompletableFuture.supplyAsync(() -> {
                 try {
@@ -114,7 +114,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                     return new WholesalerProductDetailsDTO(
                             swp_id,
                             wholesaler.getName(),
-                            wholesaler.getUEN(),
+                            uen,
                             address.getStreet_name(),
                             address.getPostal_code(),
                             travelStats.getDuration(),
