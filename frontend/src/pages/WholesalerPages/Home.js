@@ -173,9 +173,6 @@ const Home = () => {
           <Ionicons name="add-circle-outline" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.addButtonText}>Add New Product</Text>
-        <TouchableOpacity style={styles.filterButton}>
-          <Ionicons name="funnel-outline" size={30} color="#0C5E52" />
-        </TouchableOpacity>
       </View>
       <ScrollView style={styles.productList}>
         {filteredProducts.map((product, index) => (

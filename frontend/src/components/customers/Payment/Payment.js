@@ -132,7 +132,7 @@ const Payment = () => {
                 source={
                   productImages[item.name] 
                     ? { uri: productImages[item.name] }
-                    : require('../../../../assets/imgs/DummyImage.jpg')
+                    : ""
                 } 
                 style={styles.itemImage}
               />

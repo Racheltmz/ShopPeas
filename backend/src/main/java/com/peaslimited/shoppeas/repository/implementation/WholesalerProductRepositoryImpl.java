@@ -83,7 +83,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         List<WholesalerProducts> wholesalerProducts = snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
                 .toList();
-
+    
         // Get list of UEN
         List<String> uen_list = snapshot.getDocuments().stream()
                 .map(doc -> doc.toObject(WholesalerProducts.class))
@@ -95,6 +95,7 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
 
         // Get wholesaler address info
         List<WholesalerAddress> wholesalerAddresses = wholesalerAddressRepository.findAllWholesalerAddress(wholesalerProducts);
+        System.out.println(wholesalerAddresses);
         // Combine product and wholesaler data into DTOs
         List<CompletableFuture<WholesalerProductDetailsDTO>> futures = new ArrayList<>();
 

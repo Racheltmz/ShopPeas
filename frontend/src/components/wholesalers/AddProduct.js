@@ -28,7 +28,7 @@ const AddProductModal = ({ visible, onClose, onAddProduct, products, uen }) => {
   useEffect(() => {
     // Get products wholesaler isn't selling
     getOtherProducts();
-  });
+  }, []);
 
   const showAlert = (title, message, onConfirm) => {
     setCustomAlert({ title, message, onConfirm });

@@ -35,7 +35,7 @@ public class ProductController {
      * @return product details
      */
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('CONSUMER', 'WHOLESALER')")
+    @PreAuthorize("hasAnyRole('CONSUMER','WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
     public List<Product> getAllProducts() throws ExecutionException, InterruptedException {
         return productService.getAllProducts();

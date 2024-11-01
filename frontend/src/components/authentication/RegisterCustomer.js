@@ -8,7 +8,7 @@ import ConsumerDetails from './ConsumerDetails';
 import Address from './Address';
 import Password from './Password';
 import { CustomAlert } from '../utils/Alert';
-import { Dialog } from 'react-native-alert-notification';
+import { Dialog, ALERT_TYPE } from 'react-native-alert-notification';
 
 const RegisterCustomer = ({ onBackPress }) => {
   const [step, setStep] = useState(1);
