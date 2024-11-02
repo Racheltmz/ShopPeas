@@ -106,6 +106,8 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -155,6 +157,7 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -239,6 +242,10 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -333,6 +340,11 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Market's Best Pte Ltd", "199203796C")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -406,6 +418,7 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -464,6 +477,7 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -477,7 +491,7 @@ public class checkoutTests {
 
     // test case 8: Invalid test case with 0 items
     @Test
-    public void validCheckout_Noitem() throws Exception {
+    public void invalidCheckout_Noitem() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
         // ACTION: Mock authentication
         SecurityContext context = Mockito.mock(SecurityContext.class);
@@ -500,6 +514,7 @@ public class checkoutTests {
         """;
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
@@ -512,7 +527,7 @@ public class checkoutTests {
 
     // test case 9: invalid order with 6 items
     @Test
-    public void validCheckout_Sixitem() throws Exception {
+    public void invalidCheckout_Sixitem() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
         // ACTION: Mock authentication
         SecurityContext context = Mockito.mock(SecurityContext.class);
@@ -561,6 +576,7 @@ public class checkoutTests {
 
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());

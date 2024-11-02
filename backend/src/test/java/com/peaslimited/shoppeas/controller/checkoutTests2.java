@@ -97,12 +97,11 @@ public class checkoutTests2 {
     """;
 
         // Mock service behavior
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "201936456R")).thenReturn(true);
+        when(wholesalerService.isValidWholesalerAndUEN("Burger King", "BK1001")).thenReturn(false);
         doNothing().when(orderHistoryService).addOrderHistory(anyString(), any());
         when(cartRepository.findCIDByUID("uid")).thenReturn("test-cart-id");
         doNothing().when(cartRepository).deleteCartOnCheckout(anyString());
-
-        when(wholesalerService.UENExists("201936456R")).thenReturn(true);  // Valid UEN
-        when(wholesalerService.UENExists("BK1001")).thenReturn(false);  // Invalid UEN
 
         mockMvc.perform(MockMvcRequestBuilders.post("/transaction/checkout")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -157,7 +156,7 @@ public class checkoutTests2 {
             }
     """;
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/transaction/checkout")
+              mockMvc.perform(MockMvcRequestBuilders.post("/transaction/checkout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(checkoutJson))
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
@@ -211,7 +210,7 @@ public class checkoutTests2 {
                 ]
             }
     """;
-
+        when(wholesalerService.isValidWholesalerAndUEN("Mos Burger", "201936456R")).thenReturn(false);
         mockMvc.perform(MockMvcRequestBuilders.post("/transaction/checkout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(checkoutJson))
@@ -238,7 +237,7 @@ public class checkoutTests2 {
                 ]
             }
     """;
-
+        when(wholesalerService.isValidWholesalerAndUEN("International Premium Food Traders Pte Ltd", "12345")).thenReturn(false);
         mockMvc.perform(MockMvcRequestBuilders.post("/transaction/checkout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(checkoutJson))
