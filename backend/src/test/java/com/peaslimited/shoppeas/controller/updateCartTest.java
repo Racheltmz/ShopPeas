@@ -1,14 +1,25 @@
 package com.peaslimited.shoppeas.controller;
 
+import com.peaslimited.shoppeas.dto.WholesalerProductDTO;
 import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
 import com.peaslimited.shoppeas.service.implementation.WholesalerProductCacheServiceImpl;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @WebMvcTest( value = CartController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
@@ -123,8 +134,8 @@ class updateCartTest {
     @Test
     public void productDNE_updateCart() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
-        String swp_id = "1QguhYaLLF1GcWiiCCPR";
-        String uen = "123";
+        String swp_id = "123";
+        String uen = "200915506H";
         int quantity = 10;
         double total_price = 454.9;
 
@@ -138,8 +149,8 @@ class updateCartTest {
         // ACTION: Create a JSON body to POST
 
         String requestBody = "{"
-                + "\"swp_id\": \"1QguhYaLLF1GcWiiCCPR\", "
-                + "\"uen\": \"123\", "
+                + "\"swp_id\": \"123\", "
+                + "\"uen\": \"200915506H\", "
                 + "\"quantity\": 10, "
                 + "\"total_price\": 454.9"
                 + "}";
@@ -162,7 +173,7 @@ class updateCartTest {
     public void cartDNE_updateCart() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
         String swp_id = "1QguhYaLLF1GcWiiCCPR";
-        String uen = "123";
+        String uen = "200915506H";
         int quantity = 10;
         double total_price = 454.9;
 
@@ -177,7 +188,7 @@ class updateCartTest {
 
         String requestBody = "{"
                 + "\"swp_id\": \"1QguhYaLLF1GcWiiCCPR\", "
-                + "\"uen\": \"123\", "
+                + "\"uen\": \"200915506H\", "
                 + "\"quantity\": 10, "
                 + "\"total_price\": 454.9"
                 + "}";
