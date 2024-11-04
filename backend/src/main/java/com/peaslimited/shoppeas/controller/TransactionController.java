@@ -80,6 +80,8 @@ public class TransactionController {
     public void updateTransactionStatus(@RequestBody Map<String, Object> data) throws ExecutionException, InterruptedException {
         String tid = (String) data.get("tid");
         String status = (String) data.get("status");
+        System.out.println(transactionCacheService.doesTransactionExist(tid));
+        System.out.println(wholesalerService.isValidStatus(status));
 
         if (!transactionCacheService.doesTransactionExist(tid)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid TID: Order not found");

@@ -69,11 +69,18 @@ export const useUserStore = create((set, get) => ({
         const paymentDetailsDocSnap = await getDoc(paymentDetailsDocRef);
 
         if (docSnap.exists()) {
-          set({
-            paymentDetails: paymentDetailsDocSnap.data(),
-            cardNumbers: Object.keys(paymentDetailsDocSnap.data().paymentMtds).length,
-            isLoading: false,
-          });
+          if (userRole == "consumer") {
+            set({
+              paymentDetails: paymentDetailsDocSnap.data(),
+              cardNumbers: Object.keys(paymentDetailsDocSnap.data().paymentMtds).length,
+              isLoading: false,
+            });
+          } else if (userRole == "wholesaler") {
+            set({
+              paymentDetails: paymentDetailsDocSnap.data(),
+              isLoading: false,
+            });
+          }
         } else {
           set({ paymentDetails: null, isLoading: false });
         }
