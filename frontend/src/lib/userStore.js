@@ -71,6 +71,7 @@ export const useUserStore = create((set, get) => ({
         if (docSnap.exists()) {
           set({
             paymentDetails: paymentDetailsDocSnap.data(),
+            cardNumbers: Object.keys(paymentDetailsDocSnap.data().paymentMtds).length,
             isLoading: false,
           });
         } else {
