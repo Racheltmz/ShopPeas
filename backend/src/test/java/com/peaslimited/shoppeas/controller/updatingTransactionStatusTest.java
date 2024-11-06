@@ -15,9 +15,17 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Unit tests for the updateTransactionStatus functionality in TransactionController.
+ * using black-box testing on the `/transaction/updatetransactionstatus` endpoint, 
+ * verifying the behavior for various valid and invalid TID and status values.
+ */
 @WebMvcTest(controllers = TransactionController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class updatingTransactionStatusTest {
 
+    /**
+     * Sets up the MockMvc for performing HTTP requests in the tests.
+     */
     @Autowired
     private MockMvc mockMvc;
 
@@ -33,7 +41,12 @@ public class updatingTransactionStatusTest {
     private TransactionCacheServiceImpl transactionCacheService;
 
 
-    // test case 1: Updating valid tid and status = completed
+    /**
+     * Test case 1: Updating transaction status with a valid TID and status = "COMPLETED".
+     * Expects a 200 OK status if the transaction is updated successfully.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTransactionStatus_ValidTidStatusCompleted() throws Exception {
         String validTID = "luUU3ZHTTLv7buR14nGO";
@@ -53,7 +66,12 @@ public class updatingTransactionStatusTest {
                 .andExpect(status().isOk());
     }
 
-    // test case 2: Update valid tid and status = PENDING-ACCEPTANCE
+    /**
+     * Test case 2: Updating transaction status with a valid TID and status = "PENDING-ACCEPTANCE".
+     * Expects a 200 OK status if the transaction is updated successfully.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTranssactionStatus_ValidTidStatusPA() throws Exception{
         String validTID = "n4I3FkKeOX6G2l9BFyHu";
@@ -73,7 +91,12 @@ public class updatingTransactionStatusTest {
                 .andExpect(status().isOk());
     }
 
-    // test case 3: Valid Tid and status = IN-CART
+    /**
+     * Test case 3: Updating transaction status with a valid TID and status = "IN-CART".
+     * Expects a 200 OK status if the transaction is updated successfully.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTranssactionStatus_ValidTidStatusIC() throws Exception{
         String validTID = "41Mwt9l7y778UzlegiiS";
@@ -93,7 +116,12 @@ public class updatingTransactionStatusTest {
                 .andExpect(status().isOk());
     }
 
-    // test case 4: Invalid TID (wrong format) and valid status
+    /**
+     * Test case 4: Attempting to update transaction status with an invalid TID format.
+     * Expects a 400 Bad Request status due to the invalid TID.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTransactionStatus_InvalidTid() throws Exception {
         String TID = "12345";
@@ -112,7 +140,12 @@ public class updatingTransactionStatusTest {
 
     }
 
-    // test case 5: Invalid TID (empty) and valid status
+    /**
+     * Test case 5: Attempting to update transaction status with an empty TID.
+     * Expects a 400 Bad Request status due to the empty TID.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTransactionStatus_EmptyTid() throws Exception {
         String TID = "";
@@ -131,7 +164,12 @@ public class updatingTransactionStatusTest {
 
     }
 
-    // Test case 6: Valid TID, invalid status
+    /**
+     * Test case 6: Attempting to update transaction status with a valid TID but an invalid status.
+     * Expects a 400 Bad Request status due to the invalid status value.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTransactionStatus_invalidStatus() throws Exception {
         String validTID = "41Mwt9l7y778UzlegiiS";
@@ -150,7 +188,12 @@ public class updatingTransactionStatusTest {
                 .andExpect(status().isBadRequest());
     }
 
-    // Test case 7: Null TID + Valid Status
+    /**
+     * Test case 7: Attempting to update transaction status with a null TID and a valid status.
+     * Expects a 400 Bad Request status due to the null TID.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void updateTransactionStatus_NullTid() throws Exception {
         String validStatus = "COMPLETED";

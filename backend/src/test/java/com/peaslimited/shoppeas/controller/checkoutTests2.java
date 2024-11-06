@@ -24,9 +24,16 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Unit tests for the checkout functionality in Transaction Controller using black box testing
+ * Tests cover various error cases including invalid orders, missing fields, and incorrect values.
+ */
 @WebMvcTest(value = TransactionController.class,  excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class checkoutTests2 {
 
+    /**
+     * Sets up the MockMvc for performing HTTP requests in the tests.
+     */
     @Autowired
     private MockMvc mockMvc;
 
@@ -47,7 +54,11 @@ public class checkoutTests2 {
     @MockBean
     private WholesalerService wholesalerService;
 
-    // helper method for authentication
+    /**
+     * Mocks the authentication process for tests.
+     * 
+     * @param userId the user ID to set in the authentication context
+     */
     private void mockAuthentication(String userId) {
         SecurityContext context = Mockito.mock(SecurityContext.class);
         Authentication auth = Mockito.mock(Authentication.class);
@@ -56,7 +67,12 @@ public class checkoutTests2 {
         SecurityContextHolder.setContext(context);
     }
 
-    // test case 10: 1 valid and 1 invalid order
+    /**
+     * Invalid checkout with one valid and one invalid order (incorrect wholesaler).
+     * Expects a 400 Bad Request status due to invalid wholesaler information.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_ValidAndInvalidOrder() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -103,7 +119,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request
     }
 
-    // test case 11: invalid test case with an empty string for the wholesaler field
+    /**
+     * Invalid checkout with an empty wholesaler field.
+     * Expects a 400 Bad Request status due to the missing wholesaler name.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_EmptyWholesalerField() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -132,7 +153,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
     }
 
-    // Test case 12: Invalid shopping cart where items contain null values
+    /**
+     * Invalid checkout where the items array contains null values.
+     * Expects a 400 Bad Request status due to null values in the items array.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_NullValuesInItemsArray() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -156,7 +182,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
     }
 
-    // test case 13: Invalid cart with a missing field such as uen or wholesaler
+    /**
+     * Invalid checkout with a missing field (e.g., UEN).
+     * Expects a 400 Bad Request status due to the missing UEN field.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_MissingUenField() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -184,7 +215,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
     }
 
-    // Test case 14: Invalid wholesaler
+    /**
+     * Invalid checkout with an incorrect wholesaler.
+     * Expects a 400 Bad Request status due to an invalid wholesaler name.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidWholesaler() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -211,7 +247,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
     }
 
-    // test case 15: Invalid UEN
+    /**
+     * Invalid checkout with an incorrect UEN.
+     * Expects a 400 Bad Request status due to an invalid UEN.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidUEN() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -238,7 +279,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
     }
 
-    // test case 16: missing quantity in items
+    /**
+     * Invalid checkout with a missing quantity field in items.
+     * Expects a 400 Bad Request status due to missing quantity in the item details.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void missingQuantity() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -264,7 +310,12 @@ public class checkoutTests2 {
                 .andExpect(status().isBadRequest());  // Expect a 400 Bad Request status
     }
 
-    // test case 17: Invalid shopping cart with quantity 0
+    /**
+     * Invalid checkout with an item quantity of zero.
+     * Expects a 400 Bad Request status due to an invalid quantity (zero) in the item details.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_ZeroQuantity() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";

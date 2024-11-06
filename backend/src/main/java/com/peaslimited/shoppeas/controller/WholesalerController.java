@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Controller for managing wholesaler operations such as viewing,updating profiles, 
+ * and handling ratings.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/wholesaler")
@@ -35,6 +39,14 @@ public class WholesalerController {
     @Autowired
     private WholesalerProductService wholesalerProductService;
 
+    /**
+     * Retrieves Wholesaler details by UEN for consumers and is called by the front end with 
+     * a HTTP request of "wholesaler/view/{uen}"
+     * @param UEN the uen of the wholesaler 
+     * @return {@link WholesalerDetailsDTO} containing wholesaler details, address, and products
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @GetMapping("/view/{uen}")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
@@ -46,8 +58,11 @@ public class WholesalerController {
     }
 
     /**
-     * Get wholesaler details by UID
-     * @return wholesaler details
+     * Retrieves wholesaler details by UID and is called by the front end with 
+     * a HTTP request of "wholesaler/profile"
+     * @return {@link WholesalerProfileDTO} containing profile information, address, and account details
+     * @throws ExecutionException
+     * @throws InterruptedException
      */
     @GetMapping("/profile")
     @PreAuthorize("hasRole('WHOLESALER')")
@@ -66,6 +81,16 @@ public class WholesalerController {
         return WholesalerMapper.toProfileDTO(wholesaler, wholesalerAddress, wholesalerAccount);
     }
 
+    /**
+     * Updates wholesaler profile, account or address details and is called by the front end 
+     * with a HTTP request of "wholesaler/profile/update"
+     * @param data a Map <String, Map <String, Object> containing information about the wholesaler, 
+     * wholesaler account and wholesaler address
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws FirebaseAuthException
+     * 
+     */
     @PatchMapping("/profile/update")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
@@ -83,6 +108,14 @@ public class WholesalerController {
         wholesalerAddressService.updateWholesalerAddress(UEN, addressDetails);
     }
 
+    /**
+     * Retrieves the rating of a specific wholesaler by UEN and is called by the front end with 
+     * a request of "wholesaler/rating/{uen}"
+     * @param UEN the uen of the wholesaler 
+     * @return {@link RatingDTO} containing rating information for the wholesaler
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @GetMapping("/rating/{uen}")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
@@ -94,6 +127,14 @@ public class WholesalerController {
 
         return wholesalerService.getRatingByUEN(UEN);
     }
+
+    /**
+     * Allows a consumer to rate a wholesaler and is called by the front end 
+     * with a request of "wholesaler/rate"
+     * @param data a Map <String, Object containing information about the uen, tid and rating 
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
 
     @PatchMapping("/rate")
     @PreAuthorize("hasRole('CONSUMER')")
