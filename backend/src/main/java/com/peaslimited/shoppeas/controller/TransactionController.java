@@ -18,6 +18,10 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This class handles operations surrounding transactions, such as fetching transactions from FireBase by wholesaler,
+ * updating a transaction's status, and checking out the contents of a shopping cart.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/transaction")
@@ -32,6 +36,16 @@ public class TransactionController {
     @Autowired
     private TransactionCacheServiceImpl transactionCacheService;
 
+    /**
+     * Fetches transaction records from FireBase by wholesaler and is called from the frontend with
+     * HTTP status "/transaction/get".
+     * @param uen String representing the wholesaler's UEN (Unique Entity Number).
+     * @param status String representing the transaction status: PENDING-ACCEPTANCE, PENDING-COMPLETION, COMPLETED.
+     * @return ArrayList<Object> of transaction records representing the transactions for a wholesaler of a specific
+     * transaction type.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @GetMapping("/get")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
@@ -74,6 +88,13 @@ public class TransactionController {
         return transactionList;
     }
 
+    /**
+     * Updates a transaction's status, and is called from the frontend with HTTP status "/transaction/updatetransactionstatus".
+     * @param data Map<String, Object> containing information about the transaction whose status is to be updated, such as TID
+     *             (transaction ID), and the new status
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @PatchMapping("/updatetransactionstatus")
     @PreAuthorize("hasRole('WHOLESALER')")
     @ResponseStatus(code = HttpStatus.OK)
@@ -91,6 +112,15 @@ public class TransactionController {
         transactionService.updateTransactionStatus(data);
     }
 
+    /**
+     * Checks out the contents of a consumer's shopping cart, deletes the products in the shopping cart record,
+     * updates the corresponding transaction statuses to "PENDING-ACCEPTANCE", and creates an order history record.
+     * @param data Map<String, Object> containing the items in the shopping cart.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws IOException
+     * @throws URISyntaxException
+     */
     @PostMapping("/checkout")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -98,7 +128,6 @@ public class TransactionController {
         // Get UID
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String uid = (String) authentication.getPrincipal();
-
 
         // Check cart items and enforce limits
         ArrayList<Object> cartItems = (ArrayList<Object>) data.get("cart_items");

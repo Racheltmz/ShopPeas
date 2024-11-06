@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This class handles operations surrounding the consumer profile page, such as fetching the user's profile
+ * details from FireBase, and editing the user's profile details.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/consumer")
@@ -33,7 +37,7 @@ public class ConsumerController {
     private ConsumerAddressService consumerAddressService;
 
     /**
-     * Get consumer details by UID
+     * Get consumer details by UID and is called from the frontend with HTTP path "/consumer/profile"
      * @return consumer details
      */
     @GetMapping("/profile")
@@ -51,6 +55,14 @@ public class ConsumerController {
         return ConsumerProfileMapper.toProfileDTO(consumer, consumerAddress);
     }
 
+    /**
+     * Updates a consumer's profile details such as their address, and phone number and is called
+     * from the frontend with HTTP path "/consumer/profile/update".
+     * @param data Map<String, Map<String, Object>> containing information about the updated profile details and address.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws FirebaseAuthException
+     */
     @PatchMapping("/profile/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)

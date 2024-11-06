@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This class handles operations surrounding the user's order history, specifically retrieving order history data
+ * from FireBase.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/history")
@@ -19,6 +23,13 @@ public class OrderHistoryController {
     @Autowired
     private OrderHistoryService orderService;
 
+    /**
+     * Fetches the consumer's order history from FireBase, and is called from the frontend with HTTP path
+     * "/history/view".
+     * @return List<OrderHistoryDTO> of OrderHistoryDTO objects.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @GetMapping("/view")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)

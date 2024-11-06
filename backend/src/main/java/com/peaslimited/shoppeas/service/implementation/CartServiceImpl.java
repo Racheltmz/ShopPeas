@@ -182,22 +182,6 @@ public class CartServiceImpl implements CartService {
         else return false;
     }
 
-    @Override
-    public int testException(int j)
-    {
-        if(j <= 0)
-        {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        else if(j <= 10)
-        {
-            return 100;
-        }
-        else if(j <= 20)
-        {
-            return 1000;
-        }
-        else return 999;
-    }
+
 
 }

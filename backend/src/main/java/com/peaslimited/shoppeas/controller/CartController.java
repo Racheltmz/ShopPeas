@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * CartController handles operations involving the shopping cart, such as getting cart contents, adding products to cart,
+ * updating products in cart, and deleting a product from cart.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/cart")
@@ -31,6 +35,13 @@ public class CartController {
     @Autowired
     private WholesalerProductService wholesalerProductService;
 
+    /**
+     * Returns the contents of a consumer's shopping cart and is called from the frontend with
+     * HTTP path "/cart/view".
+     * @return Map<String, Object> containing the contents of a consumer's shopping cart.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @GetMapping("/view")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.OK)
@@ -45,6 +56,17 @@ public class CartController {
         return returnMap;
     }
 
+    /**
+     * Adds a single product to a consumer's shopping cart and is called from the frontend with
+     * HTTP path "/cart/add".
+     * @param data Map<String, Object> containing information about the product that will be added to cart, such as
+     *             swp_id (wholesaler product id), quantity, wholesaler UEN, unit price of the product, and total price of the
+     *             products being added to cart.
+     * @throws ExecutionException
+     * @throws InterruptedException
+     * @throws ResponseStatusException Thrown when product quantity is invalid (quantity <= 0) or when the wholesaler product
+     * ID is invalid (swp_id), i.e., wholesaler product does not exist.
+     */
     @PostMapping("/add")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -69,7 +91,14 @@ public class CartController {
         cartService.addCartItem(uid, data);
     }
 
-    // update quantity
+    /**
+     * Updates the quantity of an item in the shopping cart and is called from the frontend with
+     * HTTP path "/cart/update".
+     * @param data Map<String, Object> containing information about the product that will be updated in cart, such as
+     *       swp_id (wholesaler product id), quantity, wholesaler UEN, and the unit price of the product
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @PatchMapping("/update")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
@@ -98,6 +127,13 @@ public class CartController {
         cartService.updateCartQuantity(uid, data);
     }
 
+    /**
+     * Deletes an item from the shopping cart and is called from the frontend with HTTP path "/cart/delete".
+     * @param data Map<String, Object> containing information about the product that will be deleted from cart, such as
+     *       swp_id (wholesaler product id) and wholesaler UEN
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @PatchMapping("/deleteItem")
     @PreAuthorize("hasRole('CONSUMER')")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
