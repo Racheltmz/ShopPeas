@@ -18,9 +18,17 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Unit tests for the getTransactionsByWholesalers functionality in TransactionController 
+ * using black-box testing on the `/transaction/get` endpoint, verifying
+ * the behavior with various valid and invalid UEN and status values.
+ */
 @WebMvcTest( value = TransactionController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class getTransactionbyWholesalerTests {
 
+    /**
+     * Sets up the MockMvc for performing HTTP requests in the tests.
+     */
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,7 +48,12 @@ public class getTransactionbyWholesalerTests {
     @MockBean
     private WholesalerProductService wholesalerProductService;
 
-    // test case 1: For getTransactionsByUEN, testing valid UEN and status = IN-CART
+    /**
+     * Test case 1: Valid UEN with status "IN-CART".
+     * Expects a 200 OK status with a correctly structured JSON response containing transaction details.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getValidTransaction_ValidUEN_StatusInCart() throws Exception {
         // Mocking QueryDocumentSnapshot to simulate Firebase data
@@ -82,7 +95,12 @@ public class getTransactionbyWholesalerTests {
                 .andExpect(jsonPath("$[0].tid").value("41Mwt9l7y778UzlegiiS"));
     }
 
-    // test case 2: For getTransactionsByUEN, testing valid UEN and status = COMPLETED
+    /**
+     * Test case 2: Valid UEN with status "COMPLETED".
+     * Expects a 200 OK status with a correctly structured JSON response containing transaction details.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getValidTransaction_ValidUEN_StatusCompleted() throws Exception {
         // Mocking QueryDocumentSnapshot to simulate Firebase data
@@ -128,7 +146,12 @@ public class getTransactionbyWholesalerTests {
                 .andExpect(jsonPath("$[0].tid").value("ZiKz4NgADn5g6IhBqILB"));
     }
 
-    // test case 3: For getTransactionsByUEN, testing valid UEN and status = PENDING-ACCEPTANCE
+    /**
+     * Test case 3: Valid UEN with status "PENDING-ACCEPTANCE".
+     * Expects a 200 OK status with a correctly structured JSON response containing transaction details.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getValidTransaction_ValidUEN_StatusPendingAcceptance() throws Exception {
         // Mocking QueryDocumentSnapshot to simulate Firebase data
@@ -167,7 +190,12 @@ public class getTransactionbyWholesalerTests {
                 .andExpect(jsonPath("$[0].tid").value("Z5wdGvwiUqbJoCM23OJB"));
     }
 
-    // test case 4: Invalid UEN (Wrong format)
+    /**
+     * Test case 4: Invalid UEN with an incorrect format.
+     * Expects a 400 Bad Request status due to an incorrectly formatted UEN.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getInvalidTransaction_UenWrongFormat() throws Exception {
         // Perform the get request with the wrong format for the UEN and check that it fails
@@ -178,7 +206,12 @@ public class getTransactionbyWholesalerTests {
                 .andExpect(status().isBadRequest());
     }
 
-    // Test case 5: Invalid UEN (empty)
+    /**
+     * Test case 5: Empty UEN.
+     * Expects a 400 Bad Request status due to a missing UEN.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getTransaction_EmptyUen() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/transaction/get")
@@ -187,7 +220,12 @@ public class getTransactionbyWholesalerTests {
                 .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
 
-    // Test case 6: For getTransactionByUEN, status value is invalid (empty/missing)
+    /**
+     * Test case 6: Missing status parameter.
+     * Expects a 400 Bad Request status due to the absence of the status parameter.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getInvalidTransaction_StatusMissing() throws Exception {
         // Perform the GET request without a status parameter and check that it returns BAD_REQUEST
@@ -197,7 +235,12 @@ public class getTransactionbyWholesalerTests {
                 .andExpect(status().isBadRequest());
     }
 
-    // Test case 7: For getTransactionByUEN, status value is an unknown status
+    /**
+     * Test case 7: Unknown status value.
+     * Expects a 400 Bad Request status due to an invalid or unknown status value.
+     *
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void getInvalidTransaction_StatusUnknown() throws Exception {
         // Perform the GET request without a status parameter and check that it returns BAD_REQUEST

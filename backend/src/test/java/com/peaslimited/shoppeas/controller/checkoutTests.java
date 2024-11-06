@@ -30,9 +30,16 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doNothing;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * Unit tests for the checkout functionality in TransactionController using black-box testing.
+ * The tests cover valid and invalid scenarios for checkout requests with varying cart structures.
+ */
 @WebMvcTest(value = TransactionController.class,  excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class checkoutTests {
 
+    /**
+     * Sets up the MockMvc for performing HTTP requests in the tests.
+     */
     @Autowired
     private MockMvc mockMvc;
 
@@ -53,7 +60,12 @@ public class checkoutTests {
     @MockBean
     private WholesalerService wholesalerService;
 
-    // test case 1: Valid shopping cart with multiple orders
+    /**
+     * Tests a valid checkout with multiple orders in the cart.
+     * Expects a 201 Created status upon successful checkout.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void validCheckout_MultipleOrders() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -118,7 +130,13 @@ public class checkoutTests {
                         .content(checkoutJson))
                 .andExpect(status().isCreated());  // Expect a 201 Created status
     }
-    // test case 2: valid order with 1 order
+    
+    /**
+     * Tests a valid checkout with a single order in the cart.
+     * Expects a 201 Created status upon successful checkout.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void validCheckout_SingleOrders() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -169,7 +187,12 @@ public class checkoutTests {
                 .andExpect(status().isCreated());  // Expect a 201 Created status
     }
 
-    // test case 3: valid order with 4 orders
+    /**
+     * Tests a valid checkout with exactly four orders in the cart.
+     * Expects a 201 Created status upon successful checkout.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void validCheckout_FourOrders() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -257,7 +280,12 @@ public class checkoutTests {
                 .andExpect(status().isCreated());  // Expect a 201 Created status
     }
 
-    // Case 4: Invalid test case of 5 orders
+    /**
+     * Tests an invalid checkout with five orders in the cart, which exceeds the allowable limit.
+     * Expects a 400 Bad Request status due to exceeding the maximum number of allowed orders.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_FiveOrders() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -356,7 +384,12 @@ public class checkoutTests {
                 .andExpect(status().isBadRequest());  // Expect a 400 bad request
     }
 
-    // Test case 5: Invalid test case of 0 orders
+    /**
+     * Tests an invalid checkout with zero orders in the cart.
+     * Expects a 400 Bad Request status due to an empty cart.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_NoOrders() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -387,7 +420,12 @@ public class checkoutTests {
                 .andExpect(status().isBadRequest());  // Expect a 400 bad request
     }
 
-    // Test case 6: Valid shopping cart with 1 order and 1 item
+    /**
+     * Tests a valid checkout with a single order containing a single item.
+     * Expects a 201 Created status upon successful checkout.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void validCheckout_Singleitem() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -430,7 +468,12 @@ public class checkoutTests {
                 .andExpect(status().isCreated());  // Expect a 201 Created status
     }
 
-    // test case 7: Valid checkout with 1 order and 5 items
+    /**
+     * Tests a valid checkout with a single order containing five items.
+     * Expects a 201 Created status upon successful checkout.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void validCheckout_Fiveitem() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -489,7 +532,12 @@ public class checkoutTests {
                 .andExpect(status().isCreated());  // Expect a 201 Created status
     }
 
-    // test case 8: Invalid test case with 0 items
+    /**
+     * Tests an invalid checkout with a single order containing zero items.
+     * Expects a 400 Bad Request status due to the order containing no items.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_Noitem() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -525,7 +573,12 @@ public class checkoutTests {
                 .andExpect(status().isBadRequest());  // Expect a 400 bad request
     }
 
-    // test case 9: invalid order with 6 items
+    /**
+     * Tests an invalid checkout with a single order containing six items, exceeding the allowable item limit.
+     * Expects a 400 Bad Request status due to exceeding the maximum number of allowed items.
+     * 
+     * @throws Exception if the request fails unexpectedly
+     */
     @Test
     public void invalidCheckout_Sixitem() throws Exception {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
