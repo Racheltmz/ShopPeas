@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 
 import java.util.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest( value = TransactionController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
