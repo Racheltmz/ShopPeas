@@ -19,5 +19,4 @@ public interface CartService {
 
     boolean checkObjectNull(Object obj);
 
-    int testException(int i);
 }

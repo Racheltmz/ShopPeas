@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.Map;
 
+/**
+ * AuthController handles the registration of users.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/auth")
@@ -20,6 +23,13 @@ public class AuthController {
     @Autowired
     private RegistrationFactory registrationFactory;
 
+    /**
+     * Registers a consumer when a user signs up as a consumer and is called from the frontend with
+     * HTTP path "/auth/consumer".
+     * @param consumer Map<String, Object> containing the data needed to register a consumer.
+     * @throws IOException
+     * @throws FirebaseAuthException
+     */
     @PostMapping("/consumer")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void registerConsumer(@RequestBody Map<String, Object> consumer) throws IOException, FirebaseAuthException {
@@ -28,6 +38,13 @@ public class AuthController {
         strategy.register(uid, consumer);
     }
 
+    /**
+     * Registers a wholesaler when a user signs up as a business and is called from the frontend with
+     * HTTP path "/auth/wholesaler".
+     * @param wholesaler Map<String, Object> containing the data needed to register a wholesaler/ business.
+     * @throws IOException
+     * @throws FirebaseAuthException
+     */
     @PostMapping("/wholesaler")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void registerWholesaler(@RequestBody Map<String, Object> wholesaler) throws IOException, FirebaseAuthException {
@@ -36,6 +53,10 @@ public class AuthController {
         strategy.register(uid, wholesaler);
     }
 
+    /**
+     * Gets a user's ID (uid) from FireBase (document ID).
+     * @return A String containing the uid.
+     */
     private String getUid() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (String) authentication.getPrincipal();

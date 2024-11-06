@@ -31,6 +31,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * This class tests the addToCart() function from CartController using Basis Path Testing.
+ */
 @WebMvcTest( value = CartController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class addToCartTest {
     @Autowired
@@ -61,7 +64,7 @@ class addToCartTest {
 
 
     /**
-     * Test case 2.1.1: Tests the addToCart() function in CartController() with the default correct JSON input
+     * Test case 2.1.a: Tests the addToCart() function in CartController with the default correct JSON input
      * and cart record does not exist for the user
      * @throws Exception
      */
@@ -110,8 +113,12 @@ class addToCartTest {
                         .contentType(MediaType.APPLICATION_JSON).content(requestBody)).andExpect(status().isCreated());
     }
 
+    /**
+     * Test case 2.1.b: Tests the addToCart() function in CartController with the default correct JSON input
+     * and cart already exists for the user.
+     * @throws Exception
+     */
     @Test
-    @ExtendWith(MockitoExtension.class)
     public void getValid_addToCartTest_CartExists() throws Exception
     {
         String uid = "hnByvuE2t0fviOCA0q7T8nsqZVp1";
@@ -158,6 +165,11 @@ class addToCartTest {
                         .content(requestBody))
                 .andExpect(status().isCreated());
     }
+    /**
+     * Test case 2.1.c: Tests the addToCart() function in CartController with an invalid JSON input
+     * (quantity of item <= 0)
+     * @throws Exception
+     */
     @Test
     public void addToCart_InvalidSwpid() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
@@ -204,6 +216,11 @@ class addToCartTest {
     }
 
 
+    /**
+     * Test case 2.1.d: Tests the addToCart() function in CartController with an invalid JSON input
+     * (invalid swp_id (wholesaler product does not exist)).
+     * @throws Exception
+     */
     @Test()
     public void addToCart_InvalidQuantity() throws Exception {
         int quantity = -10;

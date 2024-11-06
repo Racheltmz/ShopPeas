@@ -16,3 +16,4 @@ public class ShoppingCart {
     String uid;
     double total_price;
 }
+

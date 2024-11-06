@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This class handles operations surrounding payment, such as fetching a user's payment methods from FireBase,
+ * adding a new payment method, and deleting a payment method.
+ */
 @CrossOrigin
 @RestController
 @RequestMapping("/payment")
@@ -21,7 +25,8 @@ public class PaymentController {
     private ConsumerAccountService consumerAccService;
 
     /**
-     * Gets the card numbers of all the cards belonging to a single consumer.
+     * Gets the card numbers of all the cards belonging to a single consumer and is called from the frontend with
+     * HTTP status "/payment/get".
      * @return A Map containing a list of the consumer's card numbers.
      * @throws ExecutionException
      * @throws InterruptedException
@@ -57,7 +62,7 @@ public class PaymentController {
     }
 
     /**
-     * Adds a new payment method for the consumer.
+     * Adds a new payment method for the consumer and is called from the frontend with HTTP status "/payment/add".
      * @param data A Map containing the consumer's name, card number, card expiry date, and cvv
      * @throws ExecutionException
      * @throws InterruptedException
@@ -108,7 +113,7 @@ public class PaymentController {
     }
 
     /**
-     * Deletes a payment method.
+     * Deletes a payment method and is called from the frontend with HTTP status "/payment/delete".
      * @param data A map containing the card number of the card that is to be deleted.
      * @throws ExecutionException
      * @throws InterruptedException

@@ -16,21 +16,48 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
+/**
+ * Strategy implementation for registering a new wholesaler in the system.
+ * This class handles the process of adding a new wholesaler, their account,
+ * and their address to the database. It also sets custom claims for the
+ * newly registered user in Firebase Authentication.
+ */
 @Component
 public class WholesalerRegistrationStrategy implements RegistrationStrategy {
 
+    /**
+     * Repository for interacting with Firebase Authentication.
+     */
     @Autowired
     private AuthRepository authRepository;
 
+    /**
+     * Service responsible for managing wholesaler data in the system.
+     */
     @Autowired
     private WholesalerService wholesalerService;
 
+    /**
+     * Service responsible for managing wholesaler address data in the system.
+     */
     @Autowired
     private WholesalerAddressService wholesalerAddressService;
 
+    /**
+     * Service responsible for managing wholesaler account data in the system.
+     * Used to add the wholesaler's account details to the database.
+     */
     @Autowired
     private WholesalerAccountService wholesalerAccountService;
 
+    /**
+     * Registers a new wholesaler by creating their profile, account, and address in the system.
+     * This includes adding wholesaler details, setting custom claims in Firebase,
+     * and adding the wholesaler's account and address to the system.
+     * @param uid The unique user ID of the wholesaler in Firebase Authentication.
+     * @param userData A map containing the user data, including wholesaler details, account, and address.
+     * @throws FirebaseAuthException If there is an issue setting user claims in Firebase Authentication.
+     */
     @Override
     public void register(String uid, Map<String, Object> userData) throws FirebaseAuthException {
         // Create and add wholesaler
@@ -48,6 +75,11 @@ public class WholesalerRegistrationStrategy implements RegistrationStrategy {
         wholesalerAddressService.addWholesalerAddress(userData.get("uen").toString(), wholesalerAddress);
     }
 
+    /**
+     * Creates a {@link WholesalerDTO} object from the provided user data map.
+     * @param user A map containing the wholesaler data.
+     * @return A `WholesalerDTO` containing the wholesaler's profile information.
+     */
     private WholesalerDTO createWholesalerFromMap(Map<String, Object> user) {
         return new WholesalerDTO(
                 user.get("uen").toString(),
@@ -60,6 +92,11 @@ public class WholesalerRegistrationStrategy implements RegistrationStrategy {
         );
     }
 
+    /**
+     * Creates a {@link WholesalerAccountDTO} object from the provided user data map.
+     * @param user A map containing the wholesaler account data.
+     * @return A `WholesalerAccountDTO` containing the wholesaler's account details.
+     */
     private WholesalerAccountDTO createWholesalerAccountFromMap(Map<String, Object> user) {
         return new WholesalerAccountDTO(
                 user.get("bank").toString(),
@@ -68,6 +105,11 @@ public class WholesalerRegistrationStrategy implements RegistrationStrategy {
         );
     }
 
+    /**
+     * Creates a {@link WholesalerAddressDTO} object from the provided user data map.
+     * @param user A map containing the wholesaler address data.
+     * @return A `WholesalerAddressDTO` containing the wholesaler's address details.
+     */
     private WholesalerAddressDTO createWholesalerAddressFromMap(Map<String, Object> user) {
         return new WholesalerAddressDTO(
                 user.get("street_name").toString(),

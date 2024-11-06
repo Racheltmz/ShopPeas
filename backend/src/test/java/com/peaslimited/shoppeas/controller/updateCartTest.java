@@ -22,6 +22,9 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
+/**
+ * This class tests the updateCart() function in CartController using Basis Path Testing.
+ */
 @WebMvcTest( value = CartController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 class updateCartTest {
 
@@ -53,6 +56,10 @@ class updateCartTest {
     @MockBean
     private CartRepository cartRepository;
 
+    /**
+     * Test case 2.2.a: Tests the updateCart() function in CartController with a valid JSON input.
+     * @throws Exception
+     */
     @Test
     public void getValid_updateCart() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
@@ -92,6 +99,11 @@ class updateCartTest {
                 .contentType(MediaType.APPLICATION_JSON).content(requestBody)).andExpect(status().isNoContent());
     }
 
+    /**
+     * Test case 2.2.b: Tests the updateCart() function in CartController with an invalid JSON input (invalid uen,
+     * wholesaler does not exist).
+     * @throws Exception
+     */
     @Test
     public void wholesalerDNE_updateCart() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
@@ -131,6 +143,11 @@ class updateCartTest {
                 .contentType(MediaType.APPLICATION_JSON).content(requestBody)).andExpect(status().isBadRequest());
     }
 
+    /**
+     * Test case 2.2.c: Tests the updateCart() function in CartController with an invalid JSON input (invalid swp_id,
+     * wholesaler product does not exist).
+     * @throws Exception
+     */
     @Test
     public void productDNE_updateCart() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
@@ -169,6 +186,11 @@ class updateCartTest {
                 .contentType(MediaType.APPLICATION_JSON).content(requestBody)).andExpect(status().isBadRequest());
     }
 
+    /**
+     * Test case 2.2.d: Tests the updateCart() function in CartController where the cart record does not exist for the
+     * user
+     * @throws Exception
+     */
     @Test
     public void cartDNE_updateCart() throws Exception {
         String uid = "8i9PDIBnKaa2SJBqzkVlIKyruCp1";
