@@ -21,6 +21,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of  WholesalerProductRepository for managing and performing operations
+ * on wholesaler products in Firestore, including methods to retrieve, add, update, and delete 
+ * wholesaler products.
+ */
 @Repository
 public class WholesalerProductRepositoryImpl implements WholesalerProductRepository {
 
@@ -44,6 +49,14 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
     @Autowired
     private WholesalerAddressRepository wholesalerAddressRepository;
 
+    /**
+    * Retrieves a list of detailed product information associated with a specific wholesaler by their UEN.
+    *
+    * @param uen the unique entity number of the wholesaler
+    * @return a list of {@link ProductDetailedDTO} objects containing detailed product information
+    * @throws ExecutionException 
+    * @throws InterruptedException 
+    */
     @Override
     // Fetch wholesaler products by uen
     public List<ProductDetailedDTO> findByUEN(String uen) throws ExecutionException, InterruptedException {
@@ -65,7 +78,15 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return productRepository.findProductDetails(swpid_list, productid_list, products);
     }
 
-    // Fetch products by their PID
+    /**
+     * Finds products based on a product ID and the user's postal code, returning details of each matching product.
+     *
+     * @param pid the product ID to search for
+     * @param userPostalCode the postal code of the user, used to calculate distance
+     * @return a list of {@link WholesalerProductDetailsDTO} containing product details and location information
+     * @throws ExecutionException if an error occurs while executing the Firestore query
+     * @throws InterruptedException if the operation is interrupted
+     */
     @Override
     public List<WholesalerProductDetailsDTO> findByPid(String pid, String userPostalCode) throws ExecutionException, InterruptedException {
         // Query database to get all wholesaler products with the given PID
@@ -137,6 +158,14 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a wholesaler product by its unique ID (swp_id).
+     *
+     * @param swp_id the unique wholesaler product identifier
+     * @return a {@link WholesalerProductDTO} containing product details, or null if the product does not exist
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public WholesalerProductDTO findBySwp_id(String swp_id) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection(COLLECTION).document(swp_id);
@@ -153,6 +182,14 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return wholesalerProductDTO;
     }
 
+    /**
+     * Retrieves the name of a product based on the wholesaler product ID (swp_id).
+     *
+     * @param swp_id the unique wholesaler product identifier
+     * @return the name of the product as a {@link String}
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public String getWholesalerProductName(String swp_id) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
@@ -163,6 +200,14 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return product.getName();
     }
 
+    /**
+     * Retrieves the description of a product based on its wholesaler product unique ID (swp_id).
+     *
+     * @param swp_id the unique wholesaler product identifier
+     * @return the description of the product as a {@link String}
+     * @throws ExecutionException 
+     * @throws InterruptedException
+     */
     @Override
     public String getWholesalerProductDesc(String swp_id) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
@@ -173,6 +218,14 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return product.getPackage_size();
     }
 
+    /**
+     * Retrieves the image URL of a product based on its unique ID (swp_id).
+     *
+     * @param swpId the unique wholesaler product identifier
+     * @return the image URL of the product as a {@link String}
+     * @throws ExecutionException 
+     * @throws InterruptedException
+     */
     @Override
     public String getWholesalerProductImg(String swp_id) throws ExecutionException, InterruptedException {
         WholesalerProductDTO wholesalerProduct = findBySwp_id(swp_id);
@@ -183,12 +236,24 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         return product.getImage_url();
     }
 
-    // Add a new wholesaler product
+    /**
+     * Adds a new wholesaler product to the database.
+     *
+     * @param wholesalerProductDTO a {@link WholesalerProductDTO} object containing details of the product to be added
+     */
     @Override
     public void addWholesalerProduct(WholesalerProductDTO wholesalerProductDTO) {
         firestore.collection(COLLECTION).add(wholesalerProductDTO); // Firebase generates ID
     }
 
+    /**
+     * Updates details of an existing product by its unique ID (swp_id).
+     *
+     * @param swp_id the unique wholesaler product identifier
+     * @param data a {@link Map} of fields and values to update
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public void updateWholesalerProduct(String swp_id, Map<String, Object> data) throws ExecutionException, InterruptedException {
         // Update an existing document
@@ -200,6 +265,11 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         }
     }
 
+    /**
+     * Deletes a product from the database based on its unique ID by marking it as inactive.
+     *
+     * @param swp_id the unique product identifier
+     */
     @Override
     public void deleteWholesalerProduct(String swp_id) {
         // Update an existing document
@@ -207,6 +277,15 @@ public class WholesalerProductRepositoryImpl implements WholesalerProductReposit
         docRef.update("active", false);
     }
 
+    /**
+     * Retrieves a wholesaler product based on its product ID (pid) and the UEN of the wholesaler.
+     *
+     * @param pid the product ID to search for
+     * @param uen the unique entity number of the wholesaler
+     * @return a {@link WholesalerProducts} object containing details of the product, or null if not found
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public WholesalerProducts getWProductByPIDandUEN(String pid, String uen) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION)

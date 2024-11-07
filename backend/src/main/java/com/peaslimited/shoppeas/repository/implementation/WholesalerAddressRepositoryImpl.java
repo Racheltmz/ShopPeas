@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Implementation of WholesalerAddressRepository for managing wholesaler address data in Firestore,
+ * including methods to retrieve, add, and update address information for wholesalers.
+ */
 @Repository
 public class WholesalerAddressRepositoryImpl implements WholesalerAddressRepository {
 
@@ -23,6 +27,15 @@ public class WholesalerAddressRepositoryImpl implements WholesalerAddressReposit
     @Autowired
     private Firestore firestore;
 
+     /**
+     * {@inheritDoc}
+     * Retrieves the address details for a wholesaler from Firestore using the specified UEN.
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @return a {@link WholesalerAddressDTO} containing the address details of the wholesaler,
+     * @throws ExecutionException  
+     * @throws InterruptedException 
+     */
     @Override
     public WholesalerAddressDTO findByUEN(String UEN) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection(COLLECTION).document(UEN);
@@ -40,6 +53,15 @@ public class WholesalerAddressRepositoryImpl implements WholesalerAddressReposit
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     * Retrieves the addresses of all wholesalers associated with specific products.
+     *
+     * @param wholesalerProducts a list of {@link WholesalerProducts} related to the wholesalers
+     * @return a list of {@link WholesalerAddress} objects containing the addresses of each wholesaler
+     * @throws ExecutionException
+     * @throws InterruptedException 
+     */
     @Override
     public List<WholesalerAddress> findAllWholesalerAddress(List<WholesalerProducts> wholesalerProducts) throws ExecutionException, InterruptedException {
         List<DocumentReference> wholesalerAddressRefs = wholesalerProducts.stream()
@@ -53,11 +75,25 @@ public class WholesalerAddressRepositoryImpl implements WholesalerAddressReposit
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     * Adds a new address entry for a wholesaler in Firestore using the provided UEN.
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @param data a {@link WholesalerAddressDTO} containing the address details to be added
+     */
     @Override
     public void addByUEN(String UEN, WholesalerAddressDTO data) {
         firestore.collection(COLLECTION).document(UEN).set(data);
     }
 
+    /**
+     * {@inheritDoc}
+     * Updates an existing address entry for a wholesaler in Firestore based on the provided UEN and data map.
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @param data a {@link Map} containing fields to update and their respective values
+     */
     @Override
     public void updateByUEN(String UEN, Map<String, Object> data) {
         // Update an existing document

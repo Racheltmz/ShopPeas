@@ -16,6 +16,11 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+
+/**
+ * Implementation of ProductRepository for managing product data in Firestore,
+ * including methods to retrieve, add, update, and find product details.
+ */
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
 
@@ -24,7 +29,17 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Autowired
     private Firestore firestore;
 
-    // get product details
+    /**
+     * {@inheritDoc}
+     *
+     * Retrieves a product document from Firestore based on the provided PID.
+     * Converts the document into a {@link ProductDTO} if it exists.
+     *
+     * @param pid the unique product ID
+     * @return a {@link ProductDTO} containing product details, or null if not found
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public ProductDTO findByPID(String pid) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection(COLLECTION).document(pid);
@@ -42,6 +57,15 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Fetches all product documents from Firestore and maps each document to a {@link Product} object.
+     *
+     * @return a list of {@link Product} objects representing all products
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public List<Product> findAll() throws ExecutionException, InterruptedException {
         // Fetch all products from firebase
@@ -57,6 +81,18 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Retrieves detailed product information by mapping Firestore documents to {@link ProductDetailedDTO}.
+     *
+     * @param swpid_list a list of wholesaler product IDs
+     * @param productid_list a list of product IDs
+     * @param wholesaler_products a list of {@link WholesalerProducts} objects
+     * @return a list of {@link ProductDetailedDTO} containing detailed product information
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
     @Override
     public List<ProductDetailedDTO> findProductDetails(List<String> swpid_list, List<String> productid_list, List<WholesalerProducts> wholesaler_products) throws ExecutionException, InterruptedException {
         List<DocumentReference> docRefs = productid_list.stream()
@@ -83,11 +119,30 @@ public class ProductRepositoryImpl implements ProductRepository {
         return productDetailedList;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Adds a new product document to Firestore with the specified PID as the document ID.
+     *
+     * @param PID the unique product ID
+     * @param product a {@link ProductDTO} containing details of the product to add
+     */
     @Override
     public void addByPID(String PID, ProductDTO product) {
         firestore.collection(COLLECTION).document(PID).set(product);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Updates an existing product document in Firestore with new data based on the provided PID.
+     * Each key-value pair in the {@code data} map represents a field to be updated.
+     *
+     * @param PID the unique product ID
+     * @param data a {@link Map} containing the fields to update and their new values
+     * @throws ExecutionException 
+     * @throws InterruptedException
+     */
     @Override
     public void updateByPID(String PID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         // Update an existing document
@@ -99,6 +154,17 @@ public class ProductRepositoryImpl implements ProductRepository {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Searches for a product document in Firestore based on its name.
+     * Converts the first matching document into a {@link Product} object if it exists.
+     *
+     * @param name the name of the product
+     * @return a {@link Product} object representing the product with the specified name, or null if not found
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public Product findByProductName(String name) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("name", name).get();
@@ -120,6 +186,16 @@ public class ProductRepositoryImpl implements ProductRepository {
         return product;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Retrieves a Firestore document snapshot containing the URL of a product's image based on its name.
+     *
+     * @param productName the name of the product
+     * @return a {@link DocumentSnapshot} containing the product's image URL, or null if no match is found
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public DocumentSnapshot getUrlByName(String productName) throws ExecutionException, InterruptedException {
         CollectionReference products = firestore.collection("products");
