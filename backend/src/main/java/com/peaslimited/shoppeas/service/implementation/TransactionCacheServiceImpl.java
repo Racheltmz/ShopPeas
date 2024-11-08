@@ -14,6 +14,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Handles operations related to transaction cache functionality.
+ * This service updates cache about transaction information.
+ */
 @Service
 public class TransactionCacheServiceImpl {
 
@@ -46,7 +50,11 @@ public class TransactionCacheServiceImpl {
         }
     }
 
-    // Method to check if a TID exists in the cache
+    /**
+     * Check if transaction exists for given TID.
+     * @param tid Transaction ID.
+     * @return boolean value of whether the transaction exists.
+     */
     public boolean doesTransactionExist(String tid) {
         synchronized (validTIDs) {
             return validTIDs.contains(tid);

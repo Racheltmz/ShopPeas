@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.service;
 
 import com.google.firebase.auth.FirebaseAuthException;
-import com.peaslimited.shoppeas.factory.RegistrationFactory;
 import com.peaslimited.shoppeas.repository.AuthRepository;
 
 import java.io.IOException;

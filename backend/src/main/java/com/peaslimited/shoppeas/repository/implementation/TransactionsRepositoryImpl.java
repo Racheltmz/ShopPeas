@@ -223,9 +223,9 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
      * @param uid the user's unique identifier
      * @param uen the wholesaler's unique entity number
      * @param swp_id the unique wholesaler product identifier 
-     * @param quantity the new quantity of the product
+     * @param newQuantity the new quantity of the product
      * @param price the price of the product
-     * @throws ExecutionException 
+     * @throws ExecutionException
      * @throws InterruptedException 
      */
     @Override

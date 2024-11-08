@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
- * This interface  handles operations related to shopping cart functionality, such as
+ * This interface handles operations related to shopping cart functionality, such as
  * retrieving, adding, updating, and deleting cart items.
  */
 public interface CartService {

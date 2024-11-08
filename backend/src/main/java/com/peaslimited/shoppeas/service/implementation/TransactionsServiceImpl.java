@@ -19,34 +19,77 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Implementation of the {@link TransactionsService} interface that handles operations related to transaction functionality.
+ * This service provides methods to retrieve, add, and update transaction items.
+ */
 @Service
-
 public class TransactionsServiceImpl implements TransactionsService {
 
+    /**
+     * Repository for interacting with transaction data
+     */
     @Autowired
     private TransactionsRepository transactionsRepo;
 
+    /**
+     * Repository for interacting with cart data
+     */
     @Autowired
     private CartRepository cartRepository;
 
+    /**
+     * Service for handling order history records.
+     */
     @Autowired
     private OrderHistoryService orderHistoryService;
 
+    /**
+     * Retrieves the transaction by transaction ID.
+     * @param tid The unique identifier of the transaction.
+     * @return A TransactionDTO object.
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     */
     @Override
     public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
         return transactionsRepo.findByTID(tid);
     }
 
+    /**
+     * Retrieves transaction by UEN and Status
+     * @param uen Wholesaler UEN.
+     * @param status Transaction Status.
+     * @return a list of transactions.
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     */
     @Override
     public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException {
         return transactionsRepo.getDocByUENAndStatus(uen, status);
     }
 
+    /**
+     * Get products in transaction.
+     * @param document Transaction document from the database.
+     * @param cart a boolean indicating if the transaction is a cart transaction
+     * @return List of products.
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     */
     @Override
     public ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException {
         return transactionsRepo.getProductListfromTransaction(document, cart);
     }
 
+    /**
+     * Update transaction product details.
+     * @param uid Consumer UID.
+     * @param data Transaction product details to update.
+     * @return Transaction ID.
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     */
     @Override
     public String updateTransactionProduct(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
         String uen = data.get("uen").toString();
@@ -82,11 +125,24 @@ public class TransactionsServiceImpl implements TransactionsService {
         }
     }
 
+    /**
+     * Update transaction status.
+     * @param data Details of transaction.
+     */
     @Override
     public void updateTransactionStatus(Map<String, Object> data) {
         transactionsRepo.updateTransactionStatus(data);
     }
 
+    /**
+     * Update order history, transaction, and cart when user checks out.
+     * @param uid Consumer UID.
+     * @param data Transaction details.
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     * @throws IOException If an I/O error occurs.
+     * @throws URISyntaxException If a string cannot be passed as a URI reference.
+     */
     @Override
     public void updateToCheckout(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException, IOException, URISyntaxException {
         //ACTION: GET TRANSACTION DATA
