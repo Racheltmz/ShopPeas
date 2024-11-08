@@ -4,9 +4,7 @@
 
 As part of our Software Engineering module (SC2006) at NTU, our 6-member team, Peas Pte Ltd, developed a Mobile Application that aligns with Singapore's Smart Nation Initiative.
 
-<p align='center'>
-       <img src="./assets/landing_page.jpg" alt="landing_page" width="200"/>
-</p>
+![shoppeas](./assets/landing_page.png)
 
 ShopPeas is a one-stop platform connecting consumers with wholesalers. Our goal is to provide easy access to healthy food options directly from wholesalers. Users can effortlessly browse for specific products or wholesalers. To help users make informed decisions, they can compare the prices, number of stocks, and distance of each wholesaler from their location. An added feature of our app is our cross-border accessibility, which allows Singaporeans to purchase directly from Malaysian wholesalers. Throughout the process, we ensure the app's efficiency, robustness, and the secureness of their personal data.
 
