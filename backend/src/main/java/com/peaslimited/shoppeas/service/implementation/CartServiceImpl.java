@@ -14,30 +14,58 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Implementation of the {@link CartService} interface that handles operations related to shopping cart functionality.
+ * This service provides methods to retrieve, add, update, and delete cart items.
+ */
 @Service
 public class CartServiceImpl implements CartService {
 
+    /**
+     * Repository for interacting with the cart data.
+     */
     @Autowired
     private CartRepository cartRepository;
-
+    /**
+     * Service for handling transactions.
+     */
     @Autowired
     private TransactionsService transactionsService;
 
+    /**
+     * Service pertaining to wholesaler information.
+     */
     @Autowired
     private WholesalerService wholesalerService;
-    
+    /**
+     * Service pertaining to wholesaler address information.
+     */
     @Autowired
     private WholesalerAddressService wholesalerAddressService;
-    
+    /**
+     * Service pertaining to wholesaler products.
+     */
     @Autowired
     private WholesalerProductService wholesalerProductService;
-    
+    /**
+     * Service pertaining to products.
+     */
     @Autowired
     private ProductService productService;
-    
+    /**
+     * Service pertaining to transactions.
+     */
     @Autowired
     private TransactionsRepository transactionsRepository;
 
+
+    /**
+     * Retrieves the shopping cart for a user by their user ID (UID).
+     * @param uid The unique identifier of the user whose cart contents are to be retrieved.
+     * @return A map containing the cart details, including a list of transactions and their associated products.
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     */
     @Override
     public Map<String, Object> getCartByUID(String uid) throws ExecutionException, InterruptedException {
         ShoppingCartDTO cart = cartRepository.findByUID(uid);
@@ -96,6 +124,15 @@ public class CartServiceImpl implements CartService {
         return null;
     }
 
+    /**
+     * Adds an item to the user's cart.
+     *
+     * @param uid The user ID of the user adding the item to their cart.
+     * @param data A map containing the data of the product to be added (e.g., swp_id, quantity, total price).
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     * @throws ResponseStatusException If there are validation errors, such as invalid product or quantity.
+     */
     @Override
     public void addCartItem(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException,ResponseStatusException {
         // Get order data
@@ -122,6 +159,15 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    /**
+     * Updates the quantity of a product in the user's cart.
+     *
+     * @param uid The user ID of the user updating their cart.
+     * @param data A map containing the data for the update (e.g., swp_id, quantity, price).
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     * @throws ResponseStatusException If the wholesaler or product does not exist, or if the cart is not found.
+     */
     @Override
     public void updateCartQuantity(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
         String uen = data.get("uen").toString();
@@ -143,6 +189,14 @@ public class CartServiceImpl implements CartService {
         cartRepository.updateCartPrice(cid, price);
     }
 
+    /**
+     * Deletes a product from the user's cart.
+     *
+     * @param uid The user ID of the user deleting the product.
+     * @param data A map containing the data of the product to be deleted (e.g., swp_id, uen).
+     * @throws ExecutionException If an error occurs while retrieving data asynchronously.
+     * @throws InterruptedException If the thread executing the task is interrupted.
+     */
     @Override
     public void deleteCartProduct(String uid, Map<String, Object> data) throws ExecutionException, InterruptedException {
         String uen = data.get("uen").toString();
@@ -159,14 +213,14 @@ public class CartServiceImpl implements CartService {
         }
     }
 
+    /**
+     * Checks if the quantity in addToCart() is valid (i.e., quantity >=0)
+     * @param quantity The quantity of a product being added to cart.
+     * @return True if quantity is valid, false otherwise.
+     */
     @Override
     public boolean checkQuantity(int quantity) {
         return quantity >= 0;
-    }
-
-    @Override
-    public boolean checkObjectNull(Object obj) {
-        return obj == null;
     }
 
 }
