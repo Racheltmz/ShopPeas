@@ -67,9 +67,9 @@ To provide a high-level overview using our system layered architecture diagram, 
 
 ### Front-End
 
-1. Install a simulator on your computer. If you are using a MacOS, install the simulator with Xcode. If you are using Windows, install the emulators with Andriod Studio.
+1. Install an emulator on your computer. If you are using a MacOS, install the simulator with Xcode. If you are using Windows, install the emulators with Android Studio.
 
-2. Create an `.env` file in the `frontend/` folder and fill in the respective fields. The REACT_APP_BACKEND_* environment variables indicates the respective API path to use and will call the respective controllers.
+2. Create an `.env` file in the `frontend/` folder and fill in the respective fields. The REACT_APP_BACKEND_* environment variables indicate the respective API path to use and will call the respective controllers.
 
        REACT_APP_API_KEY=<your-firestore-apikey>
        REACT_APP_BACKEND_API=http://localhost:8080/
@@ -98,7 +98,7 @@ To provide a high-level overview using our system layered architecture diagram, 
 
 1. Download Java SE 22 [link](https://www.oracle.com/sg/java/technologies/downloads/).
 
-2. Open the `backend` fodler in your IDE. We used Intellij.
+2. Open the `backend` folder in your IDE. We used Intellij.
 
 3. In the [config](./backend/src/main/resources/config) folder, add these 3 JSON files that will contain the resources to communicate with external services. The first is the Currency API JSON file. Create an account with [currencyapi](https://currencyapi.com/) and get the API key.
 
