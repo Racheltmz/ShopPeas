@@ -15,6 +15,10 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Implementation of TransactionRepository for managing transaction data in Firestore,
+ * including methods to retrieve, add, update, and delete transactions.
+ */
 @Repository
 public class TransactionsRepositoryImpl implements TransactionsRepository {
 
@@ -26,6 +30,16 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
     @Autowired
     private WholesalerProductService wholesalerProductService;
 
+    /**
+     * {@inheritDoc}
+     *
+     * Retrieves a transaction document by its TID and converts it to {@link TransactionsDTO}.
+     *
+     * @param tid the unique transaction ID
+     * @return a {@link TransactionsDTO} containing transaction details, or null if not found
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public TransactionsDTO findByTID(String tid) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
@@ -56,6 +70,17 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
             return null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Finds a cart transaction for the specified user (UID) and wholesaler (UEN) with status "IN-CART".
+     *
+     * @param uid the user's unique identifier
+     * @param uen the wholesaler's unique entity number
+     * @return a {@link Transactions} object representing the cart transaction, or null if not found
+     * @throws ExecutionException
+     * @throws InterruptedException 
+     */
     @Override
     public Transactions findCartTransaction(String uid, String uen) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION)
@@ -91,6 +116,17 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Retrieves a list of transactions filtered by UEN and status.
+     *
+     * @param uen the wholesaler's unique entity number
+     * @param status the status of the transaction
+     * @return a list of {@link QueryDocumentSnapshot} objects matching the criteria
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public List<QueryDocumentSnapshot> getDocByUENAndStatus(String uen, String status) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", uen)
@@ -101,6 +137,15 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return querySnapshot.getDocuments();
     }
 
+     /**
+     * {@inheritDoc}
+     *
+     * Extracts the product list from a transaction document.
+     *
+     * @param document the Firestore document snapshot of the transaction
+     * @param cart a boolean indicating if the transaction is a cart transaction
+     * @return an {@link ArrayList} of product details
+     */
     @Override
     public ArrayList<Object> getProductListfromTransaction(DocumentSnapshot document, boolean cart) throws ExecutionException, InterruptedException {
         Map<String,Object> productList = (Map<String,Object>) document.get("products");
@@ -122,6 +167,14 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return returnProdList;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Adds a new transaction to Firestore.
+     *
+     * @param transactionsDTO a {@link TransactionsDTO} containing transaction details
+     * @return the ID of the newly created transaction
+     */
     @Override
     public String addTransaction(TransactionsDTO transactionsDTO) {
         DocumentReference docRef = firestore.collection(COLLECTION).document();
@@ -130,6 +183,15 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return tid;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Updates a specific product within an existing transaction in Firestore.
+     *
+     * @param transaction the {@link Transactions} object representing the transaction to update
+     * @param uid the user's unique identifier
+     * @param data a {@link Map} containing the update data for the transaction's product
+     */
     @Override
     public void updateTransactionProduct(Transactions transaction, String uid, Map<String, Object> data) {
         String swp_id = data.get("swp_id").toString();
@@ -153,6 +215,19 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         docRef.update("products", curProductsMap);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Updates the quantity of a specific product.
+     *
+     * @param uid the user's unique identifier
+     * @param uen the wholesaler's unique entity number
+     * @param swp_id the unique wholesaler product identifier 
+     * @param quantity the new quantity of the product
+     * @param price the price of the product
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public void updateProductQuantity(String uid, String uen, String swp_id, int newQuantity, double price) throws ExecutionException, InterruptedException {
         QuerySnapshot querySnapshot = firestore.collection(COLLECTION)
@@ -192,6 +267,18 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
 
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Updates the product list in a transaction based on UID, UEN and swp_id, adjusting the total price as necessary.
+     *
+     * @param uid the user's unique identifier
+     * @param uen the wholesaler's unique entity number
+     * @param swp_id the wholesaler product's unique identifier
+     * @return a {@link Map} containing the updated product list and the deducted price
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public Map<String, Object> updateProductList(String uid, String uen, String swp_id) throws ExecutionException, InterruptedException {
         QuerySnapshot querySnapshot = firestore.collection(COLLECTION)
@@ -249,6 +336,16 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return outputMap;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Retrieves historical transaction details for a specific order ID.
+     *
+     * @param orderId the unique identifier of the order
+     * @return a {@link TransactionsOrderedDTO} containing ordered transaction details
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public TransactionsOrderedDTO getHistoryDetails(String orderId) throws ExecutionException, InterruptedException {
         DocumentReference transactionRef = firestore.collection(COLLECTION).document(orderId);
@@ -275,12 +372,27 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         return transaction;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Marks a transaction as rated by updating the "rated" field in Firestore.
+     *
+     * @param tid the unique transaction ID
+     */
     @Override
     public void updateTransactionRated(String tid) {
         DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
         docRef.update("rated", true);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * Updates the status of a transaction in Firestore if the status is valid.
+     *
+     * @param data a {@link Map} containing the transaction's TID and new status
+     * @throws ResponseStatusException 
+     */
     @Override
     public void updateTransactionStatus(Map<String, Object> data) {
         String tid = data.get("tid").toString();
@@ -296,12 +408,25 @@ public class TransactionsRepositoryImpl implements TransactionsRepository {
         }
     }
 
+     /**
+     * {@inheritDoc}
+     *
+     * Updates the price of a transaction by setting a new value for "converted_price" in Firestore.
+     *
+     * @param tid the unique transaction ID
+     * @param updatedPrice the new price to set for the transaction
+     */
     @Override
     public void updateTransactionPrice(String tid, double updatedPrice) {
         DocumentReference docRef = firestore.collection(COLLECTION).document(tid);
         docRef.update("converted_price", Double.parseDouble(String.format("%.2f", updatedPrice)));
     }
 
+    /**
+     * Deletes a transaction from the Firestore collection based on its TID.
+     *
+     * @param tid the unique transaction ID
+     */
     private void deleteTransaction(String tid) {
         firestore.collection(COLLECTION).document(tid).delete();
     }

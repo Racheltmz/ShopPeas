@@ -92,8 +92,8 @@ const Payment = () => {
     }
   };
 
-  const handleWholesalerPress = (wholesalerName) => {
-    navigation.navigate('ViewWholesaler', { wholesalerName });
+  const handleWholesalerPress = (wholesalerUEN) => {
+    navigation.navigate('ViewWholesaler', { wholesalerUEN });
   };
 
   return (
@@ -123,7 +123,7 @@ const Payment = () => {
         </TouchableOpacity>
         {cart.map((wholesaler, index) => (
           <View key={index} style={styles.wholesalerContainer}>
-            <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.wholesaler)}>
+            <TouchableOpacity onPress={() => handleWholesalerPress(wholesaler.uen)}>
               <Text style={styles.wholesalerName}>{wholesaler.wholesaler} <Ionicons name="chevron-forward" size={14} color="#0C5E52" /></Text>
             </TouchableOpacity>
             {wholesaler.items.map((item, itemIndex) => (

@@ -89,14 +89,30 @@ public class WholesalerServiceImpl implements WholesalerService {
     @Override
     public boolean isValidWholesalerAndUEN(String wholesaler, String uen) throws ExecutionException, InterruptedException {
         // Retrieve the wholesaler information from Firebase using UEN
-        Wholesaler wholesalerData = firestore.collection("wholesalers")
-                .document(uen)
+        QuerySnapshot snapshot = firestore.collection("wholesaler")
+                .whereEqualTo("uen", uen)
                 .get()
-                .get()
-                .toObject(Wholesaler.class);
+                .get();
 
-        // Check if wholesaler data exists and matches the provided wholesaler name
-        return wholesalerData != null && wholesalerData.getName().equalsIgnoreCase(wholesaler);
+        // Check if there are any documents in the snapshot
+        if (!snapshot.isEmpty()) {
+            Wholesaler wholesalerData = snapshot.getDocuments().getFirst().toObject(Wholesaler.class);
+
+            if (wholesalerData == null) {
+                System.out.println("No wholesaler data found for the given UEN.");
+                return false;
+            }
+
+            // Check if wholesaler data exists and matches the provided wholesaler name
+            boolean result = wholesalerData.getName().equalsIgnoreCase(wholesaler);
+            System.out.println("Does the provided name match the retrieved name? " + result);
+
+            return result;
+        }
+
+        // Return false if no document was found for the given UEN
+        System.out.println("No documents found for the provided UEN.");
+        return false;
     }
 
 }

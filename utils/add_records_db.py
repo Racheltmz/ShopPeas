@@ -8,7 +8,8 @@ import pandas as pd
 parser = argparse.ArgumentParser()
 
 # Use a service account
-cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-d9624e3bf1.json')
+FIREBASE_CONFIG = '<firebase-config-json-file>'
+cred = credentials.Certificate(FIREBASE_CONFIG)
 default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 

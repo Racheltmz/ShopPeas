@@ -3,9 +3,11 @@ import os
 import firebase_admin
 from firebase_admin import credentials, storage
 
-# Initialize Firebase with the correct paths 
-cred = credentials.Certificate('shoppeasauthentication-firebase-adminsdk-x6pk7-0e6ec030a9.json')
-default_app = firebase_admin.initialize_app(cred, {'storageBucket': "shoppeasauthentication.appspot.com"})
+# Initialize Firebase with the correct paths
+FIREBASE_CONFIG = '<firebase-config-json-file>'
+STORAGE_BUCKET = '<firebase-storage-bucket>'
+cred = credentials.Certificate(FIREBASE_CONFIG)
+default_app = firebase_admin.initialize_app(cred, { 'storageBucket': STORAGE_BUCKET })
 
 # paths to the images and and products csv file 
 image_folder = 'Images/'

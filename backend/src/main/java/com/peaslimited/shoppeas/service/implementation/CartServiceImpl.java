@@ -1,7 +1,6 @@
 package com.peaslimited.shoppeas.service.implementation;
 
 import com.peaslimited.shoppeas.dto.*;
-import com.peaslimited.shoppeas.exception.ApiExceptionHandler;
 import com.peaslimited.shoppeas.repository.CartRepository;
 import com.peaslimited.shoppeas.repository.TransactionsRepository;
 import com.peaslimited.shoppeas.service.*;
@@ -32,6 +31,7 @@ public class CartServiceImpl implements CartService {
      */
     @Autowired
     private TransactionsService transactionsService;
+
     /**
      * Service pertaining to wholesaler information.
      */
@@ -140,16 +140,10 @@ public class CartServiceImpl implements CartService {
         int quantity = Integer.parseInt(data.get("quantity").toString());
         double total_price = Double.parseDouble(data.get("total_price").toString());
 
-        if(wholesalerProductService.getBySwp_id(swp_id) == null)
-        {
-            System.out.println("Error! 2");
+        if (wholesalerProductService.getBySwp_id(swp_id) == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
-
-        }
-        else if (checkQuantity(quantity) ==false) {
-            System.out.println("Error! 1");
+        } else if (!checkQuantity(quantity)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Invalid quantity");
-            //wholesalerProductCacheService.doesTransactionExist(swp_id) == false
         }
 
         //ACTION: ADDS TRANSACTION RECORD
@@ -181,18 +175,14 @@ public class CartServiceImpl implements CartService {
         int quantity = Integer.parseInt(data.get("quantity").toString());
         double price = Double.parseDouble(data.get("price").toString());
 
-        if(wholesalerService.UENExists(uen) == false)
-        {
+        if (!wholesalerService.UENExists(uen)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler does not exist");
         }
-        System.out.println(swp_id);
-        if(wholesalerProductService.getBySwp_id(swp_id) == null)
-        {
+        if (wholesalerProductService.getBySwp_id(swp_id) == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Wholesaler product does not exist");
         }
         String cid = cartRepository.findCIDByUID(uid);
-        if(cid == null)
-        {
+        if (cid == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error! Cart does not exist");
         }
         transactionsRepository.updateProductQuantity(uid, uen, swp_id, quantity, price);
@@ -229,13 +219,8 @@ public class CartServiceImpl implements CartService {
      * @return True if quantity is valid, false otherwise.
      */
     @Override
-    public boolean checkQuantity(int quantity)
-    {
-        if(quantity >= 0) return true;
-        else return false;
+    public boolean checkQuantity(int quantity) {
+        return quantity >= 0;
     }
-
-
-
 
 }

@@ -15,6 +15,10 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of WholesalerRepository for performing operations on wholesaler data in Firestore,
+ * including methods to retrieve, add, update, and manage wholesaler information.
+ */
 @Repository
 public class WholesalerRepositoryImpl implements WholesalerRepository {
 
@@ -23,7 +27,14 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
     @Autowired
     private Firestore firestore;
 
-    // Get wholesaler details
+    /**
+     * {@inheritDoc}
+     *
+     * @param UID the unique identifier of the wholesaler
+     * @return a {@link WholesalerDTO} containing wholesaler details, or null if the document does not exist
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public WholesalerDTO findByUID(String UID) throws ExecutionException, InterruptedException {
         DocumentReference docRef = firestore.collection(COLLECTION).document(UID);
@@ -40,6 +51,14 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         return wholesaler;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @return a {@link DocumentSnapshot} of the wholesaler document, or null if no document matches
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public DocumentSnapshot findDocByUEN(String UEN) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("uen", UEN).get();
@@ -60,6 +79,14 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         return document;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param name the name of the wholesaler
+     * @return a {@link DocumentSnapshot} of the wholesaler document, or null if no document matches
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public DocumentSnapshot findDocByWholesalerName(String name) throws ExecutionException, InterruptedException {
         ApiFuture<QuerySnapshot> query = firestore.collection(COLLECTION).whereEqualTo("name", name).get();
@@ -80,12 +107,28 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         return document;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @return a {@link WholesalerDTO} containing wholesaler details, or null if the document does not exist
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public WholesalerDTO findByUEN(String UEN) throws ExecutionException, InterruptedException {
         DocumentSnapshot document = findDocByUEN(UEN);
         return document.toObject(WholesalerDTO.class);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param uen the unique entity number of the wholesaler
+     * @return the name of the wholesaler as a {@link String}
+     * @throws ExecutionException 
+     * @throws InterruptedException 
+     */
     @Override
     public String findWholesalerName(String uen) throws ExecutionException, InterruptedException {
         QuerySnapshot querySnapshot = firestore.collection(COLLECTION)
@@ -97,6 +140,14 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         return Objects.requireNonNull(querySnapshot.getDocuments().getFirst().get("name")).toString();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param uen_list a list of UENs for the wholesalers
+     * @return a list of {@link WholesalerDTO} objects containing details of each wholesaler in the specified order
+     * @throws ExecutionException
+     * @throws InterruptedException 
+     */
     @Override
     public List<WholesalerDTO> findWholesalers(List<String> uen_list) throws ExecutionException, InterruptedException {
         CollectionReference wholesalerCollection = firestore.collection(COLLECTION);
@@ -117,11 +168,26 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
                 .toList();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param UID the unique identifier of the wholesaler
+     * @param wholesaler a {@link WholesalerDTO} object containing the wholesaler's details
+     */
     @Override
     public void addByUID(String UID, WholesalerDTO wholesaler) {
         firestore.collection(COLLECTION).document(UID).set(wholesaler);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param UID the unique identifier of the wholesaler
+     * @param data a {@link Map} containing the fields and values to update
+     * @return the updated UID as a {@link String}
+     * @throws ExecutionException 
+     * @throws InterruptedException
+     */
     @Override
     public String updateByUID(String UID, Map<String, Object> data) throws ExecutionException, InterruptedException {
         // Update an existing document
@@ -134,12 +200,28 @@ public class WholesalerRepositoryImpl implements WholesalerRepository {
         return findByUID(UID).getUEN();
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @return a {@link RatingDTO} containing the wholesaler's rating details
+     * @throws ExecutionException
+     * @throws InterruptedException 
+     */
     @Override
     public RatingDTO findRatingByUEN(String UEN) throws ExecutionException, InterruptedException {
         WholesalerDTO wholesaler = findByUEN(UEN);
         return new RatingDTO(wholesaler.getRating(), wholesaler.getNum_ratings());
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @param UEN the unique entity number of the wholesaler
+     * @param rating the new rating to set
+     * @throws ExecutionException
+     * @throws InterruptedException 
+     */
     @Override
     public void updateRatingByUEN(String UEN, Integer rating) throws ExecutionException, InterruptedException {
         DocumentReference docRef = findDocByUEN(UEN).getReference();

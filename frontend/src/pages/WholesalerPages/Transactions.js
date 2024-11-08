@@ -213,7 +213,6 @@ const styles = StyleSheet.create({
     fontSize: 35,
     fontWeight: 'bold',
     color: '#0C5E52',
-    margin: '2%',
   },
   headerImage: {
     width: '18%',
