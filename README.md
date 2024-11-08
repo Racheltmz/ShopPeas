@@ -145,7 +145,7 @@ We have documented our solution in the following files which can be found in the
 
 3. API Documentation with `SwaggerUI`. You can access the documentation while running the backend by entering http://localhost:8080/swagger-ui/index.html. Alternatively, you can refer to our [api_docs.html](./documentation/api_docs.html) for our HTML version or [API Documentation.pdf](./documentation/API%20Documentation.pdf) for our PDF version.
 
-4. Backend Functions Documentation with `Javadocs`. You can access the documentation [here.] TODO
+4. Backend Functions Documentation with `Javadocs`. You can access the documentation through the [index.html](./documentation/javadocs) file here.
 
 <a id='contributors'></a>
 
