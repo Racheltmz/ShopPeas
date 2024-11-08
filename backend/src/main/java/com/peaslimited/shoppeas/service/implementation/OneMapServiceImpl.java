@@ -17,6 +17,11 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * This class is an implementation of the {@link OneMapService} interface, and it interacts with the OneMap API
+ * to provide functionalities such as retrieving coordinates from a postal code and calculating the driving time between
+ * two sets of coordinates (consumer and wholesaler locations).
+ */
 @Service
 public class OneMapServiceImpl implements OneMapService {
 
@@ -27,11 +32,22 @@ public class OneMapServiceImpl implements OneMapService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
 
+    /**
+     * Constructor to initialize the {@link RestTemplate} and {@link ObjectMapper}.
+     * {@code RestTemplate} is used for making HTTP requests, and {@code ObjectMapper} is used
+     * for parsing JSON responses.
+     */
     public OneMapServiceImpl() {
         this.restTemplate = new RestTemplate();  // Used for making HTTP requests
         this.objectMapper = new ObjectMapper();  // Used for parsing JSON responses
     }
 
+    /**
+     * Loads the API key from a configuration file on the classpath {@code config/onemapapi.json}.
+     *
+     * @return The API key used to authenticate requests to the OneMap API.
+     * @throws IOException If there is an error while reading the configuration file.
+     */
     // Replace API token on 20/10
     @PostConstruct
     public String getApiKeyPath() throws IOException {
@@ -49,6 +65,14 @@ public class OneMapServiceImpl implements OneMapService {
         return apiKey;
     }
 
+    /**
+     * Retrieves the geographic coordinates for a given postal code by querying the OneMap API
+     * using the provided postal code.
+     *
+     * @param postalCode The postal code for which to retrieve the coordinates.
+     * @return A string containing the coordinates of the location.
+     * @throws IOException If an error occurs while making the API request or processing the response.
+     */
     // URL calling works
     @Override
     public String getCoordinates(String postalCode) throws IOException {
@@ -67,6 +91,15 @@ public class OneMapServiceImpl implements OneMapService {
         return extractCoordinates(response.getBody());
     }
 
+    /**
+     * Calculates the estimated driving time between two coordinates using the OneMap routing API and
+     * returns a {@link LocationDTO} object containing the calculated driving time (in minutes) and distance (in kilometers).</p>
+     *
+     * @param startCoordinates The starting coordinates.
+     * @param endCoordinates The destination coordinates.
+     * @return A {@link LocationDTO} object containing the estimated driving time (in minutes) and distance (in kilometers).
+     * @throws IOException If an error occurs while making the API request or processing the response.
+     */
     @Override
     public LocationDTO calculateDrivingTime(String startCoordinates, String endCoordinates) throws IOException {
         // Split start and end coordinates (assuming they are formatted as "latitude,longitude")
@@ -84,6 +117,13 @@ public class OneMapServiceImpl implements OneMapService {
         return extractDrivingTime(response.getBody());
     }
 
+    /**
+     * Builds the URL for the routing API request using the provided start and end coordinates.
+     *
+     * @param startCoordinates The starting coordinates.
+     * @param endCoordinates The destination coordinates.
+     * @return A URL string to query the routing API.
+     */
     private String getString(String startCoordinates, String endCoordinates) {
         String[] start = startCoordinates.split(",");
         String[] end = endCoordinates.split(",");
@@ -97,6 +137,13 @@ public class OneMapServiceImpl implements OneMapService {
                 + "&mode=TRANSIT";
     }
 
+    /**
+     * Extracts the coordinates from the JSON response returned by the OneMap API.
+     *
+     * @param response The JSON response from the OneMap API containing the location results or null if no results are found.
+     * @return A string containing the latitude and longitude.
+     * @throws JsonProcessingException If there is an error processing the JSON response.
+     */
     private String extractCoordinates(String response) throws JsonProcessingException {
         // Parse the JSON response
         JsonNode rootNode = objectMapper.readTree(response);
@@ -116,6 +163,14 @@ public class OneMapServiceImpl implements OneMapService {
         }
     }
 
+    /**
+     * Extracts the driving time and distance from the JSON response returned by the OneMap routing API.
+     *
+     * @param response The JSON response from the OneMap routing API containing route details.
+     * @return A {@link LocationDTO} object containing the driving time (in minutes) and distance (in kilometers) or null if
+     * no route is found.
+     * @throws IOException If there is an error processing the JSON response.
+     */
     private LocationDTO extractDrivingTime(String response) throws IOException {
         // Parse the JSON response
         JsonNode rootNode = objectMapper.readTree(response);
