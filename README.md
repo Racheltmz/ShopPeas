@@ -1,8 +1,6 @@
 # ShopPeas
 
-<p align='center'>
-       <img src="./assets/logo_peasltd.jpeg" alt="logo_team" width="200"/>
-</p>
+![team_logo](./assets/logo_peasltd.png)
 
 As part of our Software Engineering module (SC2006) at NTU, our 6-member team, Peas Pte Ltd, developed a Mobile Application that aligns with Singapore's Smart Nation Initiative.
 
