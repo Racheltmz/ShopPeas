@@ -98,7 +98,7 @@ To provide a high-level overview using our system layered architecture diagram, 
 
 1. Download Java SE 22 [link](https://www.oracle.com/sg/java/technologies/downloads/).
 
-2. Open the `backend` folder in your IDE. We used Intellij.
+2. Open the `backend` folder in your IDE. We used IntelliJ IDEA.
 
 3. In the [config](./backend/src/main/resources/config) folder, add these 3 JSON files that will contain the resources to communicate with external services. The first is the Currency API JSON file. Create an account with [currencyapi](https://currencyapi.com/) and get the API key.
 
