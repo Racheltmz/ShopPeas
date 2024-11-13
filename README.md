@@ -8,6 +8,8 @@ As part of our Software Engineering module (SC2006) at NTU, our 6-member team, P
 
 ShopPeas is a one-stop platform connecting consumers with wholesalers. Our goal is to provide easy access to healthy food options directly from wholesalers. Users can effortlessly browse for specific products or wholesalers. To help users make informed decisions, they can compare the prices, number of stocks, and distance of each wholesaler from their location. An added feature of our app is our cross-border accessibility, which allows Singaporeans to purchase directly from Malaysian wholesalers. Throughout the process, we ensure the app's efficiency, robustness, and the secureness of their personal data.
 
+Demo Video Youtube link: https://youtu.be/YNtytzvVLPc
+
 ## Table of Contents
 
 1. [Folder Structure](#folder-structure)
