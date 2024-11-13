@@ -1,4 +1,4 @@
-# ShopPeas
+# ShopPeas 🛍️🫛
 
 ![team_logo](./assets/logo_peasltd.png)
 
@@ -39,6 +39,11 @@ utils/               # Utility files to create records for firestore
 <a id='tech-stack'></a>
 
 ## Tech Stack
+
+![React Native](https://img.shields.io/badge/react_native-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Expo](https://img.shields.io/badge/expo-1C1E24?style=for-the-badge&logo=expo&logoColor=#D04A37)
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 
 ![tech_stack](./assets/tech_stack.png)
 
