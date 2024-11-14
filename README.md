@@ -107,7 +107,7 @@ To provide a high-level overview using our system layered architecture diagram, 
 
 2. Open the `backend` folder in your IDE. We used IntelliJ IDEA.
 
-3. In the [config](./backend/src/main/resources/config) folder, add these 3 JSON files that will contain the resources to communicate with external services. The first is the Currency API JSON file. Create an account with [currencyapi](https://currencyapi.com/) and get the API key.
+3. In the `./backend/src/main/resources/config` folder, add these 3 JSON files that will contain the resources to communicate with external services. The first is the Currency API JSON file. Create an account with [currencyapi](https://currencyapi.com/) and get the API key.
 
        # currencyapi.json file
        {
@@ -150,7 +150,7 @@ We have documented our solution in the following files which can be found in the
 
 2. Use Case Document
 
-3. API Documentation with `SwaggerUI`. You can access the documentation while running the backend by entering http://localhost:8080/swagger-ui/index.html. Alternatively, you can refer to our [api_docs.html](./documentation/api_docs.html) for our HTML version or [API Documentation.pdf](./documentation/API%20Documentation.pdf) for our PDF version.
+3. API Documentation with `SwaggerUI`. You can access the documentation while running the backend by entering http://localhost:8080/swagger-ui/index.html. Alternatively, you can refer to our [index.html](./documentation/api/index.html) for our HTML version or [API Documentation.pdf](./documentation/API%20Documentation.pdf) for our PDF version.
 
 4. Backend Functions Documentation with `Javadocs`. You can access the documentation through the [index.html](./documentation/javadocs) file here.
 
